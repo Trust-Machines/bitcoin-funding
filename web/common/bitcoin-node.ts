@@ -1,4 +1,3 @@
-
 import { BITCOIN_EXPLORER_URL } from './constants';
 
 export async function getCurrentBlockHeight(): Promise<Number> {
