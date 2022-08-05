@@ -1,4 +1,5 @@
 import { ECPair, payments, networks } from 'bitcoinjs-lib';
+import { btcNetwork } from '../constants';
 
 interface NewWallet {
   address: string | undefined,
@@ -8,7 +9,7 @@ interface NewWallet {
 
 export function createWallet(): NewWallet {
   const keyPair = ECPair.makeRandom();
-  const payment = payments.p2pkh({ pubkey: keyPair.publicKey, network: networks.regtest });
+  const payment = payments.p2pkh({ pubkey: keyPair.publicKey, network: btcNetwork });
 
   const result: NewWallet = {
     'address': payment.address,
