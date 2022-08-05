@@ -10,6 +10,7 @@ import {
 
 import { 
   createWallet,
+  createWalletXpub
 } from '../../common/bitcoin/bitcoin-js';
 
 import { 
@@ -28,6 +29,10 @@ export default async function handler(
 
   // const createWalletResult = createWallet();
   // console.log("createWalletResult: ", createWalletResult);
+
+  // const xpub = 'xpub6CzDCPbtLrrn4VpVbyyQLHbdSMpZoHN4iuW64VswCyEpfjM2mJGdaHJ2DyuZwtst96E16VvcERb8BBeJdHSCVmAq9RhtRQg6eAZFrTKCNqf';
+  // const createWalletXpubResult = createWalletXpub(xpub, 0);
+  // console.log("createWalletXpubResult: ", createWalletXpubResult);
 
   // const balanceResult = await getBalance("n2qEP66HWYsNf75krwQ7PZ4S4agy8SuzNi");
   // console.log("balanceResult: ", balanceResult);
