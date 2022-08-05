@@ -9,7 +9,7 @@ interface NewWallet {
 
 export function createWallet(): NewWallet {
   const keyPair = ECPair.makeRandom();
-  const payment = payments.p2pkh({ pubkey: keyPair.publicKey, network: btcNetwork });
+  const payment = payments.p2wpkh({ pubkey: keyPair.publicKey, network: btcNetwork });
 
   const result: NewWallet = {
     'address': payment.address,
