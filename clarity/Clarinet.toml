@@ -5,8 +5,11 @@ authors = []
 telemetry = false
 cache_dir = "./.requirements"
 
-# [contracts.counter]
-# path = "contracts/counter.clar"
+[contracts.clarity-bitcoin]
+path = "contracts/clarity-bitcoin.clar"
+
+[contracts.dao-registry-v1-1]
+path = "contracts/dao-registry-v1-1.clar"
 
 [repl.analysis]
 passes = ["check_checker"]
