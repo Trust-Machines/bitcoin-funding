@@ -104,6 +104,11 @@
   "resolved" "https://registry.npmjs.org/@rushstack/eslint-patch/-/eslint-patch-1.1.4.tgz"
   "version" "1.1.4"
 
+"@samouraiwallet/electrum-client@^1.2.4":
+  "integrity" "sha512-da0Zuhm/3ERttRWKL+A06dt6eKd3JteiH3HtvqxlE72L8wGJAdIPazD4Hd9LfyP0jbyJh8j3HPQ40lSidh3qKQ=="
+  "resolved" "https://registry.npmjs.org/@samouraiwallet/electrum-client/-/electrum-client-1.2.4.tgz"
+  "version" "1.2.4"
+
 "@stacks/common@^4.3.4":
   "integrity" "sha512-YJi5x0qOH1N5mwFGFVsXnfimMxc0+wozlbGzUFtY/FbvoZGq9LWGCXK1pnBiLYbIAn9983O7Pq9v4xfSEDvUFA=="
   "resolved" "https://registry.npmjs.org/@stacks/common/-/common-4.3.4.tgz"
