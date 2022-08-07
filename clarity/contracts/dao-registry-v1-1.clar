@@ -30,8 +30,8 @@
   (var-get dao-count)
 )
 
-(define-read-only (get-dao-by-id (id uint))
-  (map-get? dao-by-id id)
+(define-read-only (get-dao-by-id (dao-id uint))
+  (map-get? dao-by-id dao-id)
 )
 
 (define-read-only (get-dao-id-by-public-key (public-key (buff 33)))

@@ -11,6 +11,9 @@ path = "contracts/clarity-bitcoin.clar"
 [contracts.dao-registry-v1-1]
 path = "contracts/dao-registry-v1-1.clar"
 
+[contracts.dao-funding-v1-1]
+path = "contracts/dao-funding-v1-1.clar"
+
 [repl.analysis]
 passes = ["check_checker"]
 check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }

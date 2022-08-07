@@ -11,7 +11,6 @@ import { hexToBytes } from "./utils.ts"
 Clarinet.test({name: "dao registry: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
 
     let call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-count", [
     ], deployer.address);
@@ -62,7 +61,6 @@ Clarinet.test({name: "dao registry: register DAO",
 
 Clarinet.test({name: "dao registry: can not register DAO with already registered public key",
   async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
     let publicKey = hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58');
@@ -80,5 +78,28 @@ Clarinet.test({name: "dao registry: can not register DAO with already registered
       ], wallet_1.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(10001);
+  }
+});
+
+
+Clarinet.test({name: "dao registry: can not register DAO with already registered public key",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    // let txHex = "02000000000101444de7b264ab2edff8558a4257a2609948ec575b2329c5062ae8b89b77f8aa790000000000ffffffff02f98c420000000000160014982c47483e6b5f9045434660e87f54a5193149a339300000000000001976a914eabc65f3e890fb8bf20d153e95119c72d85765a988ac02483045022100fe850d806b77732aad8542276c91cbb81968ef66045bd9e75a90634e56ffff6c02200142ae053af024dffbebaf0e92aa407cf8be9b5e86b0e5899cebf09126ee266301210346d9beacfd3672f1f90aaa7be4a1f00243435b3bc10b82315c869bea5344bcc900000000"
+    let txHex = "0200000001444de7b264ab2edff8558a4257a2609948ec575b2329c5062ae8b89b77f8aa790000000000ffffffff02f98c420000000000160014982c47483e6b5f9045434660e87f54a5193149a339300000000000001976a914eabc65f3e890fb8bf20d153e95119c72d85765a988ac00000000";
+
+    let call = await chain.callReadOnlyFn("clarity-bitcoin", "parse-tx", [
+      types.buff(hexToBytes(txHex))      
+    ], deployer.address);
+    // call.result.expectNone();
+
+    call = await chain.callReadOnlyFn("dao-funding-v1-1", "parse-tx", [
+      types.buff(hexToBytes(txHex)),
+      types.uint(1)  
+    ], deployer.address);
+    call.result.expectNone();
+    
   }
 });
