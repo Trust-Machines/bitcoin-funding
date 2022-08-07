@@ -81,8 +81,7 @@ Clarinet.test({name: "dao registry: can not register DAO with already registered
   }
 });
 
-
-Clarinet.test({name: "dao registry: can not register DAO with already registered public key",
+Clarinet.test({name: "dao registry: can parse BTC transaction",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
@@ -96,10 +95,22 @@ Clarinet.test({name: "dao registry: can not register DAO with already registered
     // call.result.expectNone();
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "parse-tx", [
+      types.tuple({
+        "header": types.buff(new ArrayBuffer(80)),
+        "height": types.uint(1)
+      }),
+      types.list([]),
       types.buff(hexToBytes(txHex)),
+      types.tuple({
+        "tree-depth": types.uint(1),
+        "tx-index": types.uint(1),
+        "hashes": types.list([])
+      }),
       types.uint(1)  
     ], deployer.address);
-    call.result.expectNone();
-    
+    // call.result.expectOk().expectTuple()['mined'].expectBool(true);
+    call.result.expectOk().expectTuple()['recipient'].expectBuff(hexToBytes("0x76a914eabc65f3e890fb8bf20d153e95119c72d85765a988ac"));
+    call.result.expectOk().expectTuple()['sats'].expectUint(12345);
+
   }
 });

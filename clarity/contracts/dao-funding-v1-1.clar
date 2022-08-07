@@ -5,6 +5,7 @@
 
 (define-constant ERR_DAO_NOT_FOUND (err u20001))
 (define-constant ERR_INVALID_TX (err u20002))
+(define-constant ERR_TX_NOT_MINED (err u20003))
 
 ;; 
 ;; Maps
@@ -34,21 +35,48 @@
 )
 
 ;; 
-;; Register
+;; Parse
 ;; 
 
-(define-read-only (parse-tx 
+(define-public (add-user-funding
+  (block { header: (buff 80), height: uint })
+  (prev-blocks (list 10 (buff 80)))
   (tx (buff 1024))
+  (proof { tx-index: uint, hashes: (list 12 (buff 32)), tree-depth: uint })
+  (output-index uint)
+)
+  (let (
+    (tx-info (try! (parse-tx block prev-blocks tx proof output-index)))
+
+    ;; TODO - make registry dynamic
+    ;; (dao-id (try! (contract-call? .dao-registry-v1-1 get-dao-id-by-public-key (get recipient tx-info))))
+
+  )
+    (asserts! (get mined tx-info) ERR_TX_NOT_MINED)
+
+    ;; TODO - save info
+
+    (ok (get sats tx-info))
+  )
+)
+
+(define-read-only (parse-tx 
+  (block { header: (buff 80), height: uint })
+  (prev-blocks (list 10 (buff 80)))
+  (tx (buff 1024))
+  (proof { tx-index: uint, hashes: (list 12 (buff 32)), tree-depth: uint })
   (output-index uint)
 )
   (let (
     ;; TODO - Update mainnet address
-    (parsed-tx (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-bitcoin parse-tx tx) ERR_INVALID_TX))
-    ;; (input (unwrap! (element-at (get ins parsed-tx) parse-index) ERR_INVALID_TX))
+    (was-mined (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-bitcoin was-tx-mined-prev? block prev-blocks tx proof)))
+    (parsed-tx (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-bitcoin parse-tx tx)))
+
     (output (unwrap! (element-at (get outs parsed-tx) output-index) ERR_INVALID_TX))
   )
     (ok {
-      receiver: (get scriptPubKey output),
+      mined: was-mined,
+      recipient: (get scriptPubKey output),
       sats: (get value output)
     })
   )
