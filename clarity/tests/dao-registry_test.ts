@@ -8,6 +8,10 @@ import {
 
 import { hexToBytes } from "./utils.ts"
 
+// 
+// Core
+// 
+
 Clarinet.test({name: "dao registry: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -58,6 +62,10 @@ Clarinet.test({name: "dao registry: register DAO",
     call.result.expectSome().expectUint(0);
   }
 });
+
+// 
+// Errors
+// 
 
 Clarinet.test({name: "dao registry: can not register DAO with already registered public key",
   async fn(chain: Chain, accounts: Map<string, Account>) {
