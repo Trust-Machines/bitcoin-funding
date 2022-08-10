@@ -62,11 +62,10 @@
     (dao-id (unwrap! (contract-call? .dao-registry-v1-1 get-dao-id-by-public-key receiver-public-key) ERR_DAO_NOT_FOUND))
 
     (current-total (get-total-dao-funding dao-id))
+    (current-user-total (get-user-dao-funding dao-id sender-public-key))
   )
-
-    ;; TODO - save info
-
     (map-set total-dao-funding dao-id (+ current-total sats))
+    (map-set user-dao-funding { dao-id: dao-id, user-public-key: sender-public-key } (+ current-user-total sats))
 
     (ok sats)
   )
