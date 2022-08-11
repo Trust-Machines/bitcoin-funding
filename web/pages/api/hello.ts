@@ -22,6 +22,8 @@ import {
   parseTx
 } from '../../common/stacks/stacks-calls'
 
+import { PrismaClient } from '@prisma/client';
+
 type Data = {
   name: string
 }
@@ -31,6 +33,10 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
 
+  // const prisma = new PrismaClient();
+  // const daoResults = await prisma.dao.findMany();
+  // console.log("daoResults: ", daoResults);
+  
   // const createWalletResult = createWallet();
   // console.log("createWalletResult: ", createWalletResult);
 
