@@ -2,6 +2,15 @@
 
 The project is using Electrum servers to facilitate fetching of wallet data end broadcasting transactions without the need to run a full node.
 
+## Setup PostgreSQL
+
+ 1. Install PostgreSQL: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+ 2. Open pgAdmin. Login and create database.
+ 3. Update .env file `DATABASE_URL`
+ 4. Run `npx prisma db push` to create tables based on `schema.prisma`
+ 5. Run `npx prisma studio` to view tables and data
+ 6. Run `npx prisma generate` every time `schema.prisma` is updated
+
 ## Start services
 
  1. Run `clarinet integrate` to start a local bitcoin node
