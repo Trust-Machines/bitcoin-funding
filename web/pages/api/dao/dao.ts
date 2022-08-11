@@ -10,6 +10,7 @@ export default async function handler(
   } else {
     await getHandler(req, res);
   }
+  res.status(400).json("Unsupported method: " + req.method);
 }
 
 async function getHandler(
@@ -19,12 +20,12 @@ async function getHandler(
   try {
     const { id } = req.query;
     const prisma = new PrismaClient();
-    const daoResult = await prisma.dao.findUniqueOrThrow({
+    const result = await prisma.dao.findUniqueOrThrow({
       where: {
         id: id as string,
       }
     });
-    res.status(200).json(daoResult)
+    res.status(200).json(result)
   } catch (error) {
     res.status(400).json((error as Error).message);
   }
@@ -37,12 +38,12 @@ async function postHandler(
   try {
     const body = JSON.parse(req.body)
     const prisma = new PrismaClient();
-    const daoResult = await prisma.dao.create({
+    const result = await prisma.dao.create({
       data: {
         title: body.title,
       },
     });
-    res.status(200).json(daoResult)
+    res.status(200).json(result)
   } catch (error) {
     res.status(400).json((error as Error).message);
   }
