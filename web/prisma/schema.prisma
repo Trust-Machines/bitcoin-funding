@@ -11,7 +11,28 @@ datasource db {
 }
 
 model Dao {
-  id        String     @default(cuid()) @id
-  title     String
+  id    String @id @default(cuid())
+  title String
 }
 
+model User {
+  appPrivateKey             String                   @id
+  address                   String
+  fundingWallet             FundingWallet            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
+  fundingWalletPublicKey    String                   @unique
+}
+
+model FundingWallet {
+  publicKey                   String                  @id
+  address                     String
+  privateKey                  String
+  transactions                FundingTransaction[]
+  user                        User?
+}
+
+model FundingTransaction {
+  txId                        String                  @id @default(cuid())
+  wallet                      FundingWallet           @relation(fields: [walletPublicKey], references: [publicKey])
+  walletPublicKey             String
+  done                        Boolean
+}
