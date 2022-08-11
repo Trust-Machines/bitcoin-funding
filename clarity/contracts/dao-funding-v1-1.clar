@@ -58,7 +58,7 @@
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-public-key receiver-public-key)))
 
-    ;; TODO - make registry dynamic
+    ;; TODO - make registry dynamic?
     (dao-id (unwrap! (contract-call? .dao-registry-v1-1 get-dao-id-by-public-key receiver-public-key) ERR_DAO_NOT_FOUND))
 
     (current-total (get-total-dao-funding dao-id))
@@ -89,8 +89,7 @@
     (sender (unwrap! (element-at (get outs parsed-tx) sender-index) ERR_INVALID_TX))
     (receiver (unwrap! (element-at (get outs parsed-tx) receiver-index) ERR_INVALID_TX))
   )
-    ;; TODO
-    ;; (asserts! was-mined ERR_TX_NOT_MINED)
+    (asserts! was-mined ERR_TX_NOT_MINED)
     (asserts! (is-eq (get-hashed-public-key sender-public-key) (get scriptPubKey sender)) ERR_WRONG_SENDER)
     (asserts! (is-eq (get-hashed-public-key receiver-public-key) (get scriptPubKey receiver)) ERR_WRONG_RECEIVER)
 
