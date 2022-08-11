@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, FundingWallet } from '@prisma/client';
 
 import { 
-  NewWallet,
   createWallet,
   createWalletXpub
 } from '../../../common/bitcoin/bitcoin-js';
