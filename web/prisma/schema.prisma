@@ -16,14 +16,14 @@ model Dao {
 }
 
 model User {
-  appPrivateKey             String                   @id
-  address                   String
-  fundingWallet             FundingWallet            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
-  fundingWalletPublicKey    String                   @unique
+  appPrivateKey               String                    @id
+  address                     String
+  fundingWallet               FundingWallet             @relation(fields: [fundingWalletPublicKey], references: [publicKey])
+  fundingWalletPublicKey      String                    @unique
 }
 
 model FundingWallet {
-  publicKey                   String                  @id
+  publicKey                   String                    @id
   address                     String
   privateKey                  String
   transactions                FundingTransaction[]
@@ -31,8 +31,8 @@ model FundingWallet {
 }
 
 model FundingTransaction {
-  txId                        String                  @id @default(cuid())
-  wallet                      FundingWallet           @relation(fields: [walletPublicKey], references: [publicKey])
+  txId                        String                    @id @default(cuid())
+  wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
   walletPublicKey             String
   done                        Boolean
 }
