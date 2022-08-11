@@ -31,7 +31,7 @@ model FundingWallet {
 }
 
 model FundingTransaction {
-  txId                        String                    @id @default(cuid())
+  txId                        String                    @id
   wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
   walletPublicKey             String
   done                        Boolean

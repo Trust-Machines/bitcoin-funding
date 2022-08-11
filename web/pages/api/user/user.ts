@@ -44,7 +44,7 @@ async function postHandler(
         address: body.address,
         fundingWallet: {
           connect: {
-            publicKey: body.fundingWallet,
+            publicKey: body.fundingWallet, // TODO: should come from SC
           }
         }
       },
