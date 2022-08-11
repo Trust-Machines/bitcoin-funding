@@ -1,4 +1,4 @@
-import {ElectrumClient} from "@samouraiwallet/electrum-client";
+import { ElectrumClient } from "@samouraiwallet/electrum-client";
 import { address as btcAddress } from 'bitcoinjs-lib';
 import { ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
@@ -47,13 +47,12 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const client = await newElectrumClient();
 
   const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: btcNetwork });
-  const sender = payments.p2pkh({
+  const sender = payments.p2wpkh({
     pubkey: signer.publicKey,
-    network: networks.regtest,
+    network: btcNetwork,
   });
   const senderAddress = sender.address!;
   const scriptHash = getScriptHash(sender.output!);
-
   const unspents = await client.blockchainScripthash_listunspent(bytesToHex(scriptHash)) as [UnspentObject];
   const unspent = unspents.sort((a, b) => (a.value < b.value ? 1 : -1))[0];
   const tx = await client.blockchainTransaction_get(unspent.tx_hash, true) as TransactionObject;
