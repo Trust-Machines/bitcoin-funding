@@ -14,6 +14,9 @@ path = "contracts/test/test-utils.clar"
 [contracts.dao-registry-v1-1]
 path = "contracts/dao-registry-v1-1.clar"
 
+[contracts.user-registry-v1-1]
+path = "contracts/user-registry-v1-1.clar"
+
 [contracts.dao-funding-v1-1]
 path = "contracts/dao-funding-v1-1.clar"
 
