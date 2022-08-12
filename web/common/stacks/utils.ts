@@ -1,4 +1,3 @@
-
 import { stacksApiUrl } from '../constants';
 
 export async function getNonce(address: string) {

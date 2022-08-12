@@ -12,6 +12,8 @@ export let electrumPort = 50001;
 export let stacksNetwork = new StacksTestnet({ url: 'http://localhost:3999' });
 export let stacksApiUrl = 'http://localhost:3999';
 
+export let appApiUrl = 'http://localhost:3000/api/'
+
 if (process.env.NETWORK === 'mainnet') {
   btcNetwork = networks.bitcoin;
 

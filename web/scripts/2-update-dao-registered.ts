@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 
 import axios from 'axios';
+import { appApiUrl } from '../common/constants';
 
 export async function start() {
   const daoPublicKey = process.argv.slice(2)[0];
@@ -10,10 +11,9 @@ export async function start() {
   }
   console.log("[DAO] Check SC registration for DAO with public key: ", daoPublicKey)
 
-  const url = `http://localhost:3000/api/dao/dao`;
   const response = await axios({
     method: 'PUT',
-    url: url,
+    url: appApiUrl + '/dao/dao',
     data: {
       publicKey: daoPublicKey
     }

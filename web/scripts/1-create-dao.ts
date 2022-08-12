@@ -3,6 +3,7 @@ require('dotenv').config({ path: '../.env' });
 import axios from 'axios';
 import { createWallet } from '../common/bitcoin/bitcoin-js';
 import { getDaoCount, registerDao } from "../common/stacks/dao-registry-v1-1"
+import { appApiUrl } from '../common/constants';
 
 export async function start() {
 
@@ -20,10 +21,9 @@ export async function start() {
   console.log("[DAO] SC registration TX:", registerTxId);
 
   // Register DAO with API
-  const url = `http://localhost:3000/api/dao/dao`;
   const response = await axios({
     method: 'POST',
-    url: url,
+    url: appApiUrl + '/dao/dao',
     data: {
       publicKey: daoWallet.publicKey,
       title: "DAO #" + daoCount,
@@ -31,7 +31,6 @@ export async function start() {
     }
   });
   console.log("[DAO] Registration API: ", response.data);
-
 }
 
 start();
