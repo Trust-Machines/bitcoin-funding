@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../.env' });
+
 import { networks } from 'bitcoinjs-lib';
 import { StacksTestnet, StacksMainnet } from '@stacks/network';
 
@@ -8,8 +10,11 @@ export let electrumHost = 'localhost';
 export let electrumPort = 50001;
 
 export let stacksNetwork = new StacksTestnet({ url: 'http://localhost:3999' });
+export let stacksApiUrl = 'http://localhost:3999';
 
 if (process.env.NETWORK === 'mainnet') {
   btcNetwork = networks.bitcoin;
+
   stacksNetwork = new StacksMainnet();
-}
+  stacksApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
+} 
