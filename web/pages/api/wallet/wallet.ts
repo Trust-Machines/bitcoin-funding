@@ -18,8 +18,9 @@ export default async function handler(
     await postHandler(req, res);
   } else if (req.method === 'POST') {
     await postHandler(req, res);
+  } else {
+    res.status(400).json("Unsupported method: " + req.method);
   }
-  res.status(400).json("Unsupported method: " + req.method);
 }
 
 async function getHandler(

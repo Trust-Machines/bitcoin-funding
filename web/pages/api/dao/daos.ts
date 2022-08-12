@@ -7,8 +7,9 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
+  } else {
+    res.status(400).json("Unsupported method: " + req.method);
   }
-  res.status(400).json("Unsupported method: " + req.method);
 }
 
 async function getHandler(
