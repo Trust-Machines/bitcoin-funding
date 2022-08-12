@@ -18,10 +18,6 @@ import {
   sendBtc
 } from '../../common/bitcoin/electrum-api';
 
-import {
-  parseTx
-} from '../../common/stacks/stacks-calls'
-
 type Data = {
   name: string
 }
