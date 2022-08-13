@@ -9,7 +9,7 @@ export async function start() {
     console.log("[DAO] Add the DAO public key as parameter")
     return;
   }
-  console.log("[DAO] Check SC registration for DAO with public key: ", daoPublicKey)
+  console.log("[DAO] Check SC registration for DAO with public key:", daoPublicKey)
 
   const response = await axios({
     method: 'PUT',
@@ -18,14 +18,14 @@ export async function start() {
       publicKey: daoPublicKey
     }
   });
-  console.log("[DAO] registration verify API result: ", response.data);
+  console.log("[DAO] registration verify API result:", response.data);
 }
 
 export async function run() {
   try {
     await start();
   } catch (error) {
-    console.log("[DAO] ERROR: ", error);
+    console.log("[DAO] ERROR:", error);
   }
 }
 run();

@@ -9,7 +9,7 @@ export async function start() {
 
   // Number of registered DAOs
   const daoCount = await getDaoCount();
-  console.log("[DAO] Total number of DAOs in SC: ", daoCount);
+  console.log("[DAO] Total number of DAOs in SC:", daoCount);
 
   // New DAO wallet
   const daoWallet = createWallet();
@@ -30,14 +30,14 @@ export async function start() {
       registrationTxId: registerTxId,
     }
   });
-  console.log("[DAO] Registration API response: ", response.data);
+  console.log("[DAO] Registration API response:", response.data);
 }
 
 export async function run() {
   try {
     await start();
   } catch (error) {
-    console.log("[DAO] ERROR: ", error);
+    console.log("[DAO] ERROR:", error);
   }
 }
 run();

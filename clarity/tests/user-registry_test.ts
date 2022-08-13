@@ -16,10 +16,27 @@ Clarinet.test({name: "user registry: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
+    let publicKey = hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58');
+
     let call = await chain.callReadOnlyFn("user-registry-v1-1", "get-btc-to-stx", [
-      types.buff(hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58'))      
+      types.buff(publicKey)      
     ], deployer.address);
     call.result.expectNone();
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "get-stx-to-btc", [
+      types.principal(deployer.address)      
+    ], deployer.address);
+    call.result.expectNone();
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "is-btc-registered", [
+      types.buff(publicKey)      
+    ], deployer.address);
+    call.result.expectBool(false);
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "is-stx-registered", [
+      types.principal(deployer.address)      
+    ], deployer.address);
+    call.result.expectBool(false);
   }
 });
 
@@ -38,16 +55,30 @@ Clarinet.test({name: "user registry: register user",
     block.receipts[0].result.expectOk().expectBool(true);
 
     let call = await chain.callReadOnlyFn("user-registry-v1-1", "get-btc-to-stx", [
-      types.buff(hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58'))      
+      types.buff(publicKey)      
     ], deployer.address);
     call.result.expectSome().expectPrincipal(wallet_1.address);
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "get-stx-to-btc", [
+      types.principal(wallet_1.address)      
+    ], deployer.address);
+    call.result.expectSome().expectBuff(publicKey);
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "is-btc-registered", [
+      types.buff(publicKey)      
+    ], deployer.address);
+    call.result.expectBool(true);
+
+    call = await chain.callReadOnlyFn("user-registry-v1-1", "is-stx-registered", [
+      types.principal(wallet_1.address)      
+    ], deployer.address);
+    call.result.expectBool(true);
   }
 });
 
 // 
 // Errors
 // 
-
 
 Clarinet.test({name: "user registry: can not register same BTC public key twice",
   async fn(chain: Chain, accounts: Map<string, Account>) {

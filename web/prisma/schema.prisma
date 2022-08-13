@@ -20,8 +20,10 @@ model Dao {
 model User {
   appPrivateKey               String                    @id
   address                     String
-  fundingWallet               FundingWallet             @relation(fields: [fundingWalletPublicKey], references: [publicKey])
-  fundingWalletPublicKey      String                    @unique
+  fundingWallet               FundingWallet?            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
+  fundingWalletPublicKey      String?                   @unique
+  registrationTxId            String?
+  registrationStatus          String
 }
 
 model FundingWallet {

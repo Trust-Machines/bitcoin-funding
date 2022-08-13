@@ -10,8 +10,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<FundingWallet | string>
 ) {
-  if (req.method === 'GET') {
-    await postHandler(req, res);
+  if (req.method === 'PUt') {
+    await putHandler(req, res);
   } else if (req.method === 'POST') {
     await postHandler(req, res);
   } else {
@@ -19,7 +19,7 @@ export default async function handler(
   }
 }
 
-async function getHandler(
+async function putHandler(
   req: NextApiRequest,
   res: NextApiResponse<number>
 ) {
