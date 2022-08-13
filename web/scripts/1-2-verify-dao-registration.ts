@@ -18,8 +18,7 @@ export async function start() {
       publicKey: daoPublicKey
     }
   });
-  console.log("[DAO] registration TX result: ", response.data);
-
+  console.log("[DAO] registration verify API result: ", response.data);
 }
 
 export async function run() {

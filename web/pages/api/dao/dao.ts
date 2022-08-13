@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, Dao } from '@prisma/client';
 import { getTransactionInfo } from '../../../common/stacks/utils';
-import { getDaoByPublicKey } from '../../../common/stacks/dao-registry-v1-1';
+import { isDaoRegistered } from '../../../common/stacks/dao-registry-v1-1';
 
 export default async function handler(
   req: NextApiRequest,
@@ -71,11 +71,10 @@ async function putHandler(
     });
 
     // Check DAO registration in SC
-    // TODO: better method to check if public key registered
-    const daoRegistry = await getDaoByPublicKey(req.body.publicKey);
+    const daoRegistered = await isDaoRegistered(req.body.publicKey);
 
     let status = 'started';
-    if (daoRegistry.type == "uint") {
+    if (daoRegistered) {
       status = 'completed';
     } else if (resultDao.registrationTxId != null) {
       // Get registration TX info

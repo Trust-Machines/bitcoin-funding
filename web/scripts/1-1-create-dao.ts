@@ -18,7 +18,7 @@ export async function start() {
   // Register DAO with SC
   const registerResult = await registerDao(daoWallet.publicKey);
   const registerTxId = registerResult.txid;
-  console.log("[DAO] SC registration TX:", registerTxId);
+  console.log("[DAO] SC registration transaction ID:", registerTxId);
 
   // Register DAO with API
   const response = await axios({
@@ -30,7 +30,7 @@ export async function start() {
       registrationTxId: registerTxId,
     }
   });
-  console.log("[DAO] Registration API: ", response.data);
+  console.log("[DAO] Registration API response: ", response.data);
 }
 
 export async function run() {

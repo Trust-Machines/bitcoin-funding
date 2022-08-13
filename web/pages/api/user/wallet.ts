@@ -12,10 +12,10 @@ import {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FundingWallet | string>
+  res: NextApiResponse<FundingWallet | string | number>
 ) {
   if (req.method === 'GET') {
-    await postHandler(req, res);
+    await getHandler(req, res);
   } else if (req.method === 'POST') {
     await postHandler(req, res);
   } else {
@@ -39,6 +39,7 @@ async function postHandler(
   try {
     const walletResult = createWallet();
 
+    // TODO: create forwarding wallet based on xpub wallet
     // const xpub = 'xpub6CzDCPbtLrrn4VpVbyyQLHbdSMpZoHN4iuW64VswCyEpfjM2mJGdaHJ2DyuZwtst96E16VvcERb8BBeJdHSCVmAq9RhtRQg6eAZFrTKCNqf';
     // const createWalletXpubResult = createWalletXpub(xpub, 0);
 

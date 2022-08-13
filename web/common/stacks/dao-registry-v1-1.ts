@@ -62,6 +62,22 @@ export async function getDaoByPublicKey(publicKey: string): Promise<any> {
   return result;
 }
 
+export async function isDaoRegistered(publicKey: string): Promise<any> {
+  const call = await callReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: 'is-dao-registered',
+    functionArgs: [
+      bufferCV(Buffer.from(hexToBytes(publicKey)))
+    ],
+    senderAddress: contractAddress,
+    network: stacksNetwork,
+  });
+
+  const result = cvToJSON(call).value;
+  return result;
+}
+
 export async function registerDao(publicKey: string): Promise<any> {
   const nonce = await getNonce(userAddress)
   const txOptions = {
