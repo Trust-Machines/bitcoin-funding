@@ -13,7 +13,7 @@ datasource db {
 model Dao {
   publicKey                   String @id
   title                       String
-  registrationTxId            String
+  registrationTxId            String?
   registrationStatus          String
 }
 

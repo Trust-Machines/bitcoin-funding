@@ -22,4 +22,11 @@ export async function start() {
 
 }
 
-start();
+export async function run() {
+  try {
+    await start();
+  } catch (error) {
+    console.log("[DAO] ERROR: ", error);
+  }
+}
+run();

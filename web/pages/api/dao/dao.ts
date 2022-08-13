@@ -70,9 +70,6 @@ async function putHandler(
       }
     });
 
-    // Get registration TX info
-    const tx = await getTransactionInfo(resultDao.registrationTxId);
-
     // Check DAO registration in SC
     // TODO: better method to check if public key registered
     const daoRegistry = await getDaoByPublicKey(req.body.publicKey);
@@ -80,8 +77,12 @@ async function putHandler(
     let status = 'started';
     if (daoRegistry.type == "uint") {
       status = 'completed';
-    } else if (tx.tx_status == 'aborted_by_response') {
-      status = 'failed';
+    } else if (resultDao.registrationTxId != null) {
+      // Get registration TX info
+      const tx = await getTransactionInfo(resultDao.registrationTxId);
+      if (tx.tx_status == 'aborted_by_response') {
+        status = 'failed';
+      }
     }
 
     // Update registration status

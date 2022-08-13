@@ -33,4 +33,11 @@ export async function start() {
   console.log("[DAO] Registration API: ", response.data);
 }
 
-start();
+export async function run() {
+  try {
+    await start();
+  } catch (error) {
+    console.log("[DAO] ERROR: ", error);
+  }
+}
+run();
