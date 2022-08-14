@@ -9,7 +9,7 @@ export async function start() {
   // New user forwarding wallet
   const responseWallet = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/wallet',
+    url: appApiUrl + '/wallet/create',
   });
   console.log("[USER] New wallet API response:", responseWallet.data);
 
@@ -21,7 +21,7 @@ export async function start() {
   // New user
   const responseUser = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/user',
+    url: appApiUrl + '/user/create',
     data: {
       appPrivateKey: Math.random().toString().replace('.', ''),
       address: process.env.USER_ADDRESS as string,

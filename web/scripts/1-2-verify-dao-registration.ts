@@ -12,8 +12,8 @@ export async function start() {
   console.log("[DAO] Check SC registration for DAO with public key:", daoPublicKey)
 
   const response = await axios({
-    method: 'PUT',
-    url: appApiUrl + '/dao/dao',
+    method: 'POST',
+    url: appApiUrl + '/dao/verify',
     data: {
       publicKey: daoPublicKey
     }

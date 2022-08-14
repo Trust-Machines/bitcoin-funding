@@ -12,8 +12,8 @@ export async function start() {
   console.log("[USER] Check SC registration for user with appPrivateKey:", appPrivateKey)
 
   const response = await axios({
-    method: 'PUT',
-    url: appApiUrl + '/user/user',
+    method: 'POST',
+    url: appApiUrl + '/user/verify',
     data: {
       appPrivateKey: appPrivateKey
     }

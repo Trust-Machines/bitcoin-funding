@@ -23,7 +23,7 @@ export async function start() {
   // Register DAO with API
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/dao/dao',
+    url: appApiUrl + '/dao/create',
     data: {
       publicKey: daoWallet.publicKey,
       title: "DAO #" + daoCount,
