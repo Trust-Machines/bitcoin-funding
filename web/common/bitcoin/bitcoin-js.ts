@@ -34,3 +34,10 @@ export function createWalletXpub(xpub: string, index: number): NewWallet {
   }
   return result;
 }
+
+export function publicKeyToAddress(publicKey: string): string {
+  const pair = ECPair.fromPublicKey(Buffer.from(publicKey, 'hex'), { compressed: false });
+  const uncompressed = pair.publicKey.toString('hex');
+  const { address } = payments.p2pkh({ pubkey: Buffer.from(uncompressed, 'hex'), network: btcNetwork });
+  return address as string;
+}
