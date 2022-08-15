@@ -32,7 +32,7 @@ async function newElectrumClient(): Promise<ElectrumClient> {
   return client;
 }
 
-export async function getBalance(address: string): Promise<string> {
+export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
   const output = btcAddress.toOutputScript(address, btcNetwork);
@@ -40,7 +40,7 @@ export async function getBalance(address: string): Promise<string> {
 
   const balances = await client.blockchainScripthash_getBalance(bytesToHex(scriptHash)) as BtcBalance;
   const balance = BigInt(balances.unconfirmed) + BigInt(balances.confirmed);
-  return balance.toString();
+  return parseInt(balance.toString());
 }
 
 export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 500): Promise<string> {

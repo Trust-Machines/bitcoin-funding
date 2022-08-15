@@ -38,5 +38,5 @@ model FundingTransaction {
   txId                        String                    @id
   wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
   walletPublicKey             String
-  completed                   Boolean
+  status                      String
 }
