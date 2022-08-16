@@ -1,0 +1,15 @@
+import { networks } from 'bitcoinjs-lib';
+import { StacksTestnet, StacksMainnet } from '@stacks/network';
+
+export let btcNetwork = networks.regtest;
+export let btcExplorerUrl = 'http://devnet:devnet@localhost:8001';
+
+export let electrumHost = 'localhost';
+export let electrumPort = 50001;
+
+export let stacksNetwork = new StacksTestnet({ url: 'http://localhost:3999' });
+
+if (process.env.NETWORK === 'mainnet') {
+  btcNetwork = networks.bitcoin;
+  stacksNetwork = new StacksMainnet();
+}

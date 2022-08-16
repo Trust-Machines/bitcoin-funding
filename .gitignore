@@ -17,6 +17,7 @@
 
 # misc
 .DS_Store
+notes.md
 
 # debug
 npm-debug.log*
@@ -30,4 +31,8 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-notes.md
+# clarity
+clarity/settings/Mainnet.toml
+clarity/settings/Testnet.toml
+clarity/.requirements/
+clarity/history.txt
