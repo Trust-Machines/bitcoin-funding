@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@micro-stacks/react';
 import { Button } from '@/components/Button'
  
-export const WalletConnectButton = () => {
+export const WalletConnectButton = ({ buttonText }) => {
   const { openAuthRequest, isRequestPending, signOut, isSignedIn } = useAuth();
-  const [label, setLabel] = useState('Connect Stacks Wallet');
+  const [label, setLabel] = useState(buttonText);
 
   useEffect(() => {
-    setLabel(isRequestPending ? 'Loading...' : isSignedIn ? 'Sign out' : 'Connect Stacks wallet');
+    setLabel(isRequestPending ? 'Loading...' : isSignedIn ? 'Sign out' : buttonText);
   }, [isRequestPending, isSignedIn]);
 
   return (

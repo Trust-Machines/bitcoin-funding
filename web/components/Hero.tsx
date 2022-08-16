@@ -26,7 +26,7 @@ export function Hero() {
         Native Bitcoin Funding in hours, not weeks.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <WalletConnectButton />
+        <WalletConnectButton buttonText='Create a Bitcoin DAO' />
         <Button
           href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
           variant="outline"

@@ -1,5 +1,5 @@
 import { Container } from '@/components/Container'
-import { useAccount } from '@micro-stacks/react';
+import { useAccount } from '@micro-stacks/react'
 
 export function Main() {
   const account = useAccount();
@@ -7,7 +7,8 @@ export function Main() {
 
   return (
     <Container>
-      <span>Congrats, you're signed in!</span>
+      <p>Congrats, you're signed in!</p>
+      <p>Show some DAOs or whatever</p>
     </Container>
   );
 }
