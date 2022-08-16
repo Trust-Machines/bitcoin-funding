@@ -2,6 +2,7 @@ import Image from 'next/future/image'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
+import { WalletConnectButton } from '@/components/WalletConnectButton'
 
 export function Hero() {
   return (
@@ -25,7 +26,7 @@ export function Hero() {
         Native Bitcoin Funding in hours, not weeks.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <Button href="/register">Try it now</Button>
+        <WalletConnectButton />
         <Button
           href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
           variant="outline"
