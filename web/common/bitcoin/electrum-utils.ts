@@ -9,7 +9,7 @@ export function getScriptHash(output: BufferType): Uint8Array {
   return reversed;
 }
 
-function reverseBuffer(buffer: BufferType): Uint8Array {
+export function reverseBuffer(buffer: BufferType): Uint8Array {
   if (buffer.length < 1) return buffer;
   let j = buffer.length - 1;
   let tmp = 0;
