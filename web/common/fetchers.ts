@@ -27,7 +27,7 @@ export const createUser = async (formData: Object) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(formData),
-  })
+  });
 };
 
 export const createDao = async (formData: Object) => {
@@ -37,5 +37,5 @@ export const createDao = async (formData: Object) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(formData),
-  })
+  });
 };

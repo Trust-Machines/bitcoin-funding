@@ -8,9 +8,10 @@ const New: NextPage = () => {
   const [state, setState] = useState({
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',
-    amount: 6,
-    address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    raisingAmount: 6,
+    publicKey: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     deadline: '2023-01-01',
+    registrationTxId: 1,
   });
 
   const handleInputChange = (event) => {
@@ -22,7 +23,6 @@ const New: NextPage = () => {
   }
 
   const submitCreateDao = async () => {
-    console.log('creating DAO', state);
     const res = await createDao(state);
     console.log(res);
   }
@@ -71,17 +71,17 @@ const New: NextPage = () => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">How much do you want to raise?</label>
+                <label htmlFor="raisingAmount" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">How much do you want to raise?</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
                       type="number"
-                      name="amount"
-                      id="amount"
-                      autoComplete="amount"
+                      name="raisingAmount"
+                      id="raisingAmount"
+                      autoComplete="raisingAmount"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.amount}
+                      value={state.raisingAmount}
                     />
                     <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       BTC
@@ -92,17 +92,17 @@ const New: NextPage = () => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
+                <label htmlFor="publicKey" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
                       type="text"
-                      name="address"
-                      id="address"
+                      name="publicKey"
+                      id="publicKey"
                       autoComplete="address"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.address}
+                      value={state.publicKey}
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">

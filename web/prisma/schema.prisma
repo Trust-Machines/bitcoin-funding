@@ -11,10 +11,15 @@ datasource db {
 }
 
 model Dao {
-  publicKey                   String @id
-  title                       String
+  publicKey                   String                    @id
+  name                        String
+  about                       String?
   registrationTxId            String?
   registrationStatus          String
+  raisingAmount               Int                       // amount in satoshi
+  raisingDeadline             DateTime                  // date in the future
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
 }
 
 model User {
@@ -24,6 +29,8 @@ model User {
   fundingWalletPublicKey      String?                   @unique
   registrationTxId            String?
   registrationStatus          String
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
 }
 
 model FundingWallet {
@@ -32,6 +39,8 @@ model FundingWallet {
   privateKey                  String
   transactions                FundingTransaction[]
   user                        User?
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
 }
 
 model FundingTransaction {
@@ -39,4 +48,6 @@ model FundingTransaction {
   wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
   walletPublicKey             String
   status                      String
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
 }
