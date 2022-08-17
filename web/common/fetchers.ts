@@ -16,6 +16,6 @@ export const destroySession = async () => {
       body: null,
     });
   } catch (e) {
-    console.log(e);
+    console.log('ERROR:', e);
   }
 };

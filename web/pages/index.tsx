@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSidePropsContext } from 'next'
 import { useAuth } from '@micro-stacks/react';
 import { useEffect, useState } from 'react'
 
@@ -7,9 +7,20 @@ import { Hero } from '@/components/Hero'
 import { HomeGrid } from '@/components/HomeGrid'
 import { Main } from '@/components/Main'
 
-const Home: NextPage = () => {
+import { getDehydratedStateFromSession } from '@/common/session-helpers';
+
+// https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return {
+    props: {
+      dehydratedState: await getDehydratedStateFromSession(ctx),
+    },
+  };
+}
+
+const Home: NextPage = ({ dehydratedState }) => {
   const { isSignedIn } = useAuth();
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isAuthenticated, setAuthenticated] = useState(dehydratedState && dehydratedState.length > 0);
 
   useEffect(() => {
     setAuthenticated(isSignedIn);

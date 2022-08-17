@@ -12,8 +12,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ClientProvider
       appName="BallotBox Funding"
       appIconUrl="APP_ICON.png"
+      dehydratedState={pageProps?.dehydratedState}
       onPersistState={useCallback(async (dehydratedState: string) => {
-        console.log(dehydratedState);
         await saveSession(dehydratedState);
       }, [])}
       onSignOut={useCallback(async () => {
