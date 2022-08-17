@@ -20,3 +20,6 @@ if (process.env.NETWORK === 'mainnet') {
   stacksNetwork = new StacksMainnet();
   stacksApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
 } 
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const API_URL = BASE_URL ? `https://${BASE_URL}` : 'http://localhost:3000';

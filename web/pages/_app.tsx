@@ -1,15 +1,24 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import 'focus-visible'
-import * as MicroStacks from '@micro-stacks/react';
+import { ClientProvider } from '@micro-stacks/react';
 import { Header } from '@/components/Header'
 import Head from 'next/head'
+import { useCallback } from 'react';
+import { destroySession, saveSession } from '@/common/fetchers';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <MicroStacks.ClientProvider
+    <ClientProvider
       appName="BallotBox Funding"
       appIconUrl="APP_ICON.png"
+      onPersistState={useCallback(async (dehydratedState: string) => {
+        console.log(dehydratedState);
+        await saveSession(dehydratedState);
+      }, [])}
+      onSignOut={useCallback(async () => {
+        await destroySession();
+      }, [])}
     >
       <Head>
         <title>BallotBox - Funding</title>
@@ -19,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <Header isAuthenticated={true} />
       <Component {...pageProps} />
-    </MicroStacks.ClientProvider>
+    </ClientProvider>
   );
 }
 
