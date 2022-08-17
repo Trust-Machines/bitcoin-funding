@@ -30,7 +30,6 @@ async function postHandler(
 
     // Check user registration in SC
     const userRegistered = await getStxToBtc(resultUser.address);
-    const registeredPublicKey = userRegistered.value.replace("0x", "");
 
     // Update registration status
     let status = 'started';
@@ -44,18 +43,31 @@ async function postHandler(
       }
     }
 
-    // Update registration status
-    const result = await prisma.user.update({
-      where: {
-        appPrivateKey: req.body.appPrivateKey,
-      },
-      data: {
-        registrationStatus: status,
-        fundingWallet: { connect: { publicKey: registeredPublicKey } },
-      },
-    });
-
-    res.status(200).json(result)
+    if (userRegistered != null) {
+      // Update status and funding wallet
+      const registeredPublicKey = userRegistered.value.replace("0x", "");
+      const result = await prisma.user.update({
+        where: {
+          appPrivateKey: req.body.appPrivateKey,
+        },
+        data: {
+          registrationStatus: status,
+          fundingWallet: { connect: { publicKey: registeredPublicKey } },
+        },
+      });
+      res.status(200).json(result)
+    } else {
+      // Update status only
+      const result = await prisma.user.update({
+        where: {
+          appPrivateKey: req.body.appPrivateKey,
+        },
+        data: {
+          registrationStatus: status,
+        },
+      });
+      res.status(200).json(result)
+    }
   } catch (error) {
     res.status(400).json((error as Error).message);
   }

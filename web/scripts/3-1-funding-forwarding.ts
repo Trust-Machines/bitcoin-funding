@@ -37,6 +37,7 @@ export async function start() {
     data: {
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
+      // TODO - Actual data
       // sats: responseBalance.data
       sats: 1000
     }
