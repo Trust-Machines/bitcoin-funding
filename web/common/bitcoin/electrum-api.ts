@@ -1,9 +1,11 @@
 import { ElectrumClient } from "@samouraiwallet/electrum-client";
 import { address as btcAddress } from 'bitcoinjs-lib';
-import { ECPair, payments, networks, Psbt } from 'bitcoinjs-lib';
+import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
-import { getScriptHash } from './electrum-utils'
+import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { btcNetwork, electrumHost, electrumPort } from '../constants';
+import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
+import { publicKeyToAddress } from "./bitcoin-js";
 
 interface BtcBalance {
   unconfirmed: number,
@@ -32,7 +34,7 @@ async function newElectrumClient(): Promise<ElectrumClient> {
   return client;
 }
 
-export async function getBalance(address: string): Promise<string> {
+export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
   const output = btcAddress.toOutputScript(address, btcNetwork);
@@ -40,7 +42,7 @@ export async function getBalance(address: string): Promise<string> {
 
   const balances = await client.blockchainScripthash_getBalance(bytesToHex(scriptHash)) as BtcBalance;
   const balance = BigInt(balances.unconfirmed) + BigInt(balances.confirmed);
-  return balance.toString();
+  return parseInt(balance.toString());
 }
 
 export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 500): Promise<string> {
@@ -78,4 +80,71 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const finalTx = psbt.extractTransaction(true);
   const txid = await client.blockchainTransaction_broadcast(finalTx.toHex()) as string;
   return txid;
+}
+
+
+export async function getTransactionData(txId: string, senderPublicKey: string, receiverPublicKey: string): Promise<any> {
+  const client = await newElectrumClient();
+  const tx = await client.blockchainTransaction_get(txId, true) as any;
+
+  // Block info
+  const stacksInfo = await getInfo();
+  const burnHeight = stacksInfo.burn_block_height - tx.confirmations + 1;
+  const { header, stacksHeight, prevBlocks } = await stacksBlockAtBurnHeight(burnHeight, []);
+
+  // Proof info
+  const merkle = await client.blockchainTransaction_getMerkle(txId, burnHeight) as any;
+  const merkleHashes = merkle.merkle as string[];
+  const proofTxIndex = merkle.pos;
+  const proofTreeDepth = merkleHashes.length;
+  const proofHashes = merkleHashes.map(hash => bytesToHex(reverseBuffer(Buffer.from(hash, 'hex'))));
+
+  // Get indices
+  const senderAddress = publicKeyToAddress(senderPublicKey);
+  const receiverAddress = publicKeyToAddress(receiverPublicKey);
+
+  // TODO: type error
+  const senderIndex = tx.vout.findIndex(vout => {
+    const addressesMatch = vout.scriptPubKey.addresses?.[0] === senderAddress;
+    const addressMatch = vout.scriptPubKey.address === senderAddress;
+    return addressMatch || addressesMatch;
+  });
+
+  // TODO: type error
+  const receiverIndex = tx.vout.findIndex(vout => {
+    const addressesMatch = vout.scriptPubKey.addresses?.[0] === receiverAddress;
+    const addressMatch = vout.scriptPubKey.address === receiverAddress;
+    return addressMatch || addressesMatch;
+  });
+
+  // Return all info
+  return {
+    blockHeader: header,
+    blockHeight: stacksHeight,
+    prevBlocks: prevBlocks,
+    txHex: tx.hex,
+    proofTxIndex: proofTxIndex,
+    proofHashes: proofHashes,
+    proofTreeDepth: proofTreeDepth,
+    senderIndex: senderIndex,
+    receiverIndex: receiverIndex,
+  }
+}
+
+async function stacksBlockAtBurnHeight(burnHeight: number, prevBlocks: string[]): Promise<any> {
+  const client = await newElectrumClient();
+  const headerInfo = await client.blockchainBlock_headers(burnHeight, 1) as any;
+  const header = headerInfo.hex as string;
+  const stacksBlock = await getBlockByBurnHeight(burnHeight); 
+  const stacksHeight = stacksBlock.height;
+
+  if (stacksHeight !== 'undefined') {
+    return {
+      header,
+      prevBlocks,
+      stacksHeight,
+    };
+  }
+  prevBlocks.unshift(header);
+  return stacksBlockAtBurnHeight(burnHeight + 1, prevBlocks);
 }

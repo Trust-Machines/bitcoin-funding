@@ -1,8 +1,8 @@
-export function hexToBytes(hex: string) {
+export function hexToBytes(hex: string): Uint8Array {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
 }
 
-function hexToBytesHelper(hex: string) {
+function hexToBytesHelper(hex: string): Uint8Array {
   if (typeof hex !== 'string')
     throw new TypeError('hexToBytes: expected string, got ' + typeof hex);
   if (hex.length % 2)

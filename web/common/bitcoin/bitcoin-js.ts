@@ -1,9 +1,9 @@
 import { ECPair, payments, bip32 } from 'bitcoinjs-lib';
 import { btcNetwork } from '../constants';
 
-interface NewWallet {
-  address: string | undefined,
-  publicKey: string | undefined,
+export interface NewWallet {
+  address: string,
+  publicKey: string,
   privateKey: string | undefined
 }
 
@@ -12,9 +12,9 @@ export function createWallet(): NewWallet {
   const payment = payments.p2wpkh({ pubkey: keyPair.publicKey, network: btcNetwork });
 
   const result: NewWallet = {
-    'address': payment.address,
-    'publicKey': keyPair.publicKey?.toString('hex'),
-    'privateKey': keyPair.privateKey?.toString('hex')
+    'address': payment.address!,
+    'publicKey': keyPair.publicKey!.toString('hex'),
+    'privateKey': keyPair.privateKey!.toString('hex')
   }
   return result;
 }
@@ -28,9 +28,16 @@ export function createWalletXpub(xpub: string, index: number): NewWallet {
   });
 
   const result: NewWallet = {
-    'address': payment.address,
+    'address': payment.address!,
     'publicKey': pubkey.toString('hex'),
     'privateKey': undefined
   }
   return result;
+}
+
+export function publicKeyToAddress(publicKey: string): string {
+  const pair = ECPair.fromPublicKey(Buffer.from(publicKey, 'hex'), { compressed: false });
+  const uncompressed = pair.publicKey.toString('hex');
+  const { address } = payments.p2pkh({ pubkey: Buffer.from(uncompressed, 'hex'), network: btcNetwork });
+  return address as string;
 }
