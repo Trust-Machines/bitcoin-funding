@@ -97,6 +97,34 @@
   )
 )
 
+;; Hashed public key
+;; P2WPKH start with 0x0014
 (define-read-only (get-hashed-public-key (public-key (buff 33)))
   (concat 0x0014 (hash160 public-key))
+)
+
+;; BTC public key to address
+;; Before base58Check encoding
+;; (define-read-only (get-address-from-public-key (public-key (buff 33)))
+;;   (concat 0x00 (hash160 public-key))
+;; )
+
+;; BTC public key to address
+;; Not encoded in a base58 string
+(define-read-only (get-address-from-public-key (public-key (buff 33)))
+  (let (
+    (hr1 (concat 0x00 (hash160 public-key)))
+    (hr2 (sha256 (sha256 hr1)))
+    (checksum 
+      (concat (unwrap-panic (element-at hr2 u0))
+        (concat (unwrap-panic (element-at hr2 u1))
+          (concat (unwrap-panic (element-at hr2 u2))
+            (unwrap-panic (element-at hr2 u3))
+          )
+        )
+      )
+    )
+  )
+    (concat hr1 checksum)
+  )
 )
