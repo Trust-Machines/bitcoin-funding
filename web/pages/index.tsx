@@ -7,7 +7,7 @@ import { Hero } from '@/components/Hero'
 import { HomeGrid } from '@/components/HomeGrid'
 import { Main } from '@/components/Main'
 
-import { getDehydratedStateFromSession } from '@/common/session-helpers';
+import { getDehydratedStateFromSession } from '@/common/session/helpers';
 
 // https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

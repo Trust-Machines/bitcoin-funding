@@ -1,6 +1,6 @@
 import * as Iron from 'iron-session';
 import { cleanDehydratedState } from '@micro-stacks/client';
-import { sessionOptions } from './session';
+import { sessionOptions } from './index';
  
 import type { NextPageContext } from 'next';
 import type { GetServerSidePropsContext } from 'next/types';
