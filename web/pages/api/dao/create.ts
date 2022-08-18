@@ -22,10 +22,11 @@ async function postHandler(
     const result = await prisma.dao.create({
       data: {
         publicKey: req.body.publicKey,
-        title: req.body.title,
+        name: req.body.name,
         about: req.body.about,
-        amount: parseFloat(req.amount) * 100000000, // convert to sats
-        registrationTxId: req.body.registrationTxId,
+        raisingAmount: parseFloat(req.body.raisingAmount) * 100000000, // convert to sats
+        raisingDeadline: new Date(req.body.deadline),
+        registrationTxId: req.body.registrationTxId.toString(),
         registrationStatus: 'started'
       },
     });
