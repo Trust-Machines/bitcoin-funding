@@ -8,7 +8,7 @@ import { Loading } from '@/components/Loading'
 
 import { StyledIcon } from '@/components/StyledIcon'
 
-const DaoDetails: NextPage = () => {
+const FundDao: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +40,7 @@ const DaoDetails: NextPage = () => {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
                 <p className="text-sm font-medium text-gray-500">
-                  {dao.about}
+                  {dao.about}                  
                 </p>
               </div>
             </div>
@@ -164,4 +164,4 @@ const DaoDetails: NextPage = () => {
   )
 };
 
-export default DaoDetails
+export default FundDao
