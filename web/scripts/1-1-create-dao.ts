@@ -21,11 +21,16 @@ export async function start() {
   // Register DAO with API
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/dao/create',
+    url: appApiUrl + '/api/dao/create',
     data: {
       publicKey: daoWallet.publicKey,
-      title: "DAO #" + daoCount,
+      name: "DAO #" + daoCount,
+      about: "A great DAO",
+      raisingAmount: 100000000,
+      raisingDeadline: "01/01/2023",
       registrationTxId: registerTxId,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   });
   console.log("[DAO] Registration API response:", response.data);
