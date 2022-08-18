@@ -12,9 +12,22 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
  
   try {
     console.log('setting state to', dehydratedState);
-    // TODO: create User here through middleware if user does not exist yet
     req.session.dehydratedState = dehydratedState;
     await req.session.save();
+
+    // TODO: create User here through middleware if user does not exist yet
+    // const prisma = new PrismaClient();
+    // const existingUser = await prisma.user.findUnique({ where: { appPrivateKey: slug } });
+
+    // const result = await prisma.user.create({
+    //   data: {
+    //     appPrivateKey: req.body.appPrivateKey,
+    //     address: req.body.address,
+    //     registrationTxId: req.body.registrationTxId,
+    //     registrationStatus: 'started'
+    //   },
+    // });
+
     res.json({ dehydratedState });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });

@@ -11,10 +11,14 @@ import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    setAuthenticated(pageProps?.dehydratedState);
+    if (isLoading) {
+      setAuthenticated(pageProps?.dehydratedState);
+      setIsLoading(false);
+    }
   }, [pageProps?.dehydratedState]);
 
   return (
