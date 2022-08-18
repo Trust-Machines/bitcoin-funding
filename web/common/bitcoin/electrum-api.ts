@@ -103,15 +103,13 @@ export async function getTransactionData(txId: string, senderPublicKey: string, 
   const senderAddress = publicKeyToAddress(senderPublicKey);
   const receiverAddress = publicKeyToAddress(receiverPublicKey);
 
-  // TODO: type error
-  const senderIndex = tx.vout.findIndex(vout => {
+  const vout = tx.vout as any[];
+  const senderIndex = vout.findIndex(vout => {
     const addressesMatch = vout.scriptPubKey.addresses?.[0] === senderAddress;
     const addressMatch = vout.scriptPubKey.address === senderAddress;
     return addressMatch || addressesMatch;
   });
-
-  // TODO: type error
-  const receiverIndex = tx.vout.findIndex(vout => {
+  const receiverIndex = vout.findIndex(vout => {
     const addressesMatch = vout.scriptPubKey.addresses?.[0] === receiverAddress;
     const addressMatch = vout.scriptPubKey.address === receiverAddress;
     return addressMatch || addressesMatch;

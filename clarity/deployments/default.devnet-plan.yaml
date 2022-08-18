@@ -18,7 +18,7 @@ plan:
             contract-name: clarity-bitcoin
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 421940
-            path: contracts/test/clarity-bitcoin.clar
+            path: contracts/clarity-bitcoin.clar
             anchor-block-only: true
         - contract-publish:
             contract-name: user-registry-v1-1
