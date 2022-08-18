@@ -1,4 +1,6 @@
 import type { NextPage } from 'next'
+import Link from 'next/link'
+
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount } from '@micro-stacks/react';
@@ -47,7 +49,9 @@ const FundDao: NextPage = () => {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
             <div className="flex items-center space-x-5">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+                <Link href={`/daos/${dao.slug}`}>
+                  <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+                </Link>
                 <p className="text-sm font-medium text-gray-500">
                   {dao.about}                  
                 </p>
