@@ -252,3 +252,79 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
     call.result.expectErr().expectUint(20005);
   }
 });
+
+
+Clarinet.test({name: "dao funding: can only add user funding via BTC transaction once",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let txHex = "0200000001364f7dae358309253ac24998fb5d234efce3ce7b4fac2b33607453fc457c07c30000000000ffffffff022138f80300000000160014dad7767ffc5a900d5bdc539f70db46051f3a41172b020000000000001600149bb0bab766d6fabf0da9f2e9bbb065010a0bf65600000000";
+    let txId = hexToBytes("0x1dbb37887cadedb9e2b66439432440fcb8a55449ac248aabb5ab2e3042addcee");
+
+    let senderPublicKey = hexToBytes('0317a49245e880a09803dedf3930eda2b66f5ea69b0b85a74f71225ff68732c259');
+    let receiverPublicKey = hexToBytes('02965a885cab024bdff8fe565484339a87925b8ed38ac0a5b5da1758874bfb9133');
+
+    let block = chain.mineBlock([
+      Tx.contractCall("test-utils", "set-mined", [
+        types.buff(txId)      
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+        types.buff(receiverPublicKey)      
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectUint(0);
+
+    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.tuple({
+        "header": types.buff(new ArrayBuffer(80)),
+        "height": types.uint(1)
+      }),
+      types.list([]),
+      types.buff(hexToBytes(txHex)),
+      types.tuple({
+        "tree-depth": types.uint(1),
+        "tx-index": types.uint(1),
+        "hashes": types.list([])
+      }),
+      types.uint(0),
+      types.uint(1),
+      types.buff(senderPublicKey),
+      types.buff(receiverPublicKey)
+    ], deployer.address);
+    call.result.expectOk().expectUint(555);
+
+    call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.tuple({
+        "header": types.buff(new ArrayBuffer(80)),
+        "height": types.uint(1)
+      }),
+      types.list([]),
+      types.buff(hexToBytes(txHex)),
+      types.tuple({
+        "tree-depth": types.uint(1),
+        "tx-index": types.uint(1),
+        "hashes": types.list([])
+      }),
+      types.uint(0),
+      types.uint(1),
+      types.buff(senderPublicKey),
+      types.buff(receiverPublicKey)
+    ], deployer.address);
+    call.result.expectErr().expectUint(20006);
+
+    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
+      types.uint(0)
+    ], deployer.address);
+    call.result.expectUint(555);
+
+    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
+      types.uint(0),
+      types.buff(senderPublicKey)
+    ], deployer.address);
+    call.result.expectUint(555);
+  }
+});

@@ -8,6 +8,7 @@
 (define-constant ERR_TX_NOT_MINED (err u20003))
 (define-constant ERR_WRONG_SENDER (err u20004))
 (define-constant ERR_WRONG_RECEIVER (err u20005))
+(define-constant ERR_TX_ALREADY_ADDED (err u20006))
 
 ;; 
 ;; Maps
@@ -22,6 +23,8 @@
 )
 
 (define-map total-dao-funding uint uint)
+
+(define-map tx-parsed (buff 1024) bool)
 
 ;; 
 ;; Getters
@@ -38,6 +41,13 @@
   (default-to 
     u0
     (map-get? total-dao-funding dao-id)
+  )
+)
+
+(define-read-only (get-tx-parsed (tx (buff 1024)))
+  (default-to 
+    false
+    (map-get? tx-parsed tx)
   )
 )
 
@@ -64,9 +74,11 @@
     (current-total (get-total-dao-funding dao-id))
     (current-user-total (get-user-dao-funding dao-id sender-public-key))
   )
+    (asserts! (not (get-tx-parsed tx)) ERR_TX_ALREADY_ADDED)
+
     (map-set total-dao-funding dao-id (+ current-total sats))
     (map-set user-dao-funding { dao-id: dao-id, user-public-key: sender-public-key } (+ current-user-total sats))
-
+    (map-set tx-parsed tx true)
     (ok sats)
   )
 )
