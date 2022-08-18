@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, Dao } from '@prisma/client';
+const slugify = require('slugify');
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,6 +20,20 @@ async function postHandler(
   try {
     console.log('Got request to create DAO', req.body);
     const prisma = new PrismaClient();
+
+    prisma.$use(async (params, next) => {
+      console.log(params);
+      if((params.action === 'create' || params.action === 'update')) {
+        let { args:{data} } = params;
+       // Check if slug exists by `findUnique` (did not test)
+       console.log(data.name, slugify(data.name.toLowerCase()));
+        data.slug = slugify(`${data.name}`, {lower: true, strict: true, remove: /[*+~.()'"!:@]/g});
+      }
+
+      const result = await next(params);
+      return result;
+    })
+
     const result = await prisma.dao.create({
       data: {
         publicKey: req.body.publicKey,
