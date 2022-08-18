@@ -1,20 +1,24 @@
-// require('dotenv').config({ path: '../.env' });
-
 import axios from 'axios';
-import { appApiUrl } from '../common/constants';
-import { addUserFunding, parseAndValidateTx } from '../common/stacks/dao-funding-v1-1';
+import { appApiUrl } from '@/common/constants';
+import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
 
 export async function start() {
   const txId = process.argv.slice(2)[0];
+  const senderPublicKey = process.argv.slice(2)[1];
+  const receiverPublicKey = process.argv.slice(2)[2];
   if (txId == undefined) {
-    console.log("[FUNDING] Add transaction ID as parameter")
+    console.log("[FUNDING] Add transaction ID as parameter");
+    return;
+  }
+  if (txId == undefined) {
+    console.log("[FUNDING] Add transaction ID as parameter");
+    return;
+  }
+  if (txId == undefined) {
+    console.log("[FUNDING] Add transaction ID as parameter");
     return;
   }
 
-  // TODO - Add as script parameter
-  const senderPublicKey = "03738bd4a4b87cbe0c751e9e01d9a226b528176d4b93bf0fdc796b7ea88b695035";
-  const receiverPublicKey = "0200fcab3adf951b19b7fb709ff07a6a91cf2a61ac0b80f62761ad64b4f98b5157";
-  
   const responseTxInfo = await axios({
     method: 'GET',
     url: appApiUrl + '/transaction/info',

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, FundingWallet } from '@prisma/client';
-import { createWallet, createWalletXpub } from '../../../common/bitcoin/bitcoin-js';
+import { createWallet, createWalletXpub } from '@/common/bitcoin/bitcoin-js';
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,7 +1,5 @@
-require('dotenv').config({ path: '../.env' });
-
 import axios from 'axios';
-import { appApiUrl } from '../common/constants';
+import { appApiUrl } from '@/common/constants';
 
 export async function start() {
   const daoPublicKey = process.argv.slice(2)[0];
