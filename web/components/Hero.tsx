@@ -12,7 +12,7 @@ import logoTuple from '@/images/logos/tuple.svg'
 
 export function Hero() {
   return (
-    <Container className="pt-20 pb-16 text-center lg:pt-40 min-h-screen">
+    <Container className="pt-20 text-center lg:pt-40 min-h-screen">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
         Turn {' '}
         <span className="relative whitespace-nowrap text-blue-600">
