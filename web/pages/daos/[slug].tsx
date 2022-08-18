@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
@@ -93,12 +94,12 @@ const DaoDetails: NextPage = () => {
                     </dl>
                   </div>
                   <div>
-                    <a
-                      href="#"
+                    <Link
+                      href={`/daos/${dao.slug}/fund`}
                       className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                     >
                       Fund DAO
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </section>
@@ -148,12 +149,12 @@ const DaoDetails: NextPage = () => {
                   </ul>
                 </div>
                 <div className="mt-6 flex flex-col justify-stretch">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/daos/${dao.slug}/fund`}
                     className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     Fund DAO
-                  </button>
+                  </Link>
                 </div>
               </div>
             </section>
