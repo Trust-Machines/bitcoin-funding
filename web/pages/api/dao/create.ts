@@ -23,11 +23,17 @@ async function postHandler(
 
     prisma.$use(async (params, next) => {
       console.log(params);
-      if((params.action === 'create' || params.action === 'update')) {
-        let { args:{data} } = params;
-       // Check if slug exists by `findUnique` (did not test)
-       console.log(data.name, slugify(data.name.toLowerCase()));
-        data.slug = slugify(`${data.name}`, {lower: true, strict: true, remove: /[*+~.()'"!:@]/g});
+      if ((params.action === 'create' || params.action === 'update')) {
+        const { args:{data} } = params;
+        // Check if slug exists by `findUnique` (did not test)
+        const slug = slugify(`${data.name}`, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+        const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
+        if (existingDao) {
+          console.log(existingDao);
+          // TODO: adjust slug or throw error - cannot make DAOs with the same slug
+        }
+
+        data.slug = slug;
       }
 
       const result = await next(params);

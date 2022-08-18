@@ -25,6 +25,7 @@ const New: NextPage = () => {
   const submitCreateDao = async () => {
     const res = await createDao(state);
     console.log(res);
+    // TODO: redirect to DAO page with success message
   }
 
   return (

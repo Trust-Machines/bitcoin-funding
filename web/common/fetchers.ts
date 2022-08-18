@@ -29,3 +29,15 @@ export const createDao = async (formData: Object) => {
     body: JSON.stringify(formData),
   });
 };
+
+export const findDao = async (slug: string) => {
+  const res = await fetch(API_URL + '/api/dao/' + slug, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const json = await res.json();
+
+  return json;
+};
