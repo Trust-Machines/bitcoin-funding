@@ -38,6 +38,10 @@
   (map-get? dao-id-by-public-key public-key)
 )
 
+(define-read-only (is-dao-registered (public-key (buff 33)))
+  (not (is-none (map-get? dao-id-by-public-key public-key)))
+)
+
 ;; 
 ;; Register
 ;; 

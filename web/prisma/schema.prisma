@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dao {
+  publicKey                   String @id
+  title                       String
+  registrationTxId            String?
+  registrationStatus          String
+}
+
+model User {
+  appPrivateKey               String                    @id
+  address                     String
+  fundingWallet               FundingWallet?            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
+  fundingWalletPublicKey      String?                   @unique
+  registrationTxId            String?
+  registrationStatus          String
+}
+
+model FundingWallet {
+  publicKey                   String                    @id
+  address                     String
+  privateKey                  String
+  transactions                FundingTransaction[]
+  user                        User?
+}
+
+model FundingTransaction {
+  txId                        String                    @id
+  wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
+  walletPublicKey             String
+  status                      String
+}

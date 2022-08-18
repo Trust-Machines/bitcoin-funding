@@ -6,7 +6,7 @@ import {
   getCurrentBlockHeight,
   getBlockInfo,
   getTransactionInfo
-} from '../../common/bitcoin/bitcoin-core-api';
+} from '@/common/bitcoin/bitcoin-core-api';
 
 import { 
   createWallet,
@@ -18,11 +18,7 @@ import {
 import { 
   getBalance,
   sendBtc
-} from '../../common/bitcoin/electrum-api';
-
-import {
-  parseTx
-} from '../../common/stacks/stacks-calls'
+} from '@/common/bitcoin/electrum-api';
 
 type Data = {
   name: string

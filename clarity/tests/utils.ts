@@ -14,5 +14,3 @@ function hexToBytesHelper(hex: string) {
   }
   return array;
 }
-
-

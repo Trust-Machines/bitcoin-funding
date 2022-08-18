@@ -16,6 +16,8 @@ Clarinet.test({name: "dao registry: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
+    let publicKey = hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58');
+
     let call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-count", [
     ], deployer.address);
     call.result.expectUint(0);
@@ -26,9 +28,14 @@ Clarinet.test({name: "dao registry: initial values",
     call.result.expectNone();
 
     call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-id-by-public-key", [
-      types.buff(hexToBytes('03edf5ed04204ac5ab55832bb893958123f123e45fa417cfe950e4ece67359ee58'))      
+      types.buff(publicKey)      
     ], deployer.address);
     call.result.expectNone();
+
+    call = await chain.callReadOnlyFn("dao-registry-v1-1", "is-dao-registered", [
+      types.buff(publicKey)      
+    ], deployer.address);
+    call.result.expectBool(false);
   }
 });
 
@@ -60,6 +67,11 @@ Clarinet.test({name: "dao registry: register DAO",
       types.buff(publicKey)      
     ], deployer.address);
     call.result.expectSome().expectUint(0);
+
+    call = await chain.callReadOnlyFn("dao-registry-v1-1", "is-dao-registered", [
+      types.buff(publicKey)      
+    ], deployer.address);
+    call.result.expectBool(true);
   }
 });
 

@@ -2,9 +2,9 @@ import { ECPair, payments, bip32 } from 'bitcoinjs-lib';
 import { btcNetwork } from '../constants';
 import bs58check from 'bs58check';
 
-interface NewWallet {
-  address: string | undefined,
-  publicKey: string | undefined,
+export interface NewWallet {
+  address: string,
+  publicKey: string,
   privateKey: string | undefined
 }
 
@@ -13,9 +13,9 @@ export function createWallet(): NewWallet {
   const payment = payments.p2wpkh({ pubkey: keyPair.publicKey, network: btcNetwork });
 
   const result: NewWallet = {
-    'address': payment.address,
-    'publicKey': keyPair.publicKey?.toString('hex'),
-    'privateKey': keyPair.privateKey?.toString('hex')
+    'address': payment.address!,
+    'publicKey': keyPair.publicKey!.toString('hex'),
+    'privateKey': keyPair.privateKey!.toString('hex')
   }
   return result;
 }
@@ -29,7 +29,7 @@ export function createWalletXpub(xpub: string, index: number): NewWallet {
   });
 
   const result: NewWallet = {
-    'address': payment.address,
+    'address': payment.address!,
     'publicKey': pubkey.toString('hex'),
     'privateKey': undefined
   }
@@ -44,4 +44,10 @@ export function base58CheckEncode(hash: string): string {
 export function base58CheckDecode(address: string): string {
   var decoded = bs58check.decode(address)
   return decoded.toString('hex');
+}
+
+export function publicKeyToAddress(publicKey: string): string {
+  const pubkey = Buffer.from( publicKey, 'hex' );
+  const { address } = payments.p2wpkh({ pubkey: pubkey, network: btcNetwork });
+  return address as string;
 }
