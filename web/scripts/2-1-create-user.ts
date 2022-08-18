@@ -1,8 +1,6 @@
-require('dotenv').config({ path: '../.env' });
-
 import axios from 'axios';
-import { appApiUrl } from '../common/constants';
-import { registerUser } from '../common/stacks/user-registry-v1-1';
+import { appApiUrl } from '@/common/constants';
+import { registerUser } from '@/common/stacks/user-registry-v1-1';
 
 export async function start() {
 

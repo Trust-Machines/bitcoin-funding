@@ -1,8 +1,6 @@
-require('dotenv').config({ path: '../.env' });
-
 import axios from 'axios';
-import { appApiUrl } from '../common/constants';
-import { publicKeyToAddress } from '../common/bitcoin/bitcoin-js'
+import { appApiUrl } from '@/common/constants';
+import { publicKeyToAddress } from '@/common/bitcoin/bitcoin-js'
 
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
