@@ -21,7 +21,7 @@ export const destroySession = async () => {
 };
 
 export const createDao = async (formData: Object) => {
-  await fetch(API_URL + '/api/dao/create', {
+  return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -2,9 +2,11 @@ import type { NextPage } from 'next'
 import { Container } from '@/components/Container'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
-import { createDao } from '@/common/fetchers';
+import { createDao } from '@/common/fetchers'
+import { useRouter } from 'next/router'
 
 const New: NextPage = () => {
+  const router = useRouter()
   const [state, setState] = useState({
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',
@@ -24,8 +26,13 @@ const New: NextPage = () => {
 
   const submitCreateDao = async () => {
     const res = await createDao(state);
-    console.log(res);
-    // TODO: redirect to DAO page with success message
+    if (res.status === 200) {
+      const data = await res.json();
+      router.push(`/daos/${data.slug}`);
+    } else {
+      console.log(res);
+      console.log('TODO: DAO creation did not succeed.. show error message');
+    }
   }
 
   return (
