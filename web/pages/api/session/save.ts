@@ -1,6 +1,7 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { sessionOptions } from '@/common/session/index';
+import { PrismaClient } from '@prisma/client';
  
 async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
   const { dehydratedState } = await req.body;
@@ -11,24 +12,24 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
     });
  
   try {
-    console.log('setting state to', dehydratedState);
     req.session.dehydratedState = dehydratedState;
     await req.session.save();
 
-    // TODO: create User here through middleware if user does not exist yet
-    // const prisma = new PrismaClient();
-    // const existingUser = await prisma.user.findUnique({ where: { appPrivateKey: slug } });
+    // create User here if user does not exist yet
+    const account = JSON.parse(dehydratedState)[1][1][0];
+    const prisma = new PrismaClient();
+    let user = await prisma.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          appPrivateKey: account['appPrivateKey'], // TODO: we should probably hash this before saving this in plain-text to our DB?
+          address: account['address'],
+          registrationStatus: 'started' // TODO: what should this be? we should create a DB enum out of this to define states
+        },
+      });
+    }
 
-    // const result = await prisma.user.create({
-    //   data: {
-    //     appPrivateKey: req.body.appPrivateKey,
-    //     address: req.body.address,
-    //     registrationTxId: req.body.registrationTxId,
-    //     registrationStatus: 'started'
-    //   },
-    // });
-
-    res.json({ dehydratedState });
+    res.json({ dehydratedState, user });
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
   }
