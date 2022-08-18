@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, User } from '@prisma/client';
-import { getTransactionInfo } from '../../../common/stacks/utils';
-import { getStxToBtc } from '../../../common/stacks/user-registry-v1-1';
+import { getTransactionInfo } from '@/common/stacks/utils';
+import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getTransactionData } from '../../../common/bitcoin/electrum-api';
+import { getTransactionData } from '@/common/bitcoin/electrum-api';
 
 export default async function handler(
   req: NextApiRequest,

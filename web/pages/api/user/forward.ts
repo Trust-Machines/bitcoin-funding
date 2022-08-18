@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient, FundingTransaction } from '@prisma/client';
-import { getBalance, sendBtc } from '../../../common/bitcoin/electrum-api';
+import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 
 export default async function handler(
   req: NextApiRequest,
