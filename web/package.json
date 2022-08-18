@@ -9,11 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@samouraiwallet/electrum-client": "^1.2.4",
+    "@stacks/transactions": "^4.3.4",
     "@headlessui/react": "^1.6.5",
     "@micro-stacks/react": "^1.0.3",
     "@prisma/client": "^4.2.1",
-    "@samouraiwallet/electrum-client": "^1.2.4",
-    "@stacks/transactions": "^4.3.4",
     "@tailwindcss/forms": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "axios": "^0.27.2",
@@ -31,6 +31,7 @@
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "@types/bs58check": "^2.1.0",
     "@types/node": "18.6.3",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
