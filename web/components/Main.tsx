@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Container } from '@/components/Container'
-import { useAccount } from '@micro-stacks/react'
 
 import { Loading } from '@/components/Loading'
 import { DaoThumbnail } from '@/components/DaoThumbnail'
 import { findAllDaos } from '@/common/fetchers'
 
 export function Main() {
-  const account = useAccount();
   const [isLoading, setIsLoading] = useState(true);
   const [daos, setDaos] = useState([]); // TODO: add TypeScript type?
 

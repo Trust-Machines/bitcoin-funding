@@ -6,7 +6,7 @@ import { createDao } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 
 const New: NextPage = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [state, setState] = useState({
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',

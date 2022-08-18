@@ -7,9 +7,11 @@ import Head from 'next/head'
 import { useCallback } from 'react';
 import { destroySession, saveSession } from '@/common/fetchers';
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setAuthenticated(pageProps?.dehydratedState);
@@ -27,6 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
+        router.push('/');
       }, [])}
     >
       <Head>
