@@ -17,12 +17,16 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
+    console.log('Got request to create DAO', req.body);
     const prisma = new PrismaClient();
     const result = await prisma.dao.create({
       data: {
         publicKey: req.body.publicKey,
-        title: req.body.title,
-        registrationTxId: req.body.registrationTxId,
+        name: req.body.name,
+        about: req.body.about,
+        raisingAmount: parseFloat(req.body.raisingAmount) * 100000000, // convert to sats
+        raisingDeadline: new Date(req.body.deadline),
+        registrationTxId: req.body.registrationTxId.toString(),
         registrationStatus: 'started'
       },
     });
