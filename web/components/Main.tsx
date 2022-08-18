@@ -22,7 +22,7 @@ export function Main() {
   }, []);
 
   return (
-    <Container>
+    <Container className="min-h-screen">
       <div className="max-w-2xl mx-auto py-16 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">Our popular DAOs</h2>
 

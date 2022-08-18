@@ -2,7 +2,10 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import 'focus-visible'
 import { ClientProvider } from '@micro-stacks/react';
+
 import { Header } from '@/components/Header'
+import { Footer } from '@/components/Footer'
+
 import Head from 'next/head'
 import { useCallback } from 'react';
 import { destroySession, saveSession } from '@/common/fetchers';
@@ -44,6 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <Header isAuthenticated={isAuthenticated} />
       <Component {...pageProps} />
+      <Footer />
     </ClientProvider>
   );
 }

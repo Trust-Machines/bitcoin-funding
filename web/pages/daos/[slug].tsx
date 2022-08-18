@@ -27,7 +27,7 @@ const DaoDetails: NextPage = () => {
   }, [slug]);
 
   return (
-    <Container>
+    <Container className="min-h-screen">
       {isLoading ? (
         <div className="flex flex-wrap mb-12">
           <Loading />
