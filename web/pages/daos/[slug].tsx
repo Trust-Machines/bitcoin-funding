@@ -56,52 +56,38 @@ const DaoDetails: NextPage = () => {
 
           <div className="mx-auto w-full px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8 mt-4">
             <img
-              className="w-full"
+              className="w-full max-h-60"
               src="https://as1.ftcdn.net/v2/jpg/03/32/69/82/1000_F_332698203_XmQ4jYo8vDPfgeqZ3Ake9xfRMS7ChD15.jpg"
-              alt="Workflow"
             />
           </div>
 
           <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
             <div className="space-y-6 lg:col-start-1 lg:col-span-2">
-              <section aria-labelledby="applicant-information-title">
+              <section>
                 <div className="bg-white shadow sm:rounded-lg">
                   <div className="px-4 py-5 sm:px-6">
-                    <h2 id="applicant-information-title" className="text-lg leading-6 font-medium text-gray-900">
-                      Applicant Information
+                    <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
+                      About {dao.name}
                     </h2>
-                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Personal details and application.</p>
                   </div>
                   <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
                       <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Application for</dt>
-                        <dd className="mt-1 text-sm text-gray-900">Backend Developer</dd>
+                        <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
+                        <dd className="mt-1 text-sm text-gray-900">$80,000</dd>
                       </div>
                       <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                        <dd className="mt-1 text-sm text-gray-900">ricardocooper@example.com</dd>
+                        <dt className="text-sm font-medium text-gray-500">Number of members</dt>
+                        <dd className="mt-1 text-sm text-gray-900">84</dd>
                       </div>
                       <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Salary expectation</dt>
-                        <dd className="mt-1 text-sm text-gray-900">$120,000</dd>
+                        <dt className="text-sm font-medium text-gray-500">Days to go</dt>
+                        <dd className="mt-1 text-sm text-gray-900">17</dd>
                       </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                        <dd className="mt-1 text-sm text-gray-900">+1 555-555-5555</dd>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">About</dt>
+                      <div className="sm:col-span-3">
+                        <dt className="text-sm font-medium text-gray-500">Our Story</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat.
-                          Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia
-                          proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
-                        </dd>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-gray-500">Attachments</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          
+                          {dao.about}
                         </dd>
                       </div>
                     </dl>
@@ -109,9 +95,9 @@ const DaoDetails: NextPage = () => {
                   <div>
                     <a
                       href="#"
-                      className="block bg-gray-50 text-sm font-medium text-gray-500 text-center px-4 py-4 hover:text-gray-700 sm:rounded-b-lg"
+                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                     >
-                      Read full application
+                      Fund DAO
                     </a>
                   </div>
                 </div>
@@ -149,7 +135,7 @@ const DaoDetails: NextPage = () => {
                           <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                             <div>
                               <p className="text-sm text-gray-500">
-                                SP123.... just funded the DAO
+                                SP123.... funded the DAO
                               </p>
                             </div>
                             <div className="text-right text-sm whitespace-nowrap text-gray-500">
