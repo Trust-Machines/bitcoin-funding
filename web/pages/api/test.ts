@@ -50,11 +50,11 @@ export default async function handler(
   // const parseResult = await parseTx(txHex);
   // console.log("parseResult: ", parseResult);
 
-  const resultEncode = base58CheckEncode("00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31");
-  console.log("resultEncode:", resultEncode);
+  // const resultEncode = base58CheckEncode("00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31");
+  // console.log("resultEncode:", resultEncode);
 
-  const resultDecode = base58CheckDecode("1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs");
-  console.log("resultDecode:", resultDecode);  
+  // const resultDecode = base58CheckDecode("1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs");
+  // console.log("resultDecode:", resultDecode);  
 
   res.status(200).json({ name: 'John Doe' })
 }
