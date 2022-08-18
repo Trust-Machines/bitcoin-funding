@@ -6,17 +6,26 @@ import { Header } from '@/components/Header'
 import Head from 'next/head'
 import { useCallback } from 'react';
 import { destroySession, saveSession } from '@/common/fetchers';
+import { useEffect, useState } from 'react'
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const [isAuthenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setAuthenticated(pageProps?.dehydratedState);
+  }, [pageProps?.dehydratedState]);
+
   return (
     <ClientProvider
       appName="BallotBox Funding"
       appIconUrl="APP_ICON.png"
       dehydratedState={pageProps?.dehydratedState}
       onPersistState={useCallback(async (dehydratedState: string) => {
+        setAuthenticated(true);
         await saveSession(dehydratedState);
       }, [])}
       onSignOut={useCallback(async () => {
+        setAuthenticated(false);
         await destroySession();
       }, [])}
     >
@@ -26,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header isAuthenticated={true} />
+      <Header isAuthenticated={isAuthenticated} />
       <Component {...pageProps} />
     </ClientProvider>
   );
