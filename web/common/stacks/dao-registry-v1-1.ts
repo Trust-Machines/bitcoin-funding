@@ -57,7 +57,7 @@ export async function getDaoIdByAddress(address: string): Promise<any> {
     network: stacksNetwork,
   });
 
-  const result = cvToJSON(call).value;
+  const result = cvToJSON(call).value.value;
   return result;
 }
 
@@ -73,7 +73,7 @@ export async function isDaoRegistered(address: string): Promise<any> {
     network: stacksNetwork,
   });
 
-  const result = cvToJSON(call).value;
+  const result = cvToJSON(call).value.value;
   return result;
 }
 

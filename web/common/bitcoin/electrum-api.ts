@@ -5,7 +5,6 @@ import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { btcNetwork, electrumHost, electrumPort } from '../constants';
 import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
-import { publicKeyToAddress } from "./bitcoin-js";
 
 interface BtcBalance {
   unconfirmed: number,
