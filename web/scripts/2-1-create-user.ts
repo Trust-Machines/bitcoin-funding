@@ -12,7 +12,7 @@ export async function start() {
   console.log("[USER] New wallet API response:", responseWallet.data);
 
   // Link funding wallet on-chain
-  const registerResult = await registerUser(responseWallet.data.publicKey);
+  const registerResult = await registerUser(responseWallet.data.address);
   const registerTxId = registerResult.txid;
   console.log("[USER] SC registration transaction ID:", registerTxId);
 

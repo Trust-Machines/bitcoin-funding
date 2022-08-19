@@ -2,18 +2,18 @@ import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
 
 export async function start() {
-  const daoPublicKey = process.argv.slice(2)[0];
-  if (daoPublicKey == undefined) {
-    console.log("[DAO] Add the DAO public key as parameter")
+  const daoAddress = process.argv.slice(2)[0];
+  if (daoAddress == undefined) {
+    console.log("[DAO] Add the DAO address as parameter")
     return;
   }
-  console.log("[DAO] Check SC registration for DAO with public key:", daoPublicKey)
+  console.log("[DAO] Check SC registration for DAO with address:", daoAddress)
 
   const response = await axios({
     method: 'POST',
     url: appApiUrl + '/dao/verify',
     data: {
-      publicKey: daoPublicKey
+      address: daoAddress
     }
   });
   console.log("[DAO] registration verify API result:", response.data);

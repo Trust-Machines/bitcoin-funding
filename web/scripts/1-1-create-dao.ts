@@ -14,23 +14,21 @@ export async function start() {
   console.log("[DAO] New DAO wallet:", daoWallet);
 
   // Register DAO with SC
-  const registerResult = await registerDao(daoWallet.publicKey);
+  const registerResult = await registerDao(daoWallet.address);
   const registerTxId = registerResult.txid;
   console.log("[DAO] SC registration transaction ID:", registerTxId);
 
   // Register DAO with API
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/api/dao/create',
+    url: appApiUrl + '/dao/create',
     data: {
-      publicKey: daoWallet.publicKey,
+      address: daoWallet.address,
       name: "DAO #" + daoCount,
       about: "A great DAO",
-      raisingAmount: 100000000,
+      raisingAmount: 10 * 100000000,  // in sats
       raisingDeadline: "01/01/2023",
       registrationTxId: registerTxId,
-      createdAt: new Date(),
-      updatedAt: new Date()
     }
   });
   console.log("[DAO] Registration API response:", response.data);
