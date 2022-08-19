@@ -1,3 +1,5 @@
+import bs58check from 'bs58check';
+
 export function hexToBytes(hex: string): Uint8Array {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
 }
@@ -13,4 +15,14 @@ function hexToBytesHelper(hex: string): Uint8Array {
     array[i] = Number.parseInt(hex.slice(j, j + 2), 16);
   }
   return array;
+}
+
+export function base58CheckEncode(hash: string): string {
+  var encoded = bs58check.encode(Buffer.from(hash, 'hex'));
+  return encoded;
+}
+
+export function base58CheckDecode(address: string): string {
+  var decoded = bs58check.decode(address)
+  return decoded.toString('hex');
 }
