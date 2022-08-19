@@ -2,7 +2,10 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import 'focus-visible'
 import { ClientProvider } from '@micro-stacks/react';
+
 import { Header } from '@/components/Header'
+import { Footer } from '@/components/Footer'
+
 import Head from 'next/head'
 import { useCallback } from 'react';
 import { destroySession, saveSession } from '@/common/fetchers';
@@ -11,10 +14,14 @@ import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    setAuthenticated(pageProps?.dehydratedState);
+    if (isLoading) {
+      setAuthenticated(pageProps?.dehydratedState);
+      setIsLoading(false);
+    }
   }, [pageProps?.dehydratedState]);
 
   return (
@@ -40,6 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <Header isAuthenticated={isAuthenticated} />
       <Component {...pageProps} />
+      <Footer />
     </ClientProvider>
   );
 }

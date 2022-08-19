@@ -12,7 +12,6 @@ import { StyledIcon } from '@/components/StyledIcon'
 const DaoDetails: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
-  const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
 
   useEffect(() => {
@@ -28,7 +27,7 @@ const DaoDetails: NextPage = () => {
   }, [slug]);
 
   return (
-    <Container>
+    <Container className="min-h-screen">
       {isLoading ? (
         <div className="flex flex-wrap mb-12">
           <Loading />
