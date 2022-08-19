@@ -24,12 +24,12 @@ async function postHandler(
     // Get registration TX
     let resultDao = await prisma.dao.findUniqueOrThrow({
       where: {
-        publicKey: req.body.publicKey,
+        address: req.body.address,
       }
     });
 
     // Check DAO registration in SC
-    const daoRegistered = await isDaoRegistered(req.body.publicKey);
+    const daoRegistered = await isDaoRegistered(req.body.address);
 
     let status = 'started';
     if (daoRegistered) {
@@ -45,7 +45,7 @@ async function postHandler(
     // Update registration status
     const result = await prisma.dao.update({
       where: {
-        publicKey: req.body.publicKey,
+        address: req.body.address,
       },
       data: {
         registrationStatus: status

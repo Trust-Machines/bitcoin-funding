@@ -27,7 +27,7 @@ async function postHandler(
     });
     const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
       where: {
-        publicKey: resultUser.fundingWalletPublicKey as string,
+        address: resultUser.fundingWalletAddress as string,
       }
     });
 
@@ -48,7 +48,7 @@ async function postHandler(
       const resultTransaction = await prisma.fundingTransaction.create({
         data: {
           txId: sendBtcResult,
-          wallet: { connect: { publicKey: resultWallet.publicKey } },
+          wallet: { connect: { address: resultWallet.address } },
           status: 'started'
         },
       });

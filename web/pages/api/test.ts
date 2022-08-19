@@ -11,9 +11,12 @@ import {
 import { 
   createWallet,
   createWalletXpub,
+} from '@/common/bitcoin/bitcoin-js';
+
+import { 
   base58CheckDecode,
   base58CheckEncode
-} from '../../common/bitcoin/bitcoin-js';
+} from '@/common/utils';
 
 import { 
   getBalance,

@@ -17,11 +17,11 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<number>
 ) {
-  const { publicKey } = req.query;
+  const { address } = req.query;
   const prisma = new PrismaClient();
   const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
     where: {
-      publicKey: publicKey as string,
+      address: address as string,
     }
   });
 
