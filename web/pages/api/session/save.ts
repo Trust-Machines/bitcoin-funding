@@ -24,7 +24,6 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
         data: {
           appPrivateKey: account['appPrivateKey'], // TODO: we should probably hash this before saving this in plain-text to our DB?
           address: account['address'],
-          registrationStatus: 'started' // TODO: what should this be? we should create a DB enum out of this to define states
         },
       });
     }
