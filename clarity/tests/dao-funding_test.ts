@@ -16,16 +16,15 @@ Clarinet.test({name: "dao funding: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
-    let senderAddress = hexToBytes('0x0014dad7767ffc5a900d5bdc539f70db46051f3a4117');
     let receiverAddress = hexToBytes('0x00149bb0bab766d6fabf0da9f2e9bbb065010a0bf656');
 
     let call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
-      types.buff(receiverAddress)
+      types.uint(0)
     ], deployer.address);
     call.result.expectUint(0);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
-      types.buff(senderAddress),
+      types.uint(0),
       types.buff(receiverAddress)
     ], deployer.address);
     call.result.expectUint(0);
@@ -114,12 +113,12 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
     call.result.expectOk().expectUint(555);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
-      types.buff(receiverAddress)      
+      types.uint(0)
     ], deployer.address);
     call.result.expectUint(555);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
-      types.buff(receiverAddress),
+      types.uint(0),
       types.buff(senderAddress)
     ], deployer.address);
     call.result.expectUint(555);
@@ -326,12 +325,12 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     call.result.expectErr().expectUint(20006);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
-      types.buff(receiverAddress)      
+      types.uint(0)
     ], deployer.address);
     call.result.expectUint(555);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
-      types.buff(receiverAddress),
+      types.uint(0),
       types.buff(senderAddress)
     ], deployer.address);
     call.result.expectUint(555);

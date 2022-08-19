@@ -16,13 +16,13 @@
 
 (define-map user-dao-funding 
   {
-    dao-address: (buff 33),   ;; address before base58Check encoding
+    dao-id: uint,
     user-address: (buff 33)   ;; address before base58Check encoding
   } 
   uint
 )
 
-(define-map total-dao-funding (buff 33) uint)
+(define-map total-dao-funding uint uint)
 
 (define-map tx-parsed (buff 1024) bool)
 
@@ -30,17 +30,17 @@
 ;; Getters
 ;; 
 
-(define-read-only (get-user-dao-funding (dao-address (buff 33)) (user-address (buff 33)))
+(define-read-only (get-user-dao-funding (dao-id uint) (user-address (buff 33)))
   (default-to 
     u0
-    (map-get? user-dao-funding { dao-address: dao-address, user-address: user-address })
+    (map-get? user-dao-funding { dao-id: dao-id, user-address: user-address })
   )
 )
 
-(define-read-only (get-total-dao-funding (dao-address (buff 33)))
+(define-read-only (get-total-dao-funding (dao-id uint))
   (default-to 
     u0
-    (map-get? total-dao-funding dao-address)
+    (map-get? total-dao-funding dao-id)
   )
 )
 
@@ -67,15 +67,17 @@
 )
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
-    (current-total (get-total-dao-funding receiver-address))
-    (current-user-total (get-user-dao-funding receiver-address sender-address))
-  )
+    
     ;; TODO: make registry dynamic
-    (asserts! (unwrap-panic (contract-call? .dao-registry-v1-1 is-dao-registered receiver-address)) ERR_DAO_NOT_FOUND)
+    (dao-id (unwrap! (unwrap! (contract-call? .dao-registry-v1-1 get-dao-id-by-address receiver-address) ERR_DAO_NOT_FOUND) ERR_DAO_NOT_FOUND))
+
+    (current-total (get-total-dao-funding dao-id))
+    (current-user-total (get-user-dao-funding dao-id sender-address))
+  )
     (asserts! (not (get-tx-parsed tx)) ERR_TX_ALREADY_ADDED)
 
-    (map-set total-dao-funding receiver-address (+ current-total sats))
-    (map-set user-dao-funding { dao-address: receiver-address, user-address: sender-address } (+ current-user-total sats))
+    (map-set total-dao-funding dao-id (+ current-total sats))
+    (map-set user-dao-funding { dao-id: dao-id, user-address: sender-address } (+ current-user-total sats))
     (map-set tx-parsed tx true)
     (ok sats)
   )
