@@ -12,6 +12,7 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
  
   try {
     console.log('setting state to', dehydratedState);
+    // TODO: create User here through middleware if user does not exist yet
     req.session.dehydratedState = dehydratedState;
     await req.session.save();
     res.json({ dehydratedState });

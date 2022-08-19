@@ -10,6 +10,7 @@ The project is using Electrum servers to facilitate fetching of wallet data end 
  4. Run `npx prisma db push` to create tables based on `schema.prisma`
  5. Run `npx prisma studio` to view tables and data
  6. Run `npx prisma generate` every time `schema.prisma` is updated
+ (7. Reset the database with `npx prisma migrate reset`)
 
 ## Start services
 

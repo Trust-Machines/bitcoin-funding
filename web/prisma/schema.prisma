@@ -13,6 +13,7 @@ datasource db {
 model Dao {
   publicKey                   String                    @id
   name                        String
+  slug                        String                    @unique
   about                       String?
   registrationTxId            String?
   registrationStatus          String
