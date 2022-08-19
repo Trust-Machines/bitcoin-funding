@@ -55,6 +55,6 @@ model FundingTransaction {
 
 enum RegistrationStatus {
   STARTED
-  PROCESSING
-  FINISHED
+  COMPLETED
+  FAILED
 }

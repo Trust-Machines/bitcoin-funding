@@ -6,7 +6,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "RegistrationStatus" AS ENUM ('STARTED', 'PROCESSING', 'FINISHED');
+CREATE TYPE "RegistrationStatus" AS ENUM ('STARTED', 'COMPLETED', 'FAILED');
 
 -- AlterTable
 ALTER TABLE "Dao" DROP COLUMN "registrationStatus",
