@@ -3,11 +3,14 @@ import { Container } from '@/components/Container'
 
 import { Loading } from '@/components/Loading'
 import { DaoThumbnail } from '@/components/DaoThumbnail'
+
+import { Dao } from '@prisma/client'
+
 import { findAllDaos } from '@/common/fetchers'
 
 export function Main() {
   const [isLoading, setIsLoading] = useState(true);
-  const [daos, setDaos] = useState([]); // TODO: add TypeScript type?
+  const [daos, setDaos] = useState<Dao[]>([]);
 
   useEffect(() => {
     const fetchDaos = async () => {
