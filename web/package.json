@@ -9,14 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@samouraiwallet/electrum-client": "^1.2.4",
-    "@stacks/transactions": "^4.3.4",
     "@headlessui/react": "^1.6.5",
     "@micro-stacks/react": "^1.0.3",
     "@prisma/client": "^4.2.1",
+    "@samouraiwallet/electrum-client": "^1.2.4",
+    "@stacks/transactions": "^4.3.4",
     "@tailwindcss/forms": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "axios": "^0.27.2",
+    "bech32": "^2.0.0",
     "bitcoinjs-lib": "^5.2.0",
     "clsx": "^1.2.0",
     "dotenv": "^16.0.1",
