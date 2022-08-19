@@ -9,7 +9,7 @@ import { findAllDaos } from '@/common/fetchers'
 
 export function Main() {
   const [isLoading, setIsLoading] = useState(true);
-  const [daos, setDaos] = useState<Dao[]>([]); // TODO: add TypeScript type?
+  const [daos, setDaos] = useState<Dao[]>([]);
 
   useEffect(() => {
     const fetchDaos = async () => {
