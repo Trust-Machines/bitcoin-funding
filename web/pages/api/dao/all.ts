@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao, RegistrationStatus } from '@prisma/client';
+import { PrismaClient, Dao } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
