@@ -1,6 +1,5 @@
 import { stacksNetwork } from '../constants';
-import { getNonce } from './utils'
-import { hexToBytes } from '../utils';
+import { decodeBtcAddressToBuffer, getNonce } from './utils'
 import {
   callReadOnlyFunction,
   makeContractCall,
@@ -26,7 +25,7 @@ export async function getDaoCount(): Promise<number> {
     network: stacksNetwork,
   });
 
-  const result = cvToJSON(call).value;
+  const result = cvToJSON(call).value.value;
   return result;
 }
 
@@ -46,13 +45,13 @@ export async function getDaoById(id: number): Promise<any> {
   return result;
 }
 
-export async function getDaoByPublicKey(publicKey: string): Promise<any> {
+export async function getDaoIdByAddress(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-id-by-public-key',
+    functionName: 'get-dao-id-by-address',
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey)))
+      bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderAddress: contractAddress,
     network: stacksNetwork,
@@ -62,13 +61,13 @@ export async function getDaoByPublicKey(publicKey: string): Promise<any> {
   return result;
 }
 
-export async function isDaoRegistered(publicKey: string): Promise<any> {
+export async function isDaoRegistered(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
     functionName: 'is-dao-registered',
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey)))
+      bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderAddress: contractAddress,
     network: stacksNetwork,
@@ -78,14 +77,15 @@ export async function isDaoRegistered(publicKey: string): Promise<any> {
   return result;
 }
 
-export async function registerDao(publicKey: string): Promise<any> {
+export async function registerDao(address: string): Promise<any> {
+
   const nonce = await getNonce(userAddress)
   const txOptions = {
     contractAddress,
     contractName,
     functionName: "register-dao",
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey)))
+      bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderKey: userPrivateKey,
     nonce: nonce,

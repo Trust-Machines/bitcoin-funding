@@ -1,4 +1,21 @@
 import { stacksApiUrl } from '../constants';
+import { base58CheckDecode, hexToBytes } from '../utils';
+
+// TODO: use import
+let { bech32 } = require('bech32')
+
+// TODO: move to common/utils
+export function decodeBtcAddressToBuffer(address: string) {
+  try {
+    // Assume Base58 encoding
+    const result = hexToBytes(base58CheckDecode(address));
+    return Buffer.from(result);
+  } catch (e) {
+    // Assume BECH32 encoding
+    const result = bech32.decode(address);
+    return Buffer.from(result.words);
+  }
+}
 
 export async function getNonce(address: string) {
   const url = `${stacksApiUrl}/v2/accounts/${address}?proof=0`;
