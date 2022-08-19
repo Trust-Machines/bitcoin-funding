@@ -2,17 +2,18 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { findDao } from '@/common/fetchers';
+import { Dao } from '@prisma/client'
+
+import { findDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-
 import { StyledIcon } from '@/components/StyledIcon'
 
 const DaoDetails: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
-  const [dao, setDao] = useState({}); // TODO: should we create a TypeScript type for a DAO?
+  const [dao, setDao] = useState<Dao>({});
 
   useEffect(() => {
     const fetchDao = async () => {

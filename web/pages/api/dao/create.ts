@@ -18,13 +18,11 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    console.log('Got request to create DAO', req.body);
     const prisma = new PrismaClient();
 
     prisma.$use(async (params, next) => {
       if (params.action === 'create') {
         const { args: { data } } = params;
-        console.log(data);
         const slug = slugify(`${data.name}`, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
         const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
         if (existingDao) {

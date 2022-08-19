@@ -14,10 +14,10 @@ export const DaoThumbnail: FC = ({ dao }) => {
         <div>
           <h3 className="text-md text-gray-700">
             <Link href={`/daos/${dao.slug}`}>
-              <a>
+              <>
                 <span aria-hidden="true" className="absolute inset-0" />
                 {dao.name}
-              </a>
+              </>
             </Link>
           </h3>
           <p className="text-sm text-gray-500">{dao.about}</p>
