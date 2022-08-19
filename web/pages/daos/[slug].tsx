@@ -12,6 +12,7 @@ import { StyledIcon } from '@/components/StyledIcon'
 const DaoDetails: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
+  const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
 
   useEffect(() => {
