@@ -16,13 +16,13 @@
 
 (define-map user-dao-funding 
   {
-    dao-id: uint,
-    user-public-key: (buff 33)
+    dao-address: (buff 33),   ;; address before base58Check encoding
+    user-address: (buff 33)   ;; address before base58Check encoding
   } 
   uint
 )
 
-(define-map total-dao-funding uint uint)
+(define-map total-dao-funding (buff 33) uint)
 
 (define-map tx-parsed (buff 1024) bool)
 
@@ -30,17 +30,17 @@
 ;; Getters
 ;; 
 
-(define-read-only (get-user-dao-funding (dao-id uint) (user-public-key (buff 33)))
+(define-read-only (get-user-dao-funding (dao-address (buff 33)) (user-address (buff 33)))
   (default-to 
     u0
-    (map-get? user-dao-funding { dao-id: dao-id, user-public-key: user-public-key })
+    (map-get? user-dao-funding { dao-address: dao-address, user-address: user-address })
   )
 )
 
-(define-read-only (get-total-dao-funding (dao-id uint))
+(define-read-only (get-total-dao-funding (dao-address (buff 33)))
   (default-to 
     u0
-    (map-get? total-dao-funding dao-id)
+    (map-get? total-dao-funding dao-address)
   )
 )
 
@@ -62,22 +62,20 @@
   (proof { tx-index: uint, hashes: (list 12 (buff 32)), tree-depth: uint })
   (sender-index uint)
   (receiver-index uint)
-  (sender-public-key (buff 33))
-  (receiver-public-key (buff 33))
+  (sender-address (buff 33))
+  (receiver-address (buff 33))
 )
   (let (
-    (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-public-key receiver-public-key)))
-
-    ;; TODO - make registry dynamic?
-    (dao-id (unwrap! (contract-call? .dao-registry-v1-1 get-dao-id-by-public-key receiver-public-key) ERR_DAO_NOT_FOUND))
-
-    (current-total (get-total-dao-funding dao-id))
-    (current-user-total (get-user-dao-funding dao-id sender-public-key))
+    (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
+    (current-total (get-total-dao-funding receiver-address))
+    (current-user-total (get-user-dao-funding receiver-address sender-address))
   )
+    ;; TODO: make registry dynamic
+    (asserts! (unwrap-panic (contract-call? .dao-registry-v1-1 is-dao-registered receiver-address)) ERR_DAO_NOT_FOUND)
     (asserts! (not (get-tx-parsed tx)) ERR_TX_ALREADY_ADDED)
 
-    (map-set total-dao-funding dao-id (+ current-total sats))
-    (map-set user-dao-funding { dao-id: dao-id, user-public-key: sender-public-key } (+ current-user-total sats))
+    (map-set total-dao-funding receiver-address (+ current-total sats))
+    (map-set user-dao-funding { dao-address: receiver-address, user-address: sender-address } (+ current-user-total sats))
     (map-set tx-parsed tx true)
     (ok sats)
   )
@@ -90,8 +88,8 @@
   (proof { tx-index: uint, hashes: (list 12 (buff 32)), tree-depth: uint })
   (sender-index uint)
   (receiver-index uint)
-  (sender-public-key (buff 33))
-  (receiver-public-key (buff 33))
+  (sender-address (buff 33))
+  (receiver-address (buff 33))
 )
   (let (
     ;; TODO - Update mainnet address
@@ -102,8 +100,8 @@
     (receiver (unwrap! (element-at (get outs parsed-tx) receiver-index) ERR_INVALID_TX))
   )
     (asserts! was-mined ERR_TX_NOT_MINED)
-    (asserts! (is-eq (get-hashed-public-key sender-public-key) (get scriptPubKey sender)) ERR_WRONG_SENDER)
-    (asserts! (is-eq (get-hashed-public-key receiver-public-key) (get scriptPubKey receiver)) ERR_WRONG_RECEIVER)
+    (asserts! (is-eq sender-address (get scriptPubKey sender)) ERR_WRONG_SENDER)
+    (asserts! (is-eq receiver-address (get scriptPubKey receiver)) ERR_WRONG_RECEIVER)
 
     (ok (get value receiver))
   )
