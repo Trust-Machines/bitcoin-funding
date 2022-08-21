@@ -1,4 +1,5 @@
 import type { IronSessionOptions } from 'iron-session';
+import { getDehydratedStateFromSession } from '@/common/session/helpers';
  
 export const sessionOptions: IronSessionOptions = {
   password: process.env.SECRET_COOKIE_PASSWORD as string,
@@ -12,16 +13,14 @@ export const sessionOptions: IronSessionOptions = {
 declare module 'iron-session' {
   interface IronSessionData {
     dehydratedState?: string;
-    user?: Object;
   }
 }
 
-export const setSession = (session: any) => {
-  if (!global.session) {
-    global.session = session;
-  }
-}
-
-export const getSession = () => {
-  return global.session;
+// https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return {
+    props: {
+      dehydratedState: await getDehydratedStateFromSession(ctx),
+    },
+  };
 }

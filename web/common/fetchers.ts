@@ -21,17 +21,14 @@ export const destroySession = async () => {
 };
 
 export const createDao = async (formData: Object, dehydratedState: string) => {
-  console.log(dehydratedState)
-  console.log(JSON.stringify(formData));
+  console.log(formData, dehydratedState);
+  console.log(JSON.stringify({ dao: formData, dehydratedState }));
   return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: {
-      dao: JSON.stringify(formData),
-      session: JSON.stringify({ dehydratedState }),
-    }
+    body: JSON.stringify({ dao: formData, dehydratedState })
   });
 };
 
@@ -48,13 +45,17 @@ export const findDao = async (slug: string) => {
 };
 
 export const findAllDaos = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/all', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
-  const json = await res.json();
+  try {
+    const res = await fetch(API_URL + '/api/dao/all', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    const json = await res.json();
 
-  return json;
+    return json;
+  } catch (e) {
+    return [];
+  }
 };

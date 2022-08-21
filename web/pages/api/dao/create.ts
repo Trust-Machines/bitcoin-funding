@@ -20,34 +20,44 @@ async function postHandler(
 ) {
   try {
     prisma.$use(async (params, next) => {
+      console.log(params)
       if (params.action === 'create') {
         const { args: { data } } = params;
+        console.log(data);
         const slug = slugify(`${data.name}`, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+        console.log(slug);
         const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
         if (existingDao) {
-          res.status(422).json('DAO with that name already exists');
+          return res.status(422).json('DAO with that name already exists');
         }
+        console.log(data);
         data.slug = slug;
+
+    //     const account = JSON.parse(req.dehydratedState)[1][1][0];
+    //     let user = await prisma.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+    //     console.log('found user:', user);
+    //     if (!user) {
+    //       // throw error
+    //     }
+    //     data.user = user;
 
         const result = await next(params);
         return result;
       }
     });
 
-    console.log(req.session);
-
     const result = await prisma.dao.create({
       data: {
-        publicKey: req.body.publicKey,
-        name: req.body.name,
-        about: req.body.about,
-        raisingAmount: parseFloat(req.body.raisingAmount) * 100000000, // convert to sats
-        raisingDeadline: new Date(req.body.deadline),
-        registrationTxId: req.body.registrationTxId.toString(),
+        publicKey: req.body.dao.publicKey,
+        name: req.body.dao.name,
+        about: req.body.dao.about,
+        raisingAmount: parseFloat(req.body.dao.raisingAmount) * 100000000, // convert to sats
+        raisingDeadline: new Date(req.body.dao.deadline),
+        registrationTxId: req.body.dao.registrationTxId.toString(),
         registrationStatus: 'started',
         admins: {
           create: [
-            { user: session.user }
+            { user: req.body.user }
           ]
         }
       },
