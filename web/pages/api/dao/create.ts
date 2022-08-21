@@ -43,7 +43,12 @@ async function postHandler(
         raisingAmount: parseFloat(req.body.raisingAmount) * 100000000, // convert to sats
         raisingDeadline: new Date(req.body.deadline),
         registrationTxId: req.body.registrationTxId.toString(),
-        registrationStatus: 'started'
+        registrationStatus: 'started',
+        admins: {
+          create: [
+            { user: { create: {  } } }
+          ]
+        }
       },
     });
     res.status(201).json(result);

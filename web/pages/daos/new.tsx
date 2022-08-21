@@ -26,7 +26,7 @@ const New: NextPage = () => {
 
   const submitCreateDao = async () => {
     const res = await createDao(state);
-    if (res.status === 200) {
+    if (res.status === 201) {
       const data = await res.json();
       router.push(`/daos/${data.slug}`);
     } else {
