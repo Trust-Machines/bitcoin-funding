@@ -12,6 +12,8 @@ import { destroySession, saveSession } from '@/common/fetchers';
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
+import { setSession } from '@/common/session/index';
+
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,12 +33,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       dehydratedState={pageProps?.dehydratedState}
       onPersistState={useCallback(async (dehydratedState: string) => {
         setAuthenticated(true);
-        await saveSession(dehydratedState);
+        const result = await saveSession(dehydratedState);
+        setSession(result);
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
         router.push('/');
+        setSession(null);
       }, [])}
     >
       <Head>

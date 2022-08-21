@@ -12,5 +12,14 @@ export const sessionOptions: IronSessionOptions = {
 declare module 'iron-session' {
   interface IronSessionData {
     dehydratedState?: string;
+    user?: Object;
   }
 }
+
+export const setSession = (session: any) => {
+  if (!global.session) {
+    global.session = session;
+  }
+}
+
+export default global.session;
