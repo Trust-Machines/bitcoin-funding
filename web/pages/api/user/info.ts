@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +19,6 @@ async function getHandler(
 ) {
   try {
     const { appPrivateKey } = req.query;
-    const prisma = new PrismaClient();
     const result = await prisma.user.findUniqueOrThrow({
       where: {
         appPrivateKey: appPrivateKey as string,

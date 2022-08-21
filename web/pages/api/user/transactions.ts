@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, FundingTransaction } from '@prisma/client';
+import { FundingTransaction } from '@prisma/client';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,8 +17,6 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction[]>
 ) {
-  const prisma = new PrismaClient();
-
   const resultUser = await prisma.user.findUniqueOrThrow({
     where: {
       appPrivateKey: req.body.appPrivateKey,

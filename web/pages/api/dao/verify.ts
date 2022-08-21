@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { isDaoRegistered } from '@/common/stacks/dao-registry-v1-1';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,8 +20,6 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    const prisma = new PrismaClient();
-
     // Get registration TX
     let resultDao = await prisma.dao.findUniqueOrThrow({
       where: {

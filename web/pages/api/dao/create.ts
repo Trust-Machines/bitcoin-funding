@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao } from '@prisma/client';
 import slugify from 'slugify';
 
 export default async function handler(
@@ -18,8 +18,6 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    const prisma = new PrismaClient();
-
     prisma.$use(async (params, next) => {
       if (params.action === 'create') {
         const { args: { data } } = params;

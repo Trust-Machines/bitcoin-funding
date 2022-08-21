@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao } from '@prisma/client';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +19,6 @@ async function getHandler(
 ) {
   try {
     const { publicKey } = req.query;
-    const prisma = new PrismaClient();
     const result = await prisma.dao.findUniqueOrThrow({
       where: {
         publicKey: publicKey as string,
