@@ -22,4 +22,6 @@ export const setSession = (session: any) => {
   }
 }
 
-export default global.session;
+export const getSession = () => {
+  return global.session;
+}

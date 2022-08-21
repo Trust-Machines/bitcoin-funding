@@ -1,15 +1,11 @@
 import { API_URL } from './constants';
  
 export const saveSession = async (dehydratedState: string) => {
-  const res = await fetch(API_URL + '/api/session/save', {
+  return await fetch(API_URL + '/api/session/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dehydratedState }),
   });
-
-  const json = await res.json();
-
-  return json;
 };
  
 export const destroySession = async () => {
@@ -24,13 +20,18 @@ export const destroySession = async () => {
   }
 };
 
-export const createDao = async (formData: Object) => {
+export const createDao = async (formData: Object, dehydratedState: string) => {
+  console.log(dehydratedState)
+  console.log(JSON.stringify(formData));
   return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(formData),
+    body: {
+      dao: JSON.stringify(formData),
+      session: JSON.stringify({ dehydratedState }),
+    }
   });
 };
 

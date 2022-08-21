@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
 import { createDao } from '@/common/fetchers'
 import { useRouter } from 'next/router'
+import { getSession } from '@/common/session/index.ts';
 
-const New: NextPage = () => {
+const New: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const [state, setState] = useState({
     name: 'Racing with Children',
@@ -25,6 +26,7 @@ const New: NextPage = () => {
   }
 
   const submitCreateDao = async () => {
+    console.log(dehydratedState);
     const res = await createDao(state);
     if (res.status === 201) {
       const data = await res.json();

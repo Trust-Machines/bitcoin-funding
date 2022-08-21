@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
-import slugify from 'slugify';
+import { Dao } from '@prisma/client'
+import slugify from 'slugify'
+import prisma from '@/common/db'
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,6 +34,8 @@ async function postHandler(
       }
     });
 
+    console.log(req.session);
+
     const result = await prisma.dao.create({
       data: {
         publicKey: req.body.publicKey,
@@ -44,7 +47,7 @@ async function postHandler(
         registrationStatus: 'started',
         admins: {
           create: [
-            { user: { create: {  } } }
+            { user: session.user }
           ]
         }
       },

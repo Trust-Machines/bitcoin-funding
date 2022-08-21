@@ -18,6 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  console.log(pageProps);
 
   useEffect(() => {
     if (isLoading) {
@@ -34,7 +35,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       onPersistState={useCallback(async (dehydratedState: string) => {
         setAuthenticated(true);
         const result = await saveSession(dehydratedState);
-        setSession(result);
+        if (result.status === 200) {
+          const json = await result.json();
+          setSession(json);
+        }
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
