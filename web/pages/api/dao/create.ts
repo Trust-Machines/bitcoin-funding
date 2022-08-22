@@ -20,7 +20,6 @@ async function postHandler(
 ) {
   try {
     prisma.$use(async (params, next) => {
-      console.log(params)
       if (params.action === 'create') {
         const { args: { data } } = params;
         console.log(data);
@@ -28,18 +27,18 @@ async function postHandler(
         console.log(slug);
         const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
         if (existingDao) {
-          return res.status(422).json('DAO with that name already exists');
+          console.log('TODO: DAO already exists... generate unique slug');
         }
-        console.log(data);
         data.slug = slug;
 
-    //     const account = JSON.parse(req.dehydratedState)[1][1][0];
-    //     let user = await prisma.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
-    //     console.log('found user:', user);
-    //     if (!user) {
-    //       // throw error
-    //     }
-    //     data.user = user;
+        const account = JSON.parse(req.body.dehydratedState)[1][1][0];
+        console.log(await prisma.user.findMany());
+        const user = await prisma.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+        console.log('found user:', user);
+        if (!user) {
+          // throw error
+        }
+        // data.admins = { create: [{ user: user }] };
 
         const result = await next(params);
         return result;
@@ -54,14 +53,10 @@ async function postHandler(
         raisingAmount: parseFloat(req.body.dao.raisingAmount) * 100000000, // convert to sats
         raisingDeadline: new Date(req.body.dao.deadline),
         registrationTxId: req.body.dao.registrationTxId.toString(),
-        registrationStatus: 'started',
-        admins: {
-          create: [
-            { user: req.body.user }
-          ]
-        }
+        registrationStatus: 'started'
       },
     });
+    console.log(result);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json((error as Error).message);
