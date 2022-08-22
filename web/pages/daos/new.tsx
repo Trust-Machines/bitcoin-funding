@@ -28,7 +28,6 @@ const New: NextPage = ({ dehydratedState }) => {
   const submitCreateDao = async () => {
     const res = await createDao(state, dehydratedState);
     if (res.status === 201) {
-      console.log(res);
       const data = await res.json();
       router.push(`/daos/${data.slug}`);
     } else {
