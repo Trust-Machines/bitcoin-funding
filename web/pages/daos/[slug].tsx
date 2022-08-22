@@ -14,8 +14,8 @@ import { getServerSideProps } from '@/common/session/index.ts';
 const DaoDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
-  const [dao, setDao] = useState<Dao>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [dao, setDao] = useState<Dao>({});
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
