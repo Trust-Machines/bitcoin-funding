@@ -4,9 +4,7 @@
 
 import { hexToBytes } from '../utils';
 import { decode, encode, convertbits } from './bech32';
-
-// TODO: use import
-var bs58check = require('bs58check')
+import bs58check from 'bs58check'
 
 export function decodeBtcAddressToBuffer(address: string): Buffer {
   const decoded = decodeBtcAddress(address);
