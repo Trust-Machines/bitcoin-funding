@@ -16,7 +16,7 @@ model Dao {
   slug                        String                    @unique
   about                       String?
   registrationTxId            String?
-  registrationStatus          String
+  registrationStatus          RegistrationStatus        @default(STARTED)
   raisingAmount               Int                       // amount in satoshi
   raisingDeadline             DateTime                  // date in the future
   createdAt                   DateTime                  @default(now())
@@ -38,7 +38,7 @@ model User {
   fundingWallet               FundingWallet?            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
   fundingWalletPublicKey      String?                   @unique
   registrationTxId            String?
-  registrationStatus          String
+  registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   daoAdmins                   DaoAdmin[]
@@ -61,4 +61,10 @@ model FundingTransaction {
   status                      String
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
+}
+
+enum RegistrationStatus {
+  STARTED
+  COMPLETED
+  FAILED
 }
