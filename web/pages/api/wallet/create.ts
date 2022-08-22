@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, FundingWallet } from '@prisma/client';
+import { FundingWallet } from '@prisma/client';
 import { createWallet, createWalletXpub } from '@/common/bitcoin/bitcoin-js';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,8 +24,6 @@ async function postHandler(
     // TODO: create forwarding wallet based on xpub wallet
     // const xpub = 'xpub6CzDCPbtLrrn4VpVbyyQLHbdSMpZoHN4iuW64VswCyEpfjM2mJGdaHJ2DyuZwtst96E16VvcERb8BBeJdHSCVmAq9RhtRQg6eAZFrTKCNqf';
     // const createWalletXpubResult = createWalletXpub(xpub, 0);
-
-    const prisma = new PrismaClient();
     const result = await prisma.fundingWallet.create({
       data: {
         publicKey: walletResult.publicKey,
