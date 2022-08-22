@@ -49,7 +49,6 @@ export const findAllDaos = async (slug: string) => {
       'Content-Type': 'application/json',
     }
   });
-  console.log(res);
   const json = await res.json();
 
   return json;
