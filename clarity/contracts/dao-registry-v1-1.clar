@@ -16,7 +16,7 @@
 ;; 
 
 (define-map dao-by-id uint {
-  address: (buff 33),   ;; address before base58Check encoding
+  address: (buff 33),   ;; address before encoding
   admin: principal
 })
 

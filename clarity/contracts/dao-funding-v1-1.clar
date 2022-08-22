@@ -17,7 +17,7 @@
 (define-map user-dao-funding 
   {
     dao-id: uint,
-    user-address: (buff 33)   ;; address before base58Check encoding
+    user-address: (buff 33)   ;; address before encoding
   } 
   uint
 )
@@ -107,16 +107,4 @@
 
     (ok (get value receiver))
   )
-)
-
-;; Hashed public key
-;; P2WPKH start with 0x0014
-(define-read-only (get-hashed-public-key (public-key (buff 33)))
-  (concat 0x0014 (hash160 public-key))
-)
-
-;; BTC public key to address
-;; Before base58Check encoding
-(define-read-only (get-address-from-public-key (public-key (buff 33)))
-  (concat 0x00 (hash160 public-key))
 )

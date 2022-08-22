@@ -52,22 +52,6 @@ export async function getTotalDaoFunding(daoId: number): Promise<any> {
   return result;
 }
 
-export async function getHashedPublicKey(publicKey: string): Promise<any> {
-  const call = await callReadOnlyFunction({
-    contractAddress,
-    contractName,
-    functionName: 'get-hashed-public-key',
-    functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey))),
-    ],
-    senderAddress: contractAddress,
-    network: stacksNetwork,
-  });
-
-  const result = cvToJSON(call).value;
-  return result;
-}
-
 export async function getTransactionParsed(txHex: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,

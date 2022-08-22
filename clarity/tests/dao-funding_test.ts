@@ -126,36 +126,6 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
 });
 
 // 
-// Helpers
-// 
-
-Clarinet.test({name: "dao funding: BTC public key to address",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    
-    let publicKey = hexToBytes('0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352');
-
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-address-from-public-key", [
-      types.buff(publicKey)
-    ], deployer.address);
-    call.result.expectBuff(hexToBytes("0x00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31"));
-  }
-});
-
-Clarinet.test({name: "dao funding: get hashed public key",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    
-    let publicKey = hexToBytes('0317a49245e880a09803dedf3930eda2b66f5ea69b0b85a74f71225ff68732c259');
-
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-hashed-public-key", [
-      types.buff(publicKey)      
-    ], deployer.address);
-    call.result.expectBuff(hexToBytes("0x0014dad7767ffc5a900d5bdc539f70db46051f3a4117"));
-  }
-});
-
-// 
 // Errors
 // 
 
