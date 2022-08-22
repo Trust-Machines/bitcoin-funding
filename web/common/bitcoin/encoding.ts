@@ -1,5 +1,6 @@
 // Resources
 // https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
+// https://bitcoin.stackexchange.com/questions/36634/how-do-i-get-to-the-value-in-the-scriptpubkey-part-of-the-transaction
 // https://en.bitcoin.it/wiki/Bech32
 
 import { hexToBytes } from '../utils';
@@ -15,7 +16,7 @@ export function decodeBtcAddress(address: string): string {
   if (address.startsWith('bc1') || address.startsWith('tb1') || address.startsWith('bcrt1')) {
     return "0x0014" + bech32Decode(address);
   }
-  return "0x" + base58CheckDecode(address);
+  return "0x76a914" + base58CheckDecode(address).slice(2) + "88ac";
 }
 
 export function bech32Encode(prefix: string, hash: string): string {
@@ -34,11 +35,6 @@ export function bech32Decode(address: string): string {
     array[i] = converted[i];
   }
   return Buffer.from(array).toString("hex");
-}
-
-export function base58CheckEncode(hash: string): string {
-  var encoded = bs58check.encode(Buffer.from(hash, 'hex'));
-  return encoded;
 }
 
 export function base58CheckDecode(address: string): string {

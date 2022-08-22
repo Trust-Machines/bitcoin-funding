@@ -30,7 +30,7 @@ export async function start() {
     data: {
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
-      sats: responseBalance.data
+      sats: responseBalance.data      // TODO: this works with '10000000' but not with data
     }
   });
   console.log("[FUNDING] Forward API response:", responsseForward.data);
