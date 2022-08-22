@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { User } from '@prisma/client';
+import { Dao } from '@prisma/client';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<User | string>
+  res: NextApiResponse<Dao | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -15,13 +15,13 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<User | string>
+  res: NextApiResponse<Dao | string>,
 ) {
   try {
-    const { appPrivateKey } = req.query;
-    const result = await prisma.user.findUniqueOrThrow({
+    const { slug } = req.query;
+    const result = await prisma.dao.findUniqueOrThrow({
       where: {
-        appPrivateKey: appPrivateKey as string,
+        slug: slug as string,
       }
     });
     res.status(200).json(result)

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, FundingWallet } from '@prisma/client';
 import { getBalance } from '@/common/bitcoin/electrum-api';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +18,6 @@ async function getHandler(
   res: NextApiResponse<number>
 ) {
   const { address } = req.query;
-  const prisma = new PrismaClient();
   const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
     where: {
       address: address as string,

@@ -14,7 +14,7 @@ export function Footer() {
             <div className="-my-1 flex justify-center gap-x-6">
               <NavLink href="#features">Features</NavLink>
               <NavLink href="#testimonials">Testimonials</NavLink>
-              <NavLink href="#pricing">Pricing</NavLink>
+              <NavLink href="#about">About</NavLink>
             </div>
           </nav>
         </div>
@@ -23,7 +23,7 @@ export function Footer() {
             <Link
               href="https://twitter.com"
               className="group"
-              aria-label="TaxPal on Twitter"
+              aria-label="BallotBox Fund on Twitter"
             >
               <svg
                 aria-hidden="true"
@@ -35,7 +35,7 @@ export function Footer() {
             <Link
               href="https://github.com"
               className="group"
-              aria-label="TaxPal on GitHub"
+              aria-label="BallotBox Fund on GitHub"
             >
               <svg
                 aria-hidden="true"

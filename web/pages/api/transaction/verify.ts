@@ -1,7 +1,8 @@
 import { getTransactionHex } from '@/common/bitcoin/electrum-api';
 import { getTransactionParsed } from '@/common/stacks/dao-funding-v1-1';
-import { FundingTransaction, PrismaClient } from '@prisma/client';
+import { FundingTransaction } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,8 +19,6 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction | string>
 ) {
-
-  const prisma = new PrismaClient();
   const result = await prisma.fundingTransaction.findUniqueOrThrow({
     where: {
       txId: req.body.txId,
