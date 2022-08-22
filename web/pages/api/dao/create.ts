@@ -53,7 +53,6 @@ async function postHandler(
         registrationStatus: 'started'
       },
     });
-    console.log(result);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json((error as Error).message);
