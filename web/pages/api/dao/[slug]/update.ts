@@ -19,12 +19,13 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    console.log(req);
+    const { slug } = req.query;
+    // TODO: check if user is authorized to update the DAO
     const result = await prisma.dao.update({
-      where: { publicKey: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
+      where: { publicKey: slug },
       data: {
-        name: req.body.name,
-        about: req.body.about,
+        name: req.body.dao.name,
+        about: req.body.dao.about,
       },
     });
     res.status(200).json(result);

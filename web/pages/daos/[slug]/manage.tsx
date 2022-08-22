@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react'
 
 import { Dao } from '@prisma/client'
 
-import { findDao } from '@/common/fetchers'
+import { findDao, updateDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
-import { getServerSideProps } from '@/common/session/index.ts';
+import { getServerSideProps } from '@/common/session/index.ts'
 
 const ManageDao: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -50,11 +50,19 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
-    setState(prevState => { return { ...prevState, [name]: value } });
+    setDao(prevState => { return { ...prevState, [name]: value } });
   }
 
-  const update = () => {
-    console.log('updating...');
+  const update = async () => {
+    const res = await updateDao(dao.publicKey, dao, dehydratedState);
+    if (res.status === 200) {
+      console.log(res);
+      const data = await res.json();
+      router.push(`/daos/${data.slug}`);
+    } else {
+      console.log(res);
+      console.log('TODO: DAO update did not succeed.. show error message');
+    }
   }
 
   return (
