@@ -23,8 +23,9 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
       const dao = await findDao(slug);
       setDao(dao);
 
-      if (dao.admins && dao.admins.length > 0) {
-        const account = JSON.parse(dehydratedState)[1][1][0];
+      const parsedState = JSON.parse(dehydratedState) || []
+      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
+        const account = parsedState[1][1][0];
         setIsAdmin(dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1);
       }
 
