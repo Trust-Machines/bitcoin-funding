@@ -81,6 +81,11 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   return txid;
 }
 
+export async function getTransactionHex(txId: string): Promise<any> {
+  const client = await newElectrumClient();
+  const tx = await client.blockchainTransaction_get(txId, true) as any;
+  return tx.hex;
+}
 
 export async function getTransactionData(txId: string, senderAddress: string, receiverAddress: string): Promise<any> {
   const client = await newElectrumClient();

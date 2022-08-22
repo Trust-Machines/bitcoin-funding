@@ -29,7 +29,7 @@ export async function start() {
     }
   });
   const txInfo = responseTxInfo.data;
-  console.log("[FUNDING] Transaction data to verify:", txInfo);
+  console.log("[FUNDING] Transaction data to verify on chain:", txInfo);
 
   // Save funding on chain
   const parseResult = await addUserFunding(
