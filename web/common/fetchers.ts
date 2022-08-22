@@ -63,3 +63,15 @@ export const updateDao = async (publicKey: string, formData: object, dehydratedS
     body: JSON.stringify({ dao: formData, dehydratedState })
   });
 };
+
+export const findUser = async (appPrivateKey: string) => {
+  const res = await fetch(API_URL + '/api/user/info?appPrivateKey=' + appPrivateKey, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const json = await res.json();
+
+  return json;
+};

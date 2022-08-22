@@ -1,11 +1,13 @@
 import type { NextPage } from 'next'
 import Link from 'next/link'
 
+import { Dao, User } from '@prisma/client'
+
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount } from '@micro-stacks/react';
 
-import { findDao } from '@/common/fetchers';
+import { findDao, findUser } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 
@@ -23,17 +25,27 @@ const FundDao: NextPage = () => {
   const { slug } = router.query;
   const account = useAccount();
   const [isLoading, setIsLoading] = useState(true);
-  const [dao, setDao] = useState({}); // TODO: should we create a TypeScript type for a DAO?
+  const [dao, setDao] = useState<Dao>({});
+  const [user, setUser] = useState<User>({});
+  const [userHasWallet, setUserHasWallet] = useState(false);
 
   useEffect(() => {
     const fetchDao = async () => {
       setDao(await findDao(slug));
-
-      setIsLoading(false);
     };
+
+    const fetchUser = async () => {
+      const user = await findUser(account['appPrivateKey']);
+      setUser(user);
+      if (!user || !user['fundingWalletPublicKey']) {
+        console.log('TODO: redirect to a route to register BTC address on-chain');
+      }
+      setIsLoading(false);
+    }
 
     if (slug) {
       fetchDao();
+      fetchUser();
     }
   }, [slug]);
 
@@ -137,7 +149,9 @@ const FundDao: NextPage = () => {
                     </h2>
                   </div>
                   <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <span>blabla</span>
+                    <p>Send BTC to {dao.publicKey}</p>
+
+                    <p>Once you've sent it, we keep track of the transaction and allow you to confirm the funds.</p>
                   </div>
                   <div>
                     <a
