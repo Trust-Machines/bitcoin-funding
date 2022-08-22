@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,8 +20,6 @@ async function postHandler(
   res: NextApiResponse<User | string>
 ) {
   try {
-    const prisma = new PrismaClient();
-
     // Get registration TX
     let resultUser = await prisma.user.findUniqueOrThrow({
       where: {
@@ -32,14 +31,14 @@ async function postHandler(
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status = 'started';
+    let status = RegistrationStatus['STARTED'];
     if (userRegistered != null) {
-      status = 'completed';
+      status = RegistrationStatus['COMPLETED'];
     } else if (resultUser.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultUser.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = 'failed';
+        status = RegistrationStatus['FAILED'];
       }
     }
 

@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao, RegistrationStatus } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { isDaoRegistered } from '@/common/stacks/dao-registry-v1-1';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,8 +20,6 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    const prisma = new PrismaClient();
-
     // Get registration TX
     let resultDao = await prisma.dao.findUniqueOrThrow({
       where: {
@@ -31,14 +30,14 @@ async function postHandler(
     // Check DAO registration in SC
     const daoRegistered = await isDaoRegistered(req.body.publicKey);
 
-    let status = 'started';
+    let status = RegistrationStatus['STARTED'];
     if (daoRegistered) {
-      status = 'completed';
+      status = RegistrationStatus['COMPLETED'];
     } else if (resultDao.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultDao.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = 'failed';
+        status = RegistrationStatus['FAILED'];
       }
     }
 

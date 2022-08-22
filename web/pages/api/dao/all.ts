@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao } from '@prisma/client';
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +17,6 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<Dao[]>
 ) {
-  const prisma = new PrismaClient();
   const result = await prisma.dao.findMany();  
   res.status(200).json(result)
 }
