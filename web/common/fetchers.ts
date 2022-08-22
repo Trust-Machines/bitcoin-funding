@@ -53,3 +53,13 @@ export const findAllDaos = async (slug: string) => {
 
   return json;
 };
+
+export const updateDao = async (publicKey: string, formData: object, dehydratedState: string) => {
+  return await fetch(API_URL + '/api/dao/' + publicKey + '/update', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ dao: formData, dehydratedState })
+  });
+};

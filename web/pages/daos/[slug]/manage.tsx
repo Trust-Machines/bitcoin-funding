@@ -53,6 +53,10 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
     setState(prevState => { return { ...prevState, [name]: value } });
   }
 
+  const update = () => {
+    console.log('updating...');
+  }
+
   return (
     <Container className="min-h-screen">
       {isLoading ? (
@@ -125,8 +129,8 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                   </div>
                   <div>
                     <a
-                      href="#"
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                      onClick={() => { update() }}
+                      className="cursor-pointer block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                     >
                       Update DAO Information
                     </a>

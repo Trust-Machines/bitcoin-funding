@@ -21,7 +21,7 @@ async function postHandler(
   try {
     console.log(req);
     const result = await prisma.dao.update({
-      where: { id: 1 },
+      where: { publicKey: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
       data: {
         name: req.body.name,
         about: req.body.about,
