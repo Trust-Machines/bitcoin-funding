@@ -1,5 +1,6 @@
 import { stacksNetwork } from '../constants';
-import { decodeBtcAddressToBuffer, getNonce } from './utils'
+import { getNonce } from './utils'
+import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import { hexToBytes } from '../utils';
 import {
   callReadOnlyFunction,

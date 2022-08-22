@@ -15,8 +15,10 @@ import {
 
 import { 
   base58CheckDecode,
-  base58CheckEncode
-} from '@/common/utils';
+  base58CheckEncode,
+  bech32Encode,
+  bech32Decode
+} from '@/common/bitcoin/encoding';
 
 import { 
   getBalance,
@@ -58,6 +60,12 @@ export default async function handler(
 
   // const resultDecode = base58CheckDecode("1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs");
   // console.log("resultDecode:", resultDecode);  
+
+  // const resultDecode = bech32Decode("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+  // console.log("resultDecode:", resultDecode);  
+
+  // const resultEncode = bech32Encode("bc", "751e76e8199196d454941c45d1b3a323f1433bd6");
+  // console.log("resultEncode:", resultEncode);  
 
   res.status(200).json({ name: 'John Doe' })
 }

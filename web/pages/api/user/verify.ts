@@ -3,9 +3,7 @@ import { PrismaClient, User } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
 import { btcNetwork } from '@/common/constants';
-
-// TODO: add helper method in utils
-let { bech32 } = require('bech32')
+import { bech32Encode } from '@/common/bitcoin/encoding';
 
 export default async function handler(
   req: NextApiRequest,
@@ -50,8 +48,7 @@ async function postHandler(
     if (userRegistered != null) {
       // Update status and funding wallet
       const registeredAddress = userRegistered.value;
-      const addressBuffer = Buffer.from(registeredAddress.replace("0x", ""), "hex");
-      const address = bech32.encode(btcNetwork.bech32, addressBuffer);
+      const address = bech32Encode(btcNetwork.bech32, registeredAddress.replace("0x0014", ""))
 
       const result = await prisma.user.update({
         where: {
