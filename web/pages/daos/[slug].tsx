@@ -9,15 +9,24 @@ import { findDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
+import { getServerSideProps } from '@/common/session/index.ts';
 
-const DaoDetails: NextPage = () => {
+const DaoDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [dao, setDao] = useState<Dao>({});
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchDao = async () => {
-      setDao(await findDao(slug));
+      const dao = await findDao(slug);
+      setDao(dao);
+
+      const parsedState = JSON.parse(dehydratedState) || []
+      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
+        const account = parsedState[1][1][0];
+        setIsAdmin(dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1);
+      }
 
       setIsLoading(false);
     };
@@ -45,14 +54,16 @@ const DaoDetails: NextPage = () => {
                 </p>
               </div>
             </div>
-            <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-              >
-                Manage DAO
-              </button>
-            </div>
+            {isAdmin ? (
+              <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
+                <Link
+                  href={`/daos/${dao.slug}/manage`}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                >
+                  Manage DAO
+                </Link>
+              </div>
+            ) : null}
           </div>
 
           <div className="mx-auto w-full px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8 mt-4">
@@ -165,4 +176,5 @@ const DaoDetails: NextPage = () => {
   )
 };
 
+export { getServerSideProps };
 export default DaoDetails

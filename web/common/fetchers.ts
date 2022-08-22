@@ -1,7 +1,7 @@
 import { API_URL } from './constants';
  
 export const saveSession = async (dehydratedState: string) => {
-  await fetch(API_URL + '/api/session/save', {
+  return await fetch(API_URL + '/api/session/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dehydratedState }),
@@ -20,13 +20,13 @@ export const destroySession = async () => {
   }
 };
 
-export const createDao = async (formData: Object) => {
+export const createDao = async (formData: Object, dehydratedState: string) => {
   return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(formData),
+    body: JSON.stringify({ dao: formData, dehydratedState })
   });
 };
 
@@ -52,4 +52,14 @@ export const findAllDaos = async (slug: string) => {
   const json = await res.json();
 
   return json;
+};
+
+export const updateDao = async (publicKey: string, formData: object, dehydratedState: string) => {
+  return await fetch(API_URL + '/api/dao/' + publicKey + '/update', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ dao: formData, dehydratedState })
+  });
 };

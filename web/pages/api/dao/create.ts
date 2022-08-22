@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
-import slugify from 'slugify';
+import { PrismaClient, Dao } from '@prisma/client'
+import slugify from 'slugify'
+import prisma from '@/common/db'
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,15 +19,23 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
+    const client = new PrismaClient();
     prisma.$use(async (params, next) => {
       if (params.action === 'create') {
         const { args: { data } } = params;
         const slug = slugify(`${data.name}`, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
         const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
         if (existingDao) {
-          res.status(422).json('DAO with that name already exists');
+          console.log('TODO: DAO already exists... generate unique slug');
         }
         data.slug = slug;
+
+        const account = JSON.parse(req.body.dehydratedState)[1][1][0];
+        const user = await client.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+        if (!user) {
+          // throw error
+        }
+        data.admins = { create: [{ userId: user['appPrivateKey'] }] };
 
         const result = await next(params);
         return result;
@@ -43,7 +52,7 @@ async function postHandler(
         registrationTxId: req.body.registrationTxId.toString(),
       },
     });
-    res.status(200).json(result);
+    res.status(201).json(result);
   } catch (error) {
     res.status(400).json((error as Error).message);
   }
