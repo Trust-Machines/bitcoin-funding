@@ -9,8 +9,9 @@ import { findDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
+import { getServerSideProps } from '@/common/session/index.ts';
 
-const ManageDao: NextPage = () => {
+const ManageDao: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
@@ -18,9 +19,24 @@ const ManageDao: NextPage = () => {
 
   useEffect(() => {
     const fetchDao = async () => {
-      setDao(await findDao(slug));
+      const dao = await findDao(slug);
+      setDao(dao);
 
-      // TODO: check if person has authorization to manage DAO
+      const parsedState = JSON.parse(dehydratedState) || []
+      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
+        const account = parsedState[1][1][0];
+        const isAdmin = dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1;
+        if (!isAdmin) {
+          // Not an admin
+          // TODO: show error message
+          router.push('/');
+        }
+      } else {
+        // no admins found or not logged in - no management possible
+        // TODO: show error message
+        router.push('/');
+      }
+
       setIsLoading(false);
     };
 
@@ -125,4 +141,5 @@ const ManageDao: NextPage = () => {
   )
 };
 
+export { getServerSideProps };
 export default ManageDao

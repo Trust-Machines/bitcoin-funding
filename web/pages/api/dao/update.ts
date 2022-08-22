@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client';
+import { Dao } from '@prisma/client';
 import slugify from 'slugify';
+import prisma from '@/common/db'
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,9 +19,9 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    const prisma = new PrismaClient();
-
-    const result = await prisma.dao.create({
+    console.log(req);
+    const result = await prisma.dao.update({
+      where: { id: 1 },
       data: {
         name: req.body.name,
         about: req.body.about,
