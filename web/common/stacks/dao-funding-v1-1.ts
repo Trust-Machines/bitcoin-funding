@@ -11,7 +11,8 @@ import {
   listCV,
   makeContractCall,
   broadcastTransaction,
-  AnchorMode
+  AnchorMode,
+  contractPrincipalCV
 } from '@stacks/transactions';
 
 const contractAddress = process.env.APP_ADDRESS as string;
@@ -87,6 +88,7 @@ export async function addUserFunding(
     contractName,
     functionName: "add-user-funding",
     functionArgs: [
+      contractPrincipalCV(contractAddress, "dao-registry-v1-1"),
       tupleCV({
         "header": bufferCV(Buffer.from(hexToBytes(blockHeader))),
         "height": uintCV(blockHeight)

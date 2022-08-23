@@ -94,6 +94,7 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
     block.receipts[0].result.expectOk().expectUint(0);
 
     let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -147,6 +148,7 @@ Clarinet.test({name: "dao funding: can not add user funding if DAO not registere
     block.receipts[0].result.expectOk().expectBool(true);
 
     let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -192,6 +194,7 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
     block.receipts[0].result.expectOk().expectUint(0);
 
     let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -211,6 +214,7 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
     call.result.expectErr().expectUint(20004);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -257,6 +261,7 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     block.receipts[0].result.expectOk().expectUint(0);
 
     let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -276,6 +281,7 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     call.result.expectOk().expectUint(555);
 
     call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)

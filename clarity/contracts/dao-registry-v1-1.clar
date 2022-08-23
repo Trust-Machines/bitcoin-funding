@@ -1,3 +1,4 @@
+(impl-trait .dao-registry-trait-v1-1.dao-registry-trait)
 
 ;; 
 ;; Constants
