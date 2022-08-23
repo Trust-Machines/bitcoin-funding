@@ -1,6 +1,6 @@
 import { getTransactionHex } from '@/common/bitcoin/electrum-api';
 import { getTransactionParsed } from '@/common/stacks/dao-funding-v1-1';
-import { FundingTransaction } from '@prisma/client';
+import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/common/db';
 
@@ -34,7 +34,7 @@ async function postHandler(
         txId: req.body.txId,
       },
       data: {
-        status: 'completed',
+        status: RegistrationStatus.COMPLETED,
       },
     });
     res.status(200).json(result)
