@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
+import { Dao, RegistrationStatus } from '@prisma/client';
 import slugify from 'slugify';
 import prisma from '@/common/db';
 
@@ -35,7 +35,7 @@ async function postHandler(
         raisingAmount: parseFloat(req.body.raisingAmount),
         raisingDeadline: new Date(req.body.raisingDeadline),
         registrationTxId: req.body.registrationTxId.toString(),
-        registrationStatus: 'started',
+        registrationStatus: RegistrationStatus.STARTED,
       },
     });
     res.status(200).json(result);

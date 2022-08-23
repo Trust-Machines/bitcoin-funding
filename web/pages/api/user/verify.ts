@@ -33,14 +33,14 @@ async function postHandler(
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status = 'started';
+    let status = RegistrationStatus['STARTED'];
     if (userRegistered != null) {
-      status = 'completed';
+      status = RegistrationStatus['COMPLETED'];
     } else if (resultUser.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultUser.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = 'failed';
+        status = RegistrationStatus['FAILED'];
       }
     }
 
