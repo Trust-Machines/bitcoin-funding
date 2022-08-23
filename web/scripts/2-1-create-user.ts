@@ -16,14 +16,25 @@ export async function start() {
   const registerTxId = registerResult.txid;
   console.log("[USER] SC registration transaction ID:", registerTxId);
 
+  // Create dehydratedState
+  const dehydratedState = [
+    [1,"https://stacks-node-api.mainnet.stacks.co"],
+    [0,
+      [{
+        "appPrivateKey": Math.random().toString().replace('.', ''),
+        "address": process.env.USER_ADDRESS as string,
+        "profile_url":"https://gaia.blockstack.org/hub/17ZjK2Ssx2dYpBejTmDG8HBVbPXp8ZmQUC/profile.json"
+      }]
+    ],1
+  ];
+  const dehydratedStateString = JSON.stringify(dehydratedState);
+
   // New user
   const responseUser = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/create',
+    url: appApiUrl + '/session/save',
     data: {
-      appPrivateKey: Math.random().toString().replace('.', ''),
-      address: process.env.USER_ADDRESS as string,
-      registrationTxId: registerTxId
+      dehydratedState: dehydratedStateString,
     }
   });
   console.log("[USER] New user API response:", responseUser.data);
