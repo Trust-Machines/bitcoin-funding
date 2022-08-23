@@ -43,21 +43,21 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: user-registry-v1-1
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/user-registry-v1-1.clar
-        - emulated-contract-publish:
             contract-name: test-utils
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/test/test-utils.clar
         - emulated-contract-publish:
-            contract-name: clarity-bitcoin
-            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/test/clarity-bitcoin.clar
-        - emulated-contract-publish:
             contract-name: dao-registry-trait-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/dao-registry-trait-v1-1.clar
+        - emulated-contract-publish:
+            contract-name: main
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/main.clar
+        - emulated-contract-publish:
+            contract-name: clarity-bitcoin
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/test/clarity-bitcoin.clar
         - emulated-contract-publish:
             contract-name: dao-funding-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
@@ -66,3 +66,7 @@ plan:
             contract-name: dao-registry-v1-1
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: contracts/dao-registry-v1-1.clar
+        - emulated-contract-publish:
+            contract-name: user-registry-v1-1
+            emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            path: contracts/user-registry-v1-1.clar

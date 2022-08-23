@@ -11,6 +11,9 @@ path = "contracts/test/clarity-bitcoin.clar"
 [contracts.test-utils]
 path = "contracts/test/test-utils.clar"
 
+[contracts.main]
+path = "contracts/main.clar"
+
 [contracts.dao-registry-trait-v1-1]
 path = "contracts/dao-registry-trait-v1-1.clar"
 

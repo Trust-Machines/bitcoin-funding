@@ -74,6 +74,7 @@
     (current-total (get-total-dao-funding dao-id))
     (current-user-total (get-user-dao-funding dao-id sender-address))
   )
+    (try! (contract-call? .main check-is-enabled))
     (asserts! (not (get-tx-parsed tx)) ERR_TX_ALREADY_ADDED)
 
     (map-set total-dao-funding dao-id (+ current-total sats))
