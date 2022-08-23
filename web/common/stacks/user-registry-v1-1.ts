@@ -32,14 +32,15 @@ export async function getStxToBtc(address: string): Promise<any> {
   return result;
 }
 
-export async function registerUser(address: string): Promise<any> {
+export async function registerUser(stxAddress: string, btcAddress: string): Promise<any> {
   const nonce = await getNonce(userAddress)
   const txOptions = {
     contractAddress,
     contractName,
     functionName: "register-user",
     functionArgs: [
-      bufferCV(decodeBtcAddressToBuffer(address))
+      standardPrincipalCV(stxAddress),
+      bufferCV(decodeBtcAddressToBuffer(btcAddress))
     ],
     senderKey: userPrivateKey,
     nonce: nonce,

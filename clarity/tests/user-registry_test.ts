@@ -49,6 +49,7 @@ Clarinet.test({name: "user registry: register user",
 
     let block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], wallet_1.address),
     ]);
@@ -89,6 +90,7 @@ Clarinet.test({name: "user registry: can not register same BTC public key twice"
 
     let block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], wallet_1.address),
     ]);
@@ -96,6 +98,7 @@ Clarinet.test({name: "user registry: can not register same BTC public key twice"
 
     block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], deployer.address),
     ]);
