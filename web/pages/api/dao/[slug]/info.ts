@@ -18,10 +18,10 @@ async function getHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    const { address } = req.query;
+    const { slug } = req.query;
     const result = await prisma.dao.findUniqueOrThrow({
       where: {
-        address: address as string,
+        slug: slug as string,
       }
     });
     res.status(200).json(result)
