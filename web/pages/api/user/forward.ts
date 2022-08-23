@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FundingTransaction } from '@prisma/client';
+import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
 
@@ -48,7 +48,7 @@ async function postHandler(
         data: {
           txId: sendBtcResult,
           wallet: { connect: { address: resultWallet.address } },
-          status: 'started'
+          status: RegistrationStatus.STARTED
         },
       });
 

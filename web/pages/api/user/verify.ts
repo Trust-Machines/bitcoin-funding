@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { User } from '@prisma/client';
+import { User, RegistrationStatus } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
 import { btcNetwork } from '@/common/constants';
@@ -33,14 +33,14 @@ async function postHandler(
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status = RegistrationStatus['STARTED'];
+    let status: RegistrationStatus = RegistrationStatus.STARTED;
     if (userRegistered != null) {
-      status = RegistrationStatus['COMPLETED'];
+      status = RegistrationStatus.COMPLETED;
     } else if (resultUser.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultUser.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = RegistrationStatus['FAILED'];
+        status = RegistrationStatus.FAILED;
       }
     }
 

@@ -31,14 +31,14 @@ async function postHandler(
     // Check DAO registration in SC
     const daoRegistered = await isDaoRegistered(resultDao.address);
 
-    let status = RegistrationStatus['STARTED'];
+    let status: RegistrationStatus = RegistrationStatus.STARTED;
     if (daoRegistered) {
-      status = RegistrationStatus['COMPLETED'];
+      status = RegistrationStatus.COMPLETED;
     } else if (resultDao.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultDao.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = RegistrationStatus['FAILED'];
+        status = RegistrationStatus.FAILED;
       }
     }
 

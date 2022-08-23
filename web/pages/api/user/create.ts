@@ -3,7 +3,7 @@
 // Need to update script "2-1-create-user.ts"
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User, RegistrationStatus } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,7 +27,7 @@ async function postHandler(
         appPrivateKey: req.body.appPrivateKey,
         address: req.body.address,
         registrationTxId: req.body.registrationTxId,
-        registrationStatus: 'started'
+        registrationStatus: RegistrationStatus.STARTED
       },
     });
     res.status(200).json(result)
