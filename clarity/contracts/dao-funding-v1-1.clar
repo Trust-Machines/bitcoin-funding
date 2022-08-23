@@ -67,7 +67,6 @@
 )
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
-    
     ;; TODO: make registry dynamic
     (dao-id (unwrap! (unwrap! (contract-call? .dao-registry-v1-1 get-dao-id-by-address receiver-address) ERR_DAO_NOT_FOUND) ERR_DAO_NOT_FOUND))
 
