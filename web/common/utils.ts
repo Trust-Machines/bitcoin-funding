@@ -21,3 +21,11 @@ export function dateToString(date: Date): string {
   const minutesPart = date.toString().split("T")[1].split(":")[1];
   return datePart + " " + hoursPart + ":" + minutesPart;
 }
+
+export function daysToDate(date: Date): number {
+  let now = new Date();
+  let deadline = new Date(date);
+  let difference = deadline.getTime() - now.getTime();
+  let days = Math.ceil(difference / (1000 * 3600 * 24));
+  return days;
+}

@@ -7,7 +7,7 @@ import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
 import { stacksApiUrl } from '@/common/constants'
-import { dateToString } from '@/common/utils'
+import { dateToString, daysToDate } from '@/common/utils'
 
 const DaoDetails: NextPage = () => {
   const router = useRouter()
@@ -102,7 +102,7 @@ const DaoDetails: NextPage = () => {
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">17</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(dao.raisingDeadline)}</dd>
                       </div>
                       <div className="sm:col-span-3">
                         <dt className="text-sm font-medium text-gray-500">Our Story</dt>
