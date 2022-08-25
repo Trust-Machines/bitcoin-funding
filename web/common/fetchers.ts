@@ -42,6 +42,18 @@ export const findDao = async (slug: string) => {
   return json;
 };
 
+export const findDaoFundingTransactions = async (slug: string) => {
+  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions", {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const json = await res.json();
+
+  return json;
+};
+
 export const findAllDaos = async (slug: string) => {
   const res = await fetch(API_URL + '/api/dao/all', {
     method: 'GET',

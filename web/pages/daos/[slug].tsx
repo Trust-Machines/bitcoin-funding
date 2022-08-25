@@ -2,9 +2,9 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { Dao } from '@prisma/client'
+import { Dao, FundingTransaction } from '@prisma/client'
 
-import { findDao } from '@/common/fetchers'
+import { findDao, findDaoFundingTransactions } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -14,16 +14,40 @@ const DaoDetails: NextPage = () => {
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [totalRaised, setTotalRaised] = useState(0);
 
   useEffect(() => {
-    const fetchDao = async () => {
-      setDao(await findDao(slug));
+
+    const fetchInfo = async (slug: string) => {
+      const [
+        dao,
+        transactions,
+      ] = await Promise.all([
+        findDao(slug),
+        findDaoFundingTransactions(slug),
+      ]);
+
+      setDao(dao);
+
+      // Get totals
+      let members: string[] = [];
+      let raised = 0;
+      for (const tx of transactions) {
+        if (!members.includes(tx.wallet)) {
+          members.push(tx.walletAddress);
+        }
+        raised += tx.sats;
+      }
+      const btcPrice = 25000.00;
+      setTotalMembers(members.length);
+      setTotalRaised((raised / 100000000.00) * btcPrice);
 
       setIsLoading(false);
     };
 
     if (slug) {
-      fetchDao();
+      fetchInfo(slug as string);
     }
   }, [slug]);
 
@@ -75,11 +99,16 @@ const DaoDetails: NextPage = () => {
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
-                        <dd className="mt-1 text-sm text-gray-900">$80,000</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          ${totalRaised.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                      </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">84</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{totalMembers}</dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
