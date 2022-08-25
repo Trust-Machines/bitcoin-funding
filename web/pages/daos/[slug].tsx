@@ -1,13 +1,13 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
-import { Dao } from '@prisma/client'
-
-import { findDao } from '@/common/fetchers'
+import { Dao, RegistrationStatus } from '@prisma/client'
+import { findAndVerifyDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
+import { stacksApiUrl } from '@/common/constants'
+import { dateToString } from '@/common/utils'
 
 const DaoDetails: NextPage = () => {
   const router = useRouter()
@@ -16,9 +16,28 @@ const DaoDetails: NextPage = () => {
   const [dao, setDao] = useState<Dao>({});
 
   useEffect(() => {
-    const fetchDao = async () => {
-      setDao(await findDao(slug));
 
+    const fetchVerifyDao = async (intervalId: number) => {
+      const dao = await findAndVerifyDao(slug as string);
+
+      // Stop polling if registration completed
+      if (dao.registrationStatus != RegistrationStatus.STARTED) {
+        setDao(dao);
+        clearInterval(intervalId);
+      }
+    }
+
+    const fetchDao = async () => {
+      const dao = await findAndVerifyDao(slug as string);
+
+      // Start polling if registration not completed yet
+      if (dao.registrationStatus == RegistrationStatus.STARTED) {
+        var intervalId = window.setInterval(function(){
+          fetchVerifyDao(intervalId);
+        }, 15000);
+      }
+
+      setDao(dao);
       setIsLoading(false);
     };
 
@@ -93,14 +112,26 @@ const DaoDetails: NextPage = () => {
                       </div>
                     </dl>
                   </div>
+
                   <div>
-                    <a
-                      href="#"
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
-                      Fund DAO
-                    </a>
+                    {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                      <a
+                        href="#"
+                        className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                      >
+                        Fund DAO
+                      </a>
+                    ):(
+                      <a
+                        href={stacksApiUrl + "/extended/v1/tx/" + dao.registrationTxId}
+                        target="_blank"
+                        className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-orange-700 sm:rounded-b-lg"
+                      >
+                        The DAO is being registered on chain. Funding will be available once the registration is done.
+                      </a>
+                    )}
                   </div>
+
                 </div>
               </section>
             </div>
@@ -122,6 +153,29 @@ const DaoDetails: NextPage = () => {
                             aria-hidden="true"
                           />
                         ) : null}
+                        <div className="relative flex space-x-3 mb-4">
+                          <div>
+                            <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
+                              <StyledIcon
+                                as="PlusCircleIcon"
+                                size={6}
+                                solid={false}
+                                className="text-white"
+                              />
+                            </span>
+                          </div>
+                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                            <div>
+                              <p className="text-sm text-gray-500">
+                                DAO created
+                              </p>
+                            </div>
+                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
+                              <time dateTime='2022-01-08'>{dateToString(dao.createdAt)}</time>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="relative flex space-x-3">
                           <div>
                             <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
@@ -148,14 +202,18 @@ const DaoDetails: NextPage = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="mt-6 flex flex-col justify-stretch">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Fund DAO
-                  </button>
-                </div>
+
+                {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                  <div className="mt-6 flex flex-col justify-stretch">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Fund DAO
+                    </button>
+                  </div>
+                ):null}
+                
               </div>
             </section>
           </div>

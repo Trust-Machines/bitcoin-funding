@@ -14,3 +14,10 @@ function hexToBytesHelper(hex: string): Uint8Array {
   }
   return array;
 }
+
+export function dateToString(date: Date): string {
+  const datePart = date.toString().split("T")[0];
+  const hoursPart = date.toString().split("T")[1].split(":")[0];
+  const minutesPart = date.toString().split("T")[1].split(":")[1];
+  return datePart + " " + hoursPart + ":" + minutesPart;
+}
