@@ -13,8 +13,8 @@ import {
 
 const contractAddress = process.env.APP_ADDRESS as string;
 const contractName = "user-registry-v1-1";
-const userAddress = process.env.USER_ADDRESS as string;
-const userPrivateKey = process.env.USER_PRIVATE_KEY as string;
+const managerAddress = process.env.MANAGER_ADDRESS as string;
+const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
 export async function getStxToBtc(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
@@ -24,7 +24,7 @@ export async function getStxToBtc(address: string): Promise<any> {
     functionArgs: [
       standardPrincipalCV(address)
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -33,7 +33,7 @@ export async function getStxToBtc(address: string): Promise<any> {
 }
 
 export async function registerUser(address: string): Promise<any> {
-  const nonce = await getNonce(userAddress)
+  const nonce = await getNonce(managerAddress)
   const txOptions = {
     contractAddress,
     contractName,
@@ -41,7 +41,7 @@ export async function registerUser(address: string): Promise<any> {
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
-    senderKey: userPrivateKey,
+    senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
     fee: (0.01 * 1000000),
