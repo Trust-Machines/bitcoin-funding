@@ -1,5 +1,6 @@
 import { stacksNetwork } from '../constants';
 import { getNonce } from './utils'
+import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import { hexToBytes } from '../utils';
 import {
   callReadOnlyFunction,
@@ -18,14 +19,14 @@ const contractName = "dao-funding-v1-1";
 const userAddress = process.env.USER_ADDRESS as string;
 const userPrivateKey = process.env.USER_PRIVATE_KEY as string;
 
-export async function getUserDaoFunding(daoId: number, userPublicKey: string): Promise<any> {
+export async function getUserDaoFunding(daoId: number, userAddress: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
     functionName: 'get-user-dao-funding',
     functionArgs: [
       uintCV(daoId),
-      bufferCV(Buffer.from(hexToBytes(userPublicKey)))
+      bufferCV(decodeBtcAddressToBuffer(userAddress))
     ],
     senderAddress: contractAddress,
     network: stacksNetwork,
@@ -51,13 +52,13 @@ export async function getTotalDaoFunding(daoId: number): Promise<any> {
   return result;
 }
 
-export async function getHashedPublicKey(publicKey: string): Promise<any> {
+export async function getTransactionParsed(txHex: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-hashed-public-key',
+    functionName: 'get-tx-parsed',
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey))),
+      bufferCV(Buffer.from(hexToBytes(txHex))),
     ],
     senderAddress: contractAddress,
     network: stacksNetwork,
@@ -77,8 +78,8 @@ export async function addUserFunding(
   proofTreeDepth: number,
   senderIndex: number,
   receiverIndex: number,
-  senderPublicKey: string,
-  receiverPublicKey: string
+  senderAddress: string,
+  receiverAddress: string
 ): Promise<any> {
   const nonce = await getNonce(userAddress)
   const txOptions = {
@@ -99,8 +100,8 @@ export async function addUserFunding(
       }),
       uintCV(senderIndex),
       uintCV(receiverIndex),
-      bufferCV(Buffer.from(hexToBytes(senderPublicKey))),
-      bufferCV(Buffer.from(hexToBytes(receiverPublicKey)))
+      bufferCV(decodeBtcAddressToBuffer(senderAddress)),
+      bufferCV(decodeBtcAddressToBuffer(receiverAddress))
     ],
     senderKey: userPrivateKey,
     nonce: nonce,

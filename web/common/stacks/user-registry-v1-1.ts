@@ -1,6 +1,6 @@
 import { stacksNetwork } from '../constants';
 import { getNonce } from './utils'
-import { hexToBytes } from '../utils';
+import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import {
   callReadOnlyFunction,
   makeContractCall,
@@ -32,14 +32,14 @@ export async function getStxToBtc(address: string): Promise<any> {
   return result;
 }
 
-export async function registerUser(publicKey: string): Promise<any> {
+export async function registerUser(address: string): Promise<any> {
   const nonce = await getNonce(userAddress)
   const txOptions = {
     contractAddress,
     contractName,
     functionName: "register-user",
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey)))
+      bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderKey: userPrivateKey,
     nonce: nonce,

@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Dao {
-  publicKey                   String                    @id
+  address                     String                    @id
   name                        String
   slug                        String                    @unique
   about                       String?
@@ -26,8 +26,8 @@ model Dao {
 model User {
   appPrivateKey               String                    @id
   address                     String
-  fundingWallet               FundingWallet?            @relation(fields: [fundingWalletPublicKey], references: [publicKey])
-  fundingWalletPublicKey      String?                   @unique
+  fundingWallet               FundingWallet?            @relation(fields: [fundingWalletAddress], references: [address])
+  fundingWalletAddress        String?                   @unique
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
@@ -35,8 +35,8 @@ model User {
 }
 
 model FundingWallet {
-  publicKey                   String                    @id
-  address                     String
+  address                     String                    @id
+  publicKey                   String
   privateKey                  String
   transactions                FundingTransaction[]
   user                        User?
@@ -46,8 +46,8 @@ model FundingWallet {
 
 model FundingTransaction {
   txId                        String                    @id
-  wallet                      FundingWallet             @relation(fields: [walletPublicKey], references: [publicKey])
-  walletPublicKey             String
+  wallet                      FundingWallet             @relation(fields: [walletAddress], references: [address])
+  walletAddress               String
   status                      String
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt

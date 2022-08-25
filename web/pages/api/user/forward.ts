@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FundingTransaction } from '@prisma/client';
+import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
 
@@ -26,7 +26,7 @@ async function postHandler(
     });
     const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
       where: {
-        publicKey: resultUser.fundingWalletPublicKey as string,
+        address: resultUser.fundingWalletAddress as string,
       }
     });
 
@@ -47,8 +47,8 @@ async function postHandler(
       const resultTransaction = await prisma.fundingTransaction.create({
         data: {
           txId: sendBtcResult,
-          wallet: { connect: { publicKey: resultWallet.publicKey } },
-          status: 'started'
+          wallet: { connect: { address: resultWallet.address } },
+          status: RegistrationStatus.STARTED
         },
       });
 

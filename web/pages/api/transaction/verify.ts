@@ -1,5 +1,8 @@
-import { FundingTransaction } from '@prisma/client';
+import { getTransactionHex } from '@/common/bitcoin/electrum-api';
+import { getTransactionParsed } from '@/common/stacks/dao-funding-v1-1';
+import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,8 +19,26 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction | string>
 ) {
+  const result = await prisma.fundingTransaction.findUniqueOrThrow({
+    where: {
+      txId: req.body.txId,
+    }
+  });
 
-  // TODO: check if TX is put on chain and update DB status
+  const txHex = await getTransactionHex(req.body.txId);
+  const parsed = await getTransactionParsed(txHex);
 
-  res.status(200).json("result")
+  if (parsed) {
+    const result = await prisma.fundingTransaction.update({
+      where: {
+        txId: req.body.txId,
+      },
+      data: {
+        status: RegistrationStatus.COMPLETED,
+      },
+    });
+    res.status(200).json(result)
+  } else {
+    res.status(200).json(result)
+  }
 }

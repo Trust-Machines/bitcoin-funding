@@ -11,8 +11,8 @@ const New: NextPage = () => {
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',
     raisingAmount: 6,
-    publicKey: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-    deadline: '2023-01-01',
+    address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    raisingDeadline: '2023-01-01',
     registrationTxId: 1,
   });
 
@@ -89,7 +89,7 @@ const New: NextPage = () => {
                       autoComplete="raisingAmount"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.raisingAmount}
+                      value={state.raisingAmount * 100000000}
                     />
                     <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       BTC
@@ -100,17 +100,17 @@ const New: NextPage = () => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="publicKey" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
                       type="text"
-                      name="publicKey"
-                      id="publicKey"
+                      name="address"
+                      id="address"
                       autoComplete="address"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.publicKey}
+                      value={state.address}
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
@@ -120,17 +120,17 @@ const New: NextPage = () => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">When will deposits close?</label>
+                <label htmlFor="raisingDeadline" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">When will deposits close?</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
                       type="date"
-                      name="deadline"
-                      id="deadline"
-                      autoComplete="deadline"
+                      name="raisingDeadline"
+                      id="raisingDeadline"
+                      autoComplete="raisingDeadline"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.deadline}
+                      value={state.raisingDeadline}
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">

@@ -28,7 +28,7 @@ async function getHandler(
 
     const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
       where: {
-        publicKey: resultUser.fundingWalletPublicKey as string,
+        address: resultUser.fundingWalletAddress as string,
       }
     });
 

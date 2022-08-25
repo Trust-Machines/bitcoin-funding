@@ -27,7 +27,7 @@ async function getHandler(
     // All funding transactions
     const resultTransactions = await prisma.fundingTransaction.findMany({
       where: {
-        walletPublicKey: resultUser.fundingWalletPublicKey as string,
+        walletAddress: resultUser.fundingWalletAddress as string,
       }
     });  
     res.status(200).json(resultTransactions)
@@ -35,7 +35,7 @@ async function getHandler(
     // Funding transactions filtered on status
     const resultTransactions = await prisma.fundingTransaction.findMany({
       where: {
-        walletPublicKey: resultUser.fundingWalletPublicKey as string,
+        walletAddress: resultUser.fundingWalletAddress as string,
         status: req.body.status
       }
     });  

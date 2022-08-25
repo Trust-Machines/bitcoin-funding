@@ -21,30 +21,31 @@ async function postHandler(
 ) {
   try {
     // Get registration TX
+    const { slug } = req.query;
     let resultDao = await prisma.dao.findUniqueOrThrow({
       where: {
-        publicKey: req.body.publicKey,
+        slug: slug as string,
       }
     });
 
     // Check DAO registration in SC
-    const daoRegistered = await isDaoRegistered(req.body.publicKey);
+    const daoRegistered = await isDaoRegistered(resultDao.address);
 
-    let status = RegistrationStatus['STARTED'];
+    let status: RegistrationStatus = RegistrationStatus.STARTED;
     if (daoRegistered) {
-      status = RegistrationStatus['COMPLETED'];
+      status = RegistrationStatus.COMPLETED;
     } else if (resultDao.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultDao.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = RegistrationStatus['FAILED'];
+        status = RegistrationStatus.FAILED;
       }
     }
 
     // Update registration status
     const result = await prisma.dao.update({
       where: {
-        publicKey: req.body.publicKey,
+        address: resultDao.address,
       },
       data: {
         registrationStatus: status
