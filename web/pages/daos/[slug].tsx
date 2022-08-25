@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Dao, RegistrationStatus } from '@prisma/client'
-import { findAndVerifyDao } from '@/common/fetchers'
+import { findDao, verifyDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -18,7 +18,7 @@ const DaoDetails: NextPage = () => {
   useEffect(() => {
 
     const fetchVerifyDao = async (intervalId: number) => {
-      const dao = await findAndVerifyDao(slug as string);
+      const dao = await verifyDao(slug as string);
 
       // Stop polling if registration completed
       if (dao.registrationStatus != RegistrationStatus.STARTED) {
@@ -28,13 +28,14 @@ const DaoDetails: NextPage = () => {
     }
 
     const fetchDao = async () => {
-      const dao = await findAndVerifyDao(slug as string);
+      const dao = await findDao(slug as string);
 
       // Start polling if registration not completed yet
       if (dao.registrationStatus == RegistrationStatus.STARTED) {
         var intervalId = window.setInterval(function(){
           fetchVerifyDao(intervalId);
         }, 15000);
+        fetchVerifyDao(intervalId);
       }
 
       setDao(dao);

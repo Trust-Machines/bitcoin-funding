@@ -42,7 +42,7 @@ export const findDao = async (slug: string) => {
   return json;
 };
 
-export const findAndVerifyDao = async (slug: string) => {
+export const verifyDao = async (slug: string) => {
   const res = await fetch(API_URL + '/api/dao/' + slug + '/verify', {
     method: 'POST',
     headers: {
