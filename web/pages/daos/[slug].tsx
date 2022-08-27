@@ -2,18 +2,20 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
-import { Dao, FundingTransaction } from '@prisma/client'
+import { Dao } from '@prisma/client'
 
 import { findDao, findDaoFundingTransactions } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { StyledIcon } from '@/components/StyledIcon'
+import { ActivityFeedItem } from '@/components/ActivityFeedItem'
+import { dollarAmountToString } from '@/common/utils'
 
 const DaoDetails: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
+  const [activityFeedItems, setActivityFeedItems] = useState([{}]);
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalRaised, setTotalRaised] = useState(0);
 
@@ -30,18 +32,31 @@ const DaoDetails: NextPage = () => {
 
       setDao(dao);
 
+      // TODO: fetch BTC price
+      const btcPrice = 25000.00;
+
       // Get totals
       let members: string[] = [];
       let raised = 0;
+      let feedItems = [];
       for (const tx of transactions) {
         if (!members.includes(tx.wallet)) {
           members.push(tx.walletAddress);
         }
-        raised += tx.sats;
+        const dollarRaised = (tx.sats / 100000000.00) * btcPrice;
+        raised += dollarRaised;
+
+        feedItems.push(
+          ActivityFeedItem({
+            icon: "ExclamationCircleIcon", 
+            title: dollarAmountToString(dollarRaised) + " funded", 
+            details: tx.createdAt.toString()
+          })
+        )
       }
-      const btcPrice = 25000.00;
       setTotalMembers(members.length);
-      setTotalRaised((raised / 100000000.00) * btcPrice);
+      setTotalRaised(raised);
+      setActivityFeedItems(feedItems);
 
       setIsLoading(false);
     };
@@ -100,10 +115,7 @@ const DaoDetails: NextPage = () => {
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          ${totalRaised.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {dollarAmountToString(totalRaised)}
                       </dd>
                       </div>
                       <div className="sm:col-span-1">
@@ -143,38 +155,7 @@ const DaoDetails: NextPage = () => {
                 {/* Activity Feed */}
                 <div className="mt-6 flow-root">
                   <ul role="list" className="-mb-8">
-                    <li key='1'>
-                      <div className="relative pb-8">
-                        {false ? (
-                          <span
-                            className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
-                              <StyledIcon
-                                as="ExclamationCircleIcon"
-                                size={6}
-                                solid={false}
-                                className="text-white"
-                              />
-                            </span>
-                          </div>
-                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                            <div>
-                              <p className="text-sm text-gray-500">
-                                SP123.... funded the DAO
-                              </p>
-                            </div>
-                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                              <time dateTime='2022-01-08'>Aug, 2022</time>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
+                    {activityFeedItems}
                   </ul>
                 </div>
                 <div className="mt-6 flex flex-col justify-stretch">

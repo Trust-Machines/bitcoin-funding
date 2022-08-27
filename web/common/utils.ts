@@ -14,3 +14,10 @@ function hexToBytesHelper(hex: string): Uint8Array {
   }
   return array;
 }
+
+export function dollarAmountToString(amount: number): string {
+  return "$" + amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
