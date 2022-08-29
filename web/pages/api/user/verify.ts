@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { User, RegistrationStatus } from '@prisma/client';
-import { getTransactionInfo } from '@/common/stacks/utils';
+import { getTransactionInfo, hashAppPrivateKey } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
 import { btcNetwork } from '@/common/constants';
 import { bech32Encode } from '@/common/bitcoin/encoding';
@@ -22,10 +22,12 @@ async function postHandler(
   res: NextApiResponse<User | string>
 ) {
   try {
+    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
+
     // Get registration TX
     let resultUser = await prisma.user.findUniqueOrThrow({
       where: {
-        appPrivateKey: req.body.appPrivateKey,
+        appPrivateKey: hashedAppPrivateKey,
       }
     });
 
@@ -51,7 +53,7 @@ async function postHandler(
 
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: req.body.appPrivateKey,
+          appPrivateKey: hashedAppPrivateKey,
         },
         data: {
           registrationStatus: status,
@@ -63,7 +65,7 @@ async function postHandler(
       // Update status only
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: req.body.appPrivateKey,
+          appPrivateKey: hashedAppPrivateKey,
         },
         data: {
           registrationStatus: status,
