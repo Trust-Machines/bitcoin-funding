@@ -36,8 +36,7 @@ model User {
 
 model FundingWallet {
   address                     String                    @id
-  publicKey                   String
-  privateKey                  String
+  index                       Int                       @unique
   transactions                FundingTransaction[]
   user                        User?
   createdAt                   DateTime                  @default(now())

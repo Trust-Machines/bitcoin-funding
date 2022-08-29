@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
+import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
 
 export default async function handler(
   req: NextApiRequest,
@@ -37,8 +38,9 @@ async function postHandler(
     } else {
 
       // Send
+      const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultWallet.index)
       const sendBtcResult = await sendBtc(
-        resultWallet.privateKey,
+        wallet.privateKey,
         req.body.daoAddress,
         req.body.sats
       );
