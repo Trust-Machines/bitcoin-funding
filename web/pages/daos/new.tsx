@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { Container } from '@/components/Container'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
-import { createDao } from '@/common/fetchers'
+import { createDao, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
 
@@ -11,12 +11,12 @@ const New: NextPage = () => {
   const [state, setState] = useState({
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',
-    raisingAmount: 6,
+    raisingAmount: 25000,
     address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     raisingDeadline: '2023-01-01',
-    registrationTxId: 1,
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const [btcPrice, setBtcPrice] = useState(0.0);
 
   const handleInputChange = (event: any) => {
     const target = event.target;
@@ -44,7 +44,14 @@ const New: NextPage = () => {
       showErrorMessage('Please enter a raising deadline.'); return;
     }
 
-    const res = await createDao(state);
+    const res = await createDao({
+      name: state.name,
+      about: state.about,
+      raisingAmount: (state.raisingAmount / btcPrice) * 100000000.0, // $ -> sats
+      address: state.address,
+      raisingDeadline: state.raisingDeadline,
+      registrationTxId: 1, // TODO: remove
+    });
     const data = await res.json();
     if (res.status === 200) {
       router.push(`/daos/${data.slug}`);
@@ -52,6 +59,17 @@ const New: NextPage = () => {
       showErrorMessage(data);
     }
   }
+
+  useEffect(() => {
+
+    const fetchBtcPrice = async () => {
+      const btcPrice = await getBtcPrice();
+      setBtcPrice(btcPrice);
+    };
+
+    fetchBtcPrice();
+
+  }, []);
 
   return (
     <Container className="max-w-7xl">
@@ -115,13 +133,13 @@ const New: NextPage = () => {
                       autoComplete="raisingAmount"
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
-                      value={state.raisingAmount * 100000000}
+                      value={state.raisingAmount}
                     />
                     <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                      BTC
+                      $
                     </span>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">That is about $XXX at current prices</p>
+                  <p className="mt-2 text-sm text-gray-500">That is {state.raisingAmount / btcPrice} BTC at current prices</p>
                 </div>
               </div>
 

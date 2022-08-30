@@ -1,5 +1,11 @@
 import { API_URL } from './constants';
- 
+import redstone from 'redstone-api';
+
+export const getBtcPrice = async () => {
+  const price = await redstone.getPrice("BTC");
+  return price.value;
+};
+
 export const saveSession = async (dehydratedState: string) => {
   await fetch(API_URL + '/api/session/save', {
     method: 'POST',

@@ -30,6 +30,7 @@
     "prisma": "^4.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "redstone-api": "^0.4.11",
     "slugify": "^1.6.5",
     "tailwindcss": "^3.1.4",
     "ts-node": "^10.9.1"
