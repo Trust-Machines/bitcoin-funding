@@ -17,6 +17,15 @@ const New: NextPage = () => {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [btcPrice, setBtcPrice] = useState(0.0);
+  const [image, setImage] = useState(null);
+
+  // TODO: can be part of  handleInputChange & state
+  const uploadToClient = (event: any) => {
+    if (event.target.files && event.target.files[0]) {
+      const i = event.target.files[0];
+      setImage(i);
+    }
+  };
 
   const handleInputChange = (event: any) => {
     const target = event.target;
@@ -44,14 +53,16 @@ const New: NextPage = () => {
       showErrorMessage('Please enter a raising deadline.'); return;
     }
 
-    const res = await createDao({
-      name: state.name,
-      about: state.about,
-      raisingAmount: (state.raisingAmount / btcPrice) * 100000000.0, // $ -> sats
-      address: state.address,
-      raisingDeadline: state.raisingDeadline,
-      registrationTxId: 1, // TODO: remove
-    });
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("name", state.name);
+    formData.append("about", state.about);
+    formData.append("raisingAmount", ((state.raisingAmount / btcPrice) * 100000000.0).toString());
+    formData.append("address", state.address);
+    formData.append("raisingDeadline", state.raisingDeadline);
+    formData.append("registrationTxId", "1");
+    
+    const res = await createDao(formData);
     const data = await res.json();
     if (res.status === 200) {
       router.push(`/daos/${data.slug}`);
@@ -103,6 +114,16 @@ const New: NextPage = () => {
                       onChange={handleInputChange}
                       value={state.name}
                     />
+                  </div>
+                </div>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+                <div className="mt-1 sm:mt-0 sm:col-span-2">
+                  <div className="max-w-lg flex rounded-md shadow-sm">
+                    {/* TODO: nice upload field */}
+                    <input type="file" name="myImage" onChange={uploadToClient} />
                   </div>
                 </div>
               </div>

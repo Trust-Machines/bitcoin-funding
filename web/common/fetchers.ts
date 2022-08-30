@@ -26,13 +26,10 @@ export const destroySession = async () => {
   }
 };
 
-export const createDao = async (formData: Object) => {
+export const createDao = async (formData: FormData) => {
   return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData),
+    body: formData,
   });
 };
 
