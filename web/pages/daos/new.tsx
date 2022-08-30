@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
 import { createDao } from '@/common/fetchers'
 import { useRouter } from 'next/router'
+import { Alert } from '@/components/Alert';
 
 const New: NextPage = () => {
   const router = useRouter();
@@ -15,35 +16,60 @@ const New: NextPage = () => {
     raisingDeadline: '2023-01-01',
     registrationTxId: 1,
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: any) => {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
     setState(prevState => { return { ...prevState, [name]: value } });
+    setErrorMessage("");
+  }
+
+  const showErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
   const submitCreateDao = async () => {
+
+    if (state.name == '') {
+      showErrorMessage('Please enter a name.'); return;
+    } else if (state.raisingAmount == 0) {
+      showErrorMessage('Please enter an amount to raise.'); return;
+    } else if (state.address == '') {
+      showErrorMessage('Please enter a valid BTC address.'); return;
+    } else if (state.raisingDeadline == '') {
+      showErrorMessage('Please enter a raising deadline.'); return;
+    }
+
     const res = await createDao(state);
+    const data = await res.json();
     if (res.status === 200) {
-      const data = await res.json();
       router.push(`/daos/${data.slug}`);
     } else {
-      console.log(res);
-      console.log('TODO: DAO creation did not succeed.. show error message');
+      showErrorMessage(data);
     }
   }
 
   return (
     <Container className="max-w-7xl">
-      <form className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
+      <div className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
         <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
           <div>
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900">Start your Bitcoin DAO</h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">This information will be displayed publicly.</p>
             </div>
+            
+            {errorMessage != "" ? (
+              <div className="mt-3">
+                <Alert type={Alert.type.ERROR}>
+                    {errorMessage}
+                </Alert>
+              </div>
+            ): null}
 
             <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
@@ -58,7 +84,6 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.name}
-                      required
                     />
                   </div>
                 </div>
@@ -91,7 +116,6 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.raisingAmount * 100000000}
-                      required
                     />
                     <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       BTC
@@ -113,7 +137,6 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.address}
-                      required
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
@@ -134,7 +157,6 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.raisingDeadline}
-                      required
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
@@ -148,12 +170,12 @@ const New: NextPage = () => {
 
         <div className="pt-5">
           <div className="flex justify-end">
-            <Button onSubmit={() => submitCreateDao()}>
+            <Button onClick={() => submitCreateDao()}>
               Save
             </Button>
           </div>
         </div>
-      </form>
+      </div>
     </Container>
   )
 }
