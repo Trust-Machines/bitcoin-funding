@@ -37,7 +37,7 @@ const New: NextPage = () => {
 
   return (
     <Container className="max-w-7xl">
-      <div className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
+      <form className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
         <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
           <div>
             <div>
@@ -58,6 +58,7 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.name}
+                      required
                     />
                   </div>
                 </div>
@@ -90,6 +91,7 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.raisingAmount * 100000000}
+                      required
                     />
                     <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       BTC
@@ -111,6 +113,7 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.address}
+                      required
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
@@ -131,6 +134,7 @@ const New: NextPage = () => {
                       className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                       onChange={handleInputChange}
                       value={state.raisingDeadline}
+                      required
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
@@ -144,12 +148,12 @@ const New: NextPage = () => {
 
         <div className="pt-5">
           <div className="flex justify-end">
-            <Button onClick={() => submitCreateDao()}>
+            <Button onSubmit={() => submitCreateDao()}>
               Save
             </Button>
           </div>
         </div>
-      </div>
+      </form>
     </Container>
   )
 }
