@@ -119,10 +119,8 @@ const New: NextPage = () => {
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex rounded-md shadow-sm">
-                    {/* TODO: nice upload field */}
-                    <input type="file" name="image" onChange={handleInputChange} />
-                  </div>
+                  {/* TODO: nice upload field */}
+                  <input type="file" name="image" onChange={handleInputChange} />
                 </div>
               </div>
 
