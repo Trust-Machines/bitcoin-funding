@@ -1,10 +1,11 @@
 import { ECPair, payments, bip32 } from 'bitcoinjs-lib';
 import { btcNetwork } from '../constants';
+import * as bip39 from 'bip39'
 
 export interface NewWallet {
   address: string,
   publicKey: string,
-  privateKey: string | undefined
+  privateKey: string
 }
 
 export function createWallet(): NewWallet {
@@ -19,18 +20,21 @@ export function createWallet(): NewWallet {
   return result;
 }
 
-export function createWalletXpub(xpub: string, index: number): NewWallet {
-  let pubkey = bip32.fromBase58(xpub).derive(0).derive(index).publicKey;
+export function createWalletXpub(mnemonic: string, index: number): NewWallet {
+
+  const seed = bip39.mnemonicToSeedSync(mnemonic)
+  const xpub = bip32.fromSeed(seed, btcNetwork).toBase58();
+  const wallet = bip32.fromBase58(xpub, btcNetwork).derive(0).derive(index);
 
   const payment = payments.p2wpkh({ 
-    pubkey: pubkey,
+    pubkey: wallet.publicKey,
     network: btcNetwork 
   });
 
   const result: NewWallet = {
     'address': payment.address!,
-    'publicKey': pubkey.toString('hex'),
-    'privateKey': undefined
+    'publicKey': wallet.publicKey.toString('hex'),
+    'privateKey': wallet.privateKey!.toString('hex')
   }
   return result;
 }
