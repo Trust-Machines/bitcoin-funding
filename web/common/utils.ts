@@ -15,6 +15,13 @@ function hexToBytesHelper(hex: string): Uint8Array {
   return array;
 }
 
+export function dollarAmountToString(amount: number): string {
+  return "$" + amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
 export function dateToString(date: Date): string {
   const datePart = date.toString().split("T")[0];
   const hoursPart = date.toString().split("T")[1].split(":")[0];

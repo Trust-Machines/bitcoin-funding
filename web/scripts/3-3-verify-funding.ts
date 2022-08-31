@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
-import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
 
 export async function start() {
   const txId = process.argv.slice(2)[0];
