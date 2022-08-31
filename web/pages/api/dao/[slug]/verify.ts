@@ -28,6 +28,11 @@ async function postHandler(
       }
     });
 
+    if (resultDao.registrationStatus == RegistrationStatus.COMPLETED) {
+      res.status(200).json(resultDao)
+      return;
+    }
+
     // Check DAO registration in SC
     const daoRegistered = await isDaoRegistered(resultDao.address);
 

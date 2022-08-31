@@ -19,6 +19,7 @@ model Dao {
   registrationStatus          RegistrationStatus        @default(STARTED)
   raisingAmount               Int                       // amount in satoshi
   raisingDeadline             DateTime                  // date in the future
+  transactions                FundingTransaction[]
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
 }
@@ -47,7 +48,11 @@ model FundingTransaction {
   txId                        String                    @id
   wallet                      FundingWallet             @relation(fields: [walletAddress], references: [address])
   walletAddress               String
-  status                      String
+  dao                         Dao                       @relation(fields: [daoAddress], references: [address])
+  daoAddress                  String
+  sats                        Int
+  registrationTxId            String?
+  registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
 }

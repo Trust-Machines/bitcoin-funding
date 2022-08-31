@@ -36,10 +36,11 @@
 ;; Register
 ;; 
 
-(define-public (register-user (address (buff 33)))
+(define-public (register-user (user principal) (address (buff 33)))
   (begin
     (asserts! (map-insert btc-to-stx address tx-sender) ERR_BTC_EXISTS)
-    (map-set stx-to-btc tx-sender address)    
+    (try! (contract-call? .main check-is-enabled))
+    (map-set stx-to-btc user address)    
     (ok true)
   )
 )
