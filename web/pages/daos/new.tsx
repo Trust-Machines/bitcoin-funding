@@ -121,7 +121,7 @@ const New: NextPage = () => {
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     {/* TODO: nice upload field */}
-                    <input type="file" name="myImage" onChange={handleInputChange} />
+                    <input type="file" name="image" onChange={handleInputChange} />
                   </div>
                 </div>
               </div>
