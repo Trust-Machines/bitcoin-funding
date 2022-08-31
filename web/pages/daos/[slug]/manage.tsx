@@ -54,7 +54,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   }
 
   const update = async () => {
-    const res = await updateDao(dao.publicKey, dao, dehydratedState);
+    const res = await updateDao(dao.slug, dao, dehydratedState);
     if (res.status === 200) {
       console.log(res);
       const data = await res.json();

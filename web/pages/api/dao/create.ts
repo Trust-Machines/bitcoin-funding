@@ -20,11 +20,13 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
+    // TODO: replace with singleton
     const client = new PrismaClient();
     const slug = slugify(req.body.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
     
     let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
     if (existingDao) {
+      // TODO: replace with slugify that adds a number to the end, DAO names shouldn't be unique
       res.status(422).json('DAO with that name already exists');
       return;
     }
@@ -47,7 +49,7 @@ async function postHandler(
     const account = JSON.parse(req.body.dehydratedState)[1][1][0];
     const user = await client.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
     if (!user) {
-      // throw error
+      // TODO: throw error or create user?
     }
     data.admins = { create: [{ userId: user['appPrivateKey'] }] };
 
