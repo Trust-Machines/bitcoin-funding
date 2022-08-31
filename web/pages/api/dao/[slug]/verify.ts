@@ -36,7 +36,7 @@ async function postHandler(
     // Check DAO registration in SC
     const daoRegistered = await isDaoRegistered(resultDao.address);
 
-    let status = resultDao.registrationStatus;
+    let status: RegistrationStatus = resultDao.registrationStatus;
     if (daoRegistered) {
       status = RegistrationStatus.COMPLETED;
     } else if (resultDao.registrationTxId != null) {

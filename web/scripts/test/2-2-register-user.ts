@@ -7,16 +7,15 @@ export async function start() {
     console.log("[USER] Add the user app private key as parameter")
     return;
   }
-  console.log("[USER] Check SC registration for user with app private key:", appPrivateKey)
 
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/verify',
+    url: appApiUrl + '/user/register',
     data: {
       appPrivateKey: appPrivateKey
     }
   });
-  console.log("[USER] registration verify API result:", response.data);
+  console.log("[USER] registration API result:", response.data);
 }
 
 export async function run() {

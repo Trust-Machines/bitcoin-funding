@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createWallet } from '@/common/bitcoin/bitcoin-js';
-import { getDaoCount, registerDao } from "@/common/stacks/dao-registry-v1-1"
+import { getDaoCount } from "@/common/stacks/dao-registry-v1-1"
 import { appApiUrl } from '@/common/constants';
 
 export async function start() {

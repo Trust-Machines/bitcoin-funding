@@ -36,7 +36,7 @@ async function postHandler(
   const parsed = await getTransactionParsed(txHex);
 
   // Update registration status
-  let status = result.registrationStatus;
+  let status: RegistrationStatus = result.registrationStatus;
   if (parsed) {
     status = RegistrationStatus.COMPLETED;
   } else if (result.registrationTxId != null) {

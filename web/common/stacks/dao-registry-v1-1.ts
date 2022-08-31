@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../../.env' });
 import { stacksNetwork } from '../constants';
 import { getNonce } from './utils'
 import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
