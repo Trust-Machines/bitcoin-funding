@@ -41,7 +41,7 @@ async function postHandler(
         res.status(422).json('DAO with that name already exists');
         return;
       }
-      existingDao = await prisma.dao.findUnique({ where: { address: req.body.address } });
+      existingDao = await prisma.dao.findUnique({ where: { address: fields.address } });
       if (existingDao) {
         res.status(422).json('DAO with that address already exists');
         return;
@@ -49,7 +49,7 @@ async function postHandler(
   
       // Register on chain
       // TODO: perform in background if broadcasting TX takes too long
-      const registrationResult = await registerDao(req.body.address);
+      const registrationResult = await registerDao(fields.address as string);
       const registrationTxId = registrationResult.txid;
       if (registrationTxId == undefined) {
         res.status(422).json('DAO could not be registered on chain');
