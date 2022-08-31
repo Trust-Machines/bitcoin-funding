@@ -1,3 +1,4 @@
+(impl-trait .dao-registry-trait-v1-1.dao-registry-trait)
 
 ;; 
 ;; Constants
@@ -16,44 +17,45 @@
 ;; 
 
 (define-map dao-by-id uint {
-  public-key: (buff 33),
+  address: (buff 33),   ;; address before encoding
   admin: principal
 })
 
-(define-map dao-id-by-public-key (buff 33) uint)
+(define-map dao-id-by-address (buff 33) uint)
 
 ;; 
 ;; Getters
 ;; 
 
 (define-read-only (get-dao-count)
-  (var-get dao-count)
+  (ok (var-get dao-count))
 )
 
 (define-read-only (get-dao-by-id (dao-id uint))
-  (map-get? dao-by-id dao-id)
+  (ok (map-get? dao-by-id dao-id))
 )
 
-(define-read-only (get-dao-id-by-public-key (public-key (buff 33)))
-  (map-get? dao-id-by-public-key public-key)
+(define-read-only (get-dao-id-by-address (address (buff 33)))
+  (ok (map-get? dao-id-by-address address))
 )
 
-(define-read-only (is-dao-registered (public-key (buff 33)))
-  (not (is-none (map-get? dao-id-by-public-key public-key)))
+(define-read-only (is-dao-registered (address (buff 33)))
+  (ok (not (is-none (map-get? dao-id-by-address address))))
 )
 
 ;; 
 ;; Register
 ;; 
 
-(define-public (register-dao (public-key (buff 33)))
+(define-public (register-dao (address (buff 33)))
   (let (
     (dao-id (var-get dao-count))
   )
-    (asserts! (map-insert dao-id-by-public-key public-key dao-id) ERR_DAO_EXISTS)
+    (try! (contract-call? .main check-is-enabled))
+    (asserts! (map-insert dao-id-by-address address dao-id) ERR_DAO_EXISTS)
 
     (map-set dao-by-id dao-id {
-      public-key: public-key,
+      address: address,
       admin: tx-sender
     })
 

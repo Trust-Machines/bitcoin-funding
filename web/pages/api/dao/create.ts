@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao } from '@prisma/client'
+import { PrismaClient, Dao, RegistrationStatus } from '@prisma/client'
 import slugify from 'slugify'
 import prisma from '@/common/db'
+import { registerDao } from '@/common/stacks/dao-registry-v1-1'
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,36 +21,47 @@ async function postHandler(
 ) {
   try {
     const client = new PrismaClient();
-    prisma.$use(async (params, next) => {
-      if (params.action === 'create') {
-        const { args: { data } } = params;
-        const slug = slugify(`${data.name}`, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
-        const existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
-        if (existingDao) {
-          console.log('TODO: DAO already exists... generate unique slug');
-        }
-        data.slug = slug;
+    const slug = slugify(req.body.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+    
+    let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
+    if (existingDao) {
+      res.status(422).json('DAO with that name already exists');
+      return;
+    }
 
-        const account = JSON.parse(req.body.dehydratedState)[1][1][0];
-        const user = await client.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
-        if (!user) {
-          // throw error
-        }
-        data.admins = { create: [{ userId: user['appPrivateKey'] }] };
+    existingDao = await prisma.dao.findUnique({ where: { address: req.body.address } });
+    if (existingDao) {
+      res.status(422).json('DAO with that address already exists');
+      return;
+    }
 
-        const result = await next(params);
-        return result;
-      }
-    });
+    // Register on chain
+    // TODO: perform in background if broadcasting TX takes too long
+    const registrationResult = await registerDao(req.body.address);
+    const registrationTxId = registrationResult.txid;
+    if (registrationTxId == undefined) {
+      res.status(422).json('DAO could not be registered on chain');
+      return;
+    }
 
+    const account = JSON.parse(req.body.dehydratedState)[1][1][0];
+    const user = await client.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+    if (!user) {
+      // throw error
+    }
+    data.admins = { create: [{ userId: user['appPrivateKey'] }] };
+
+    // Save in DB
     const result = await prisma.dao.create({
       data: {
-        publicKey: req.body.dao.publicKey,
-        name: req.body.dao.name,
-        about: req.body.dao.about,
-        raisingAmount: parseFloat(req.body.dao.raisingAmount) * 100000000, // convert to sats
-        raisingDeadline: new Date(req.body.dao.deadline),
-        registrationTxId: req.body.dao.registrationTxId.toString(),
+        address: req.body.address,
+        name: req.body.name,
+        slug: slug,
+        about: req.body.about,
+        raisingAmount: parseFloat(req.body.raisingAmount),
+        raisingDeadline: new Date(req.body.raisingDeadline),
+        registrationTxId: registrationTxId,
+        registrationStatus: RegistrationStatus.STARTED,
       },
     });
     res.status(201).json(result);

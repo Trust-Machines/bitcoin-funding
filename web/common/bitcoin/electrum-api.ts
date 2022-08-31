@@ -5,7 +5,6 @@ import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { btcNetwork, electrumHost, electrumPort } from '../constants';
 import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
-import { publicKeyToAddress } from "./bitcoin-js";
 
 interface BtcBalance {
   unconfirmed: number,
@@ -82,8 +81,13 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   return txid;
 }
 
+export async function getTransactionHex(txId: string): Promise<any> {
+  const client = await newElectrumClient();
+  const tx = await client.blockchainTransaction_get(txId, true) as any;
+  return tx.hex;
+}
 
-export async function getTransactionData(txId: string, senderPublicKey: string, receiverPublicKey: string): Promise<any> {
+export async function getTransactionData(txId: string, senderAddress: string, receiverAddress: string): Promise<any> {
   const client = await newElectrumClient();
   const tx = await client.blockchainTransaction_get(txId, true) as any;
 
@@ -98,10 +102,6 @@ export async function getTransactionData(txId: string, senderPublicKey: string, 
   const proofTxIndex = merkle.pos;
   const proofTreeDepth = merkleHashes.length;
   const proofHashes = merkleHashes.map(hash => bytesToHex(reverseBuffer(Buffer.from(hash, 'hex'))));
-
-  // Get indices
-  const senderAddress = publicKeyToAddress(senderPublicKey);
-  const receiverAddress = publicKeyToAddress(receiverPublicKey);
 
   const vout = tx.vout as any[];
   const senderIndex = vout.findIndex(vout => {

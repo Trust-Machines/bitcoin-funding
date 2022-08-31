@@ -11,9 +11,13 @@ import {
 import { 
   createWallet,
   createWalletXpub,
+} from '@/common/bitcoin/bitcoin-js';
+
+import { 
   base58CheckDecode,
-  base58CheckEncode
-} from '../../common/bitcoin/bitcoin-js';
+  bech32Encode,
+  bech32Decode
+} from '@/common/bitcoin/encoding';
 
 import { 
   getBalance,
@@ -32,8 +36,10 @@ export default async function handler(
   // const createWalletResult = createWallet();
   // console.log("createWalletResult: ", createWalletResult);
 
-  // const xpub = 'xpub6CzDCPbtLrrn4VpVbyyQLHbdSMpZoHN4iuW64VswCyEpfjM2mJGdaHJ2DyuZwtst96E16VvcERb8BBeJdHSCVmAq9RhtRQg6eAZFrTKCNqf';
-  // const createWalletXpubResult = createWalletXpub(xpub, 0);
+  // const createWalletResult = await createXpubWallet();
+  // console.log("createWalletResult: ", createWalletResult);
+
+  // const createWalletXpubResult = createWalletXpub(process.env.XPUB_MNEMONIC as string, 0);
   // console.log("createWalletXpubResult: ", createWalletXpubResult);
 
   // const balanceResult = await getBalance("bcrt1qnqkywjp7dd0eq32rgeswsl6555vnzjdr77yz7z");
@@ -50,11 +56,14 @@ export default async function handler(
   // const parseResult = await parseTx(txHex);
   // console.log("parseResult: ", parseResult);
 
-  // const resultEncode = base58CheckEncode("00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31");
-  // console.log("resultEncode:", resultEncode);
-
   // const resultDecode = base58CheckDecode("1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs");
   // console.log("resultDecode:", resultDecode);  
+
+  // const resultDecode = bech32Decode("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+  // console.log("resultDecode:", resultDecode);  
+
+  // const resultEncode = bech32Encode("bc", "751e76e8199196d454941c45d1b3a323f1433bd6");
+  // console.log("resultEncode:", resultEncode);  
 
   res.status(200).json({ name: 'John Doe' })
 }

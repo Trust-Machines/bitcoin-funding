@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getBalance } from '@/common/bitcoin/electrum-api';
+import { RegistrationStatus, Dao } from '@prisma/client';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<number | string>
+  res: NextApiResponse<Dao[] | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -15,15 +15,10 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<number>
+  res: NextApiResponse<Dao[]>
 ) {
-  const { address } = req.query;
-  const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
-    where: {
-      address: address as string,
-    }
-  });
-
-  const result = await getBalance(resultWallet.address);
+  const result = await prisma.dao.findMany({
+    where: { registrationStatus: RegistrationStatus.STARTED }
+  });  
   res.status(200).json(result)
 }

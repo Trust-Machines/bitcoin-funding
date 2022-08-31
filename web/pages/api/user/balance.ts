@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getBalance } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
+import { hashAppPrivateKey } from '@/common/stacks/utils';
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,16 +20,17 @@ async function getHandler(
 ) {
   try {
     const { appPrivateKey } = req.query;
+    const hashedAppPrivateKey = await hashAppPrivateKey(appPrivateKey as string);
 
     const resultUser = await prisma.user.findUniqueOrThrow({
       where: {
-        appPrivateKey: appPrivateKey as string,
+        appPrivateKey: hashedAppPrivateKey,
       }
     });
 
     const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
       where: {
-        publicKey: resultUser.fundingWalletPublicKey as string,
+        address: resultUser.fundingWalletAddress as string,
       }
     });
 

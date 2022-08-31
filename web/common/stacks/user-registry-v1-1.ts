@@ -1,6 +1,6 @@
 import { stacksNetwork } from '../constants';
 import { getNonce } from './utils'
-import { hexToBytes } from '../utils';
+import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import {
   callReadOnlyFunction,
   makeContractCall,
@@ -13,8 +13,8 @@ import {
 
 const contractAddress = process.env.APP_ADDRESS as string;
 const contractName = "user-registry-v1-1";
-const userAddress = process.env.USER_ADDRESS as string;
-const userPrivateKey = process.env.USER_PRIVATE_KEY as string;
+const managerAddress = process.env.MANAGER_ADDRESS as string;
+const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
 export async function getStxToBtc(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
@@ -24,7 +24,7 @@ export async function getStxToBtc(address: string): Promise<any> {
     functionArgs: [
       standardPrincipalCV(address)
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -32,16 +32,18 @@ export async function getStxToBtc(address: string): Promise<any> {
   return result;
 }
 
-export async function registerUser(publicKey: string): Promise<any> {
-  const nonce = await getNonce(userAddress)
+export async function registerUser(stxAddress: string, btcAddress: string): Promise<any> {
+  const nonce = await getNonce(managerAddress)
+
   const txOptions = {
     contractAddress,
     contractName,
     functionName: "register-user",
     functionArgs: [
-      bufferCV(Buffer.from(hexToBytes(publicKey)))
+      standardPrincipalCV(stxAddress),
+      bufferCV(decodeBtcAddressToBuffer(btcAddress))
     ],
-    senderKey: userPrivateKey,
+    senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
     fee: (0.01 * 1000000),

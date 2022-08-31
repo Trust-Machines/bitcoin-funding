@@ -1,4 +1,10 @@
 import { stacksApiUrl } from '../constants';
+import bcrypt from 'bcrypt'
+
+export async function hashAppPrivateKey(appPrivateKey: string) {
+  const hashedAppPrivateKey = await bcrypt.hash(appPrivateKey, process.env.APP_PRIVATE_KEY_SALT as string);
+  return hashedAppPrivateKey
+}
 
 export async function getNonce(address: string) {
   const url = `${stacksApiUrl}/v2/accounts/${address}?proof=0`;

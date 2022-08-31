@@ -2,6 +2,8 @@ import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
 import { registerUser } from '@/common/stacks/user-registry-v1-1';
 
+const userAddress = process.env.USER_ADDRESS as string;
+
 export async function start() {
 
   // New user forwarding wallet
@@ -12,18 +14,29 @@ export async function start() {
   console.log("[USER] New wallet API response:", responseWallet.data);
 
   // Link funding wallet on-chain
-  const registerResult = await registerUser(responseWallet.data.publicKey);
+  const registerResult = await registerUser(userAddress, responseWallet.data.address);
   const registerTxId = registerResult.txid;
   console.log("[USER] SC registration transaction ID:", registerTxId);
+
+  // Create dehydratedState
+  const dehydratedState = [
+    [1,"https://stacks-node-api.mainnet.stacks.co"],
+    [0,
+      [{
+        "appPrivateKey": Math.random().toString().replace('.', ''),
+        "address": userAddress,
+        "profile_url":"https://gaia.blockstack.org/hub/17ZjK2Ssx2dYpBejTmDG8HBVbPXp8ZmQUC/profile.json"
+      }]
+    ],1
+  ];
+  const dehydratedStateString = JSON.stringify(dehydratedState);
 
   // New user
   const responseUser = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/create',
+    url: appApiUrl + '/session/save',
     data: {
-      appPrivateKey: Math.random().toString().replace('.', ''),
-      address: process.env.USER_ADDRESS as string,
-      registrationTxId: registerTxId
+      dehydratedState: dehydratedStateString,
     }
   });
   console.log("[USER] New user API response:", responseUser.data);

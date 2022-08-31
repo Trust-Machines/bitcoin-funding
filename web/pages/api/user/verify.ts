@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { User } from '@prisma/client';
-import { getTransactionInfo } from '@/common/stacks/utils';
+import { User, RegistrationStatus } from '@prisma/client';
+import { getTransactionInfo, hashAppPrivateKey } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
+import { btcNetwork } from '@/common/constants';
+import { bech32Encode } from '@/common/bitcoin/encoding';
 import prisma from '@/common/db';
 
 export default async function handler(
@@ -20,10 +22,12 @@ async function postHandler(
   res: NextApiResponse<User | string>
 ) {
   try {
+    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
+
     // Get registration TX
     let resultUser = await prisma.user.findUniqueOrThrow({
       where: {
-        appPrivateKey: req.body.appPrivateKey,
+        appPrivateKey: hashedAppPrivateKey,
       }
     });
 
@@ -31,27 +35,29 @@ async function postHandler(
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status = RegistrationStatus['STARTED'];
+    let status: RegistrationStatus = RegistrationStatus.STARTED;
     if (userRegistered != null) {
-      status = RegistrationStatus['COMPLETED'];
+      status = RegistrationStatus.COMPLETED;
     } else if (resultUser.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultUser.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
-        status = RegistrationStatus['FAILED'];
+        status = RegistrationStatus.FAILED;
       }
     }
 
     if (userRegistered != null) {
       // Update status and funding wallet
-      const registeredPublicKey = userRegistered.value.replace("0x", "");
+      const registeredAddress = userRegistered.value;
+      const address = bech32Encode(btcNetwork.bech32, registeredAddress.replace("0x0014", ""))
+
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: req.body.appPrivateKey,
+          appPrivateKey: hashedAppPrivateKey,
         },
         data: {
           registrationStatus: status,
-          fundingWallet: { connect: { publicKey: registeredPublicKey } },
+          fundingWallet: { connect: { address: address } },
         },
       });
       res.status(200).json(result)
@@ -59,7 +65,7 @@ async function postHandler(
       // Update status only
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: req.body.appPrivateKey,
+          appPrivateKey: hashedAppPrivateKey,
         },
         data: {
           registrationStatus: status,
