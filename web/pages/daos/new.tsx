@@ -13,7 +13,6 @@ const New: NextPage = () => {
     raisingAmount: 6,
     address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     raisingDeadline: '2023-01-01',
-    registrationTxId: 1,
   });
 
   const handleInputChange = (event) => {

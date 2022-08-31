@@ -1,29 +1,88 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
-import { Dao } from '@prisma/client'
-
-import { findDao } from '@/common/fetchers'
+import { Dao, RegistrationStatus } from '@prisma/client'
+import { findDao, verifyDao, findDaoFundingTransactions } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { StyledIcon } from '@/components/StyledIcon'
+import { ActivityFeedItem } from '@/components/ActivityFeedItem'
+import { dollarAmountToString } from '@/common/utils'
+import { stacksApiUrl } from '@/common/constants'
+import { dateToString, daysToDate } from '@/common/utils'
 
 const DaoDetails: NextPage = () => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
+  const [activityFeedItems, setActivityFeedItems] = useState([{}]);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [totalRaised, setTotalRaised] = useState(0);
 
   useEffect(() => {
-    const fetchDao = async () => {
-      setDao(await findDao(slug));
+
+    const fetchInfo = async (slug: string) => {
+      const [
+        dao,
+        transactions,
+      ] = await Promise.all([
+        findDao(slug),
+        findDaoFundingTransactions(slug),
+      ]);
+
+      setDao(dao);
+
+      // TODO: fetch BTC price
+      const btcPrice = 25000.00;
+
+      // Get totals
+      let members: string[] = [];
+      let raised = 0;
+      let feedItems = [];
+      for (const tx of transactions) {
+        if (!members.includes(tx.wallet)) {
+          members.push(tx.walletAddress);
+        }
+        const dollarRaised = (tx.sats / 100000000.00) * btcPrice;
+        raised += dollarRaised;
+
+        feedItems.push(
+          ActivityFeedItem({
+            icon: "ExclamationCircleIcon", 
+            title: dollarAmountToString(dollarRaised) + " funded", 
+            details: dateToString(tx.createdAt)
+          })
+        )
+      }
+
+      // TODO: this won't work once the API is paginated
+      setTotalMembers(members.length);
+      setTotalRaised(raised);
+      setActivityFeedItems(feedItems);
+
+      // Start polling if registration not completed yet
+      if (dao.registrationStatus == RegistrationStatus.STARTED) {
+        var intervalId = window.setInterval(function(){
+          fetchVerifyDao(intervalId);
+        }, 15000);
+        fetchVerifyDao(intervalId);
+      }
 
       setIsLoading(false);
-    };
+    }
+
+    const fetchVerifyDao = async (intervalId: number) => {
+      const dao = await verifyDao(slug as string);
+
+      // Stop polling if registration completed
+      if (dao.registrationStatus != RegistrationStatus.STARTED) {
+        setDao(dao);
+        clearInterval(intervalId);
+      }
+    }
 
     if (slug) {
-      fetchDao();
+      fetchInfo(slug as string);
     }
   }, [slug]);
 
@@ -75,15 +134,17 @@ const DaoDetails: NextPage = () => {
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
-                        <dd className="mt-1 text-sm text-gray-900">$80,000</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {dollarAmountToString(totalRaised)}
+                      </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">84</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{totalMembers}</dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">17</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(dao.raisingDeadline)}</dd>
                       </div>
                       <div className="sm:col-span-3">
                         <dt className="text-sm font-medium text-gray-500">Our Story</dt>
@@ -93,14 +154,26 @@ const DaoDetails: NextPage = () => {
                       </div>
                     </dl>
                   </div>
+
                   <div>
-                    <a
-                      href="#"
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
-                      Fund DAO
-                    </a>
+                    {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                      <a
+                        href="#"
+                        className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                      >
+                        Fund DAO
+                      </a>
+                    ):(
+                      <a
+                        href={stacksApiUrl + "/extended/v1/tx/" + dao.registrationTxId}
+                        target="_blank"
+                        className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-orange-700 sm:rounded-b-lg"
+                      >
+                        The DAO is being registered on chain. Funding will be available once the registration is done.
+                      </a>
+                    )}
                   </div>
+
                 </div>
               </section>
             </div>
@@ -114,48 +187,21 @@ const DaoDetails: NextPage = () => {
                 {/* Activity Feed */}
                 <div className="mt-6 flow-root">
                   <ul role="list" className="-mb-8">
-                    <li key='1'>
-                      <div className="relative pb-8">
-                        {false ? (
-                          <span
-                            className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
-                              <StyledIcon
-                                as="ExclamationCircleIcon"
-                                size={6}
-                                solid={false}
-                                className="text-white"
-                              />
-                            </span>
-                          </div>
-                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                            <div>
-                              <p className="text-sm text-gray-500">
-                                SP123.... funded the DAO
-                              </p>
-                            </div>
-                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                              <time dateTime='2022-01-08'>Aug, 2022</time>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
+                    {activityFeedItems}
                   </ul>
                 </div>
-                <div className="mt-6 flex flex-col justify-stretch">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Fund DAO
-                  </button>
-                </div>
+
+                {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                  <div className="mt-6 flex flex-col justify-stretch">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Fund DAO
+                    </button>
+                  </div>
+                ):null}
+                
               </div>
             </section>
           </div>

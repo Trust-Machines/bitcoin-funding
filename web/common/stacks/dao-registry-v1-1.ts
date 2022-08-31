@@ -13,8 +13,8 @@ import {
 
 const contractAddress = process.env.APP_ADDRESS as string;
 const contractName = "dao-registry-v1-1";
-const userAddress = process.env.USER_ADDRESS as string;
-const userPrivateKey = process.env.USER_PRIVATE_KEY as string;
+const managerAddress = process.env.MANAGER_ADDRESS as string;
+const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
 export async function getDaoCount(): Promise<number> {
   const call = await callReadOnlyFunction({
@@ -22,7 +22,7 @@ export async function getDaoCount(): Promise<number> {
     contractName,
     functionName: 'get-dao-count',
     functionArgs: [],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -38,7 +38,7 @@ export async function getDaoById(id: number): Promise<any> {
     functionArgs: [
       uintCV(id)
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -54,7 +54,7 @@ export async function getDaoIdByAddress(address: string): Promise<any> {
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -70,7 +70,7 @@ export async function isDaoRegistered(address: string): Promise<any> {
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -79,8 +79,8 @@ export async function isDaoRegistered(address: string): Promise<any> {
 }
 
 export async function registerDao(address: string): Promise<any> {
+  const nonce = await getNonce(managerAddress)
 
-  const nonce = await getNonce(userAddress)
   const txOptions = {
     contractAddress,
     contractName,
@@ -88,7 +88,7 @@ export async function registerDao(address: string): Promise<any> {
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
-    senderKey: userPrivateKey,
+    senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
     fee: (0.01 * 1000000),

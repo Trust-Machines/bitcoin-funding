@@ -38,7 +38,7 @@ async function getHandler(
     const resultTransactions = await prisma.fundingTransaction.findMany({
       where: {
         walletAddress: resultUser.fundingWalletAddress as string,
-        status: req.body.status
+        registrationStatus: req.body.status
       }
     });  
     res.status(200).json(resultTransactions)
