@@ -51,7 +51,6 @@ export const findDaoFundingTransactions = async (slug: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({slug: slug}),
   });
   const json = await res.json();
 
