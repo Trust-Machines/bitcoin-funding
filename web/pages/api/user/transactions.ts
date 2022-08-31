@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { FundingTransaction } from '@prisma/client';
 import prisma from '@/common/db';
+import { hashAppPrivateKey } from '@/common/stacks/utils';
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,9 +18,10 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction[]>
 ) {
+  const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
   const resultUser = await prisma.user.findUniqueOrThrow({
     where: {
-      appPrivateKey: req.body.appPrivateKey,
+      appPrivateKey: hashedAppPrivateKey,
     }
   });
 

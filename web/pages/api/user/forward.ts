@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { FundingTransaction, PrismaClient, RegistrationStatus } from '@prisma/client';
 import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
+import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
 
 export default async function handler(
@@ -20,9 +21,10 @@ async function postHandler(
   res: NextApiResponse<FundingTransaction | string>
 ) {
   try {
+    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
     const resultUser = await prisma.user.findUniqueOrThrow({
       where: {
-        appPrivateKey: req.body.appPrivateKey,
+        appPrivateKey: hashedAppPrivateKey,
       }
     });
     const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
