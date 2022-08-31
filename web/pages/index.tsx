@@ -6,16 +6,7 @@ import { Hero } from '@/components/Hero'
 import { HomeGrid } from '@/components/HomeGrid'
 import { Main } from '@/components/Main'
 
-import { getDehydratedStateFromSession } from '@/common/session/helpers';
-
-// https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props
-export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  return {
-    props: {
-      dehydratedState: await getDehydratedStateFromSession(ctx),
-    },
-  };
-}
+import { getServerSideProps } from '@/common/session/index'
 
 const Home: NextPage = ({ dehydratedState }) => {
   const { isSignedIn } = useAuth();
@@ -42,4 +33,5 @@ const Home: NextPage = ({ dehydratedState }) => {
   )
 }
 
+export { getServerSideProps };
 export default Home
