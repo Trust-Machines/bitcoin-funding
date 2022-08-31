@@ -1,3 +1,4 @@
+(impl-trait .dao-registry-trait-v1-1.dao-registry-trait)
 
 ;; 
 ;; Constants
@@ -50,6 +51,7 @@
   (let (
     (dao-id (var-get dao-count))
   )
+    (try! (contract-call? .main check-is-enabled))
     (asserts! (map-insert dao-id-by-address address dao-id) ERR_DAO_EXISTS)
 
     (map-set dao-by-id dao-id {
