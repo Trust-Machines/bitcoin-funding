@@ -63,7 +63,6 @@ async function postHandler(
       } else {
         avatar = await createPlaceholderAndSaveFile(slug)
       }
-      // TODO: save avatar in DB
 
       // Save info
       const result = await prisma.dao.create({
@@ -71,6 +70,7 @@ async function postHandler(
           address: fields.address,
           name: fields.name,
           slug: slug,
+          avatar: avatar,
           about: fields.about,
           raisingAmount: parseInt(fields.raisingAmount as string),
           raisingDeadline: new Date(fields.raisingDeadline as string),
