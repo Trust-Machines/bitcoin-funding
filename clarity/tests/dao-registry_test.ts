@@ -100,3 +100,26 @@ Clarinet.test({name: "dao registry: can not register DAO with already registered
     block.receipts[0].result.expectErr().expectUint(10001);
   }
 });
+
+Clarinet.test({name: "dao registry: can not register if protocol disabled",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let address = hexToBytes('00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31');
+
+    let block = chain.mineBlock([
+      Tx.contractCall("main", "set-contracts-enabled", [
+        types.bool(false),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+        types.buff(address)      
+      ], wallet_1.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(111002);
+  }
+});

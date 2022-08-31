@@ -49,6 +49,7 @@ Clarinet.test({name: "user registry: register user",
 
     let block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], wallet_1.address),
     ]);
@@ -89,6 +90,7 @@ Clarinet.test({name: "user registry: can not register same BTC public key twice"
 
     let block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], wallet_1.address),
     ]);
@@ -96,9 +98,34 @@ Clarinet.test({name: "user registry: can not register same BTC public key twice"
 
     block = chain.mineBlock([
       Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
         types.buff(address)      
       ], deployer.address),
     ]);
     block.receipts[0].result.expectErr().expectUint(30001);
+  }
+});
+
+Clarinet.test({name: "user registry: can not register if protocol disabled",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let address = hexToBytes('00f54a5851e9372b87810a8e60cdd2e7cfd80b6e31');
+
+    let block = chain.mineBlock([
+      Tx.contractCall("main", "set-contracts-enabled", [
+        types.bool(false),
+      ], deployer.address),
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("user-registry-v1-1", "register-user", [
+        types.principal(wallet_1.address),
+        types.buff(address)      
+      ], wallet_1.address),
+    ]);
+    block.receipts[0].result.expectErr().expectUint(111002);
   }
 });
