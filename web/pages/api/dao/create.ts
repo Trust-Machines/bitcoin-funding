@@ -21,12 +21,13 @@ async function postHandler(
 ) {
   try {
     const slug = slugify(req.body.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+    
     let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
     if (existingDao) {
       res.status(422).json('DAO with that name already exists');
       return;
     }
-    
+
     existingDao = await prisma.dao.findUnique({ where: { address: req.body.address } });
     if (existingDao) {
       res.status(422).json('DAO with that address already exists');

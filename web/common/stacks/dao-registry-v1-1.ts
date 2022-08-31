@@ -79,8 +79,8 @@ export async function isDaoRegistered(address: string): Promise<any> {
 }
 
 export async function registerDao(address: string): Promise<any> {
-
   const nonce = await getNonce(managerAddress)
+
   const txOptions = {
     contractAddress,
     contractName,

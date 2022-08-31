@@ -2,6 +2,8 @@ import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
 import { registerUser } from '@/common/stacks/user-registry-v1-1';
 
+const userAddress = process.env.USER_ADDRESS as string;
+
 export async function start() {
 
   // New user forwarding wallet
@@ -12,7 +14,7 @@ export async function start() {
   console.log("[USER] New wallet API response:", responseWallet.data);
 
   // Link funding wallet on-chain
-  const registerResult = await registerUser(responseWallet.data.address);
+  const registerResult = await registerUser(userAddress, responseWallet.data.address);
   const registerTxId = registerResult.txid;
   console.log("[USER] SC registration transaction ID:", registerTxId);
 
@@ -22,7 +24,7 @@ export async function start() {
     [0,
       [{
         "appPrivateKey": Math.random().toString().replace('.', ''),
-        "address": process.env.USER_ADDRESS as string,
+        "address": userAddress,
         "profile_url":"https://gaia.blockstack.org/hub/17ZjK2Ssx2dYpBejTmDG8HBVbPXp8ZmQUC/profile.json"
       }]
     ],1
