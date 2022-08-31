@@ -14,23 +14,21 @@ const New: NextPage = () => {
     raisingAmount: 25000,
     address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     raisingDeadline: '2023-01-01',
+    image: null
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [btcPrice, setBtcPrice] = useState(0.0);
-  const [image, setImage] = useState(null);
-
-  // TODO: can be part of  handleInputChange & state
-  const uploadToClient = (event: any) => {
-    if (event.target.files && event.target.files[0]) {
-      const i = event.target.files[0];
-      setImage(i);
-    }
-  };
 
   const handleInputChange = (event: any) => {
     const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+
+    let value = target.value;
+    if (target.type == 'checkbox') {
+      value = target.checked;
+    } else if (target.type == 'file') {
+      value = event.target.files[0];
+    }
 
     setState(prevState => { return { ...prevState, [name]: value } });
     setErrorMessage("");
@@ -54,7 +52,7 @@ const New: NextPage = () => {
     }
 
     const formData = new FormData();
-    formData.append("file", image);
+    formData.append("file", state.image);
     formData.append("name", state.name);
     formData.append("about", state.about);
     formData.append("raisingAmount", ((state.raisingAmount / btcPrice) * 100000000.0).toString());
@@ -123,7 +121,7 @@ const New: NextPage = () => {
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     {/* TODO: nice upload field */}
-                    <input type="file" name="myImage" onChange={uploadToClient} />
+                    <input type="file" name="myImage" onChange={handleInputChange} />
                   </div>
                 </div>
               </div>
