@@ -31,6 +31,12 @@ async function postHandler(
       }
     });
 
+    // Check if verification needs to be done
+    if (resultUser.registrationStatus != RegistrationStatus.STARTED) {
+      res.status(200).json(resultUser)
+      return;
+    }
+
     // Check user registration in SC
     const userRegistered = await getStxToBtc(resultUser.address);
 

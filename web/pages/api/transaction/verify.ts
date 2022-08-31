@@ -26,6 +26,7 @@ async function postHandler(
     }
   });
 
+  // Check if verification needs to be done
   if (result.registrationStatus != RegistrationStatus.STARTED) {
     res.status(200).json(result)
     return;
