@@ -149,7 +149,7 @@ const FundDao: NextPage = () => {
                     </h2>
                   </div>
                   <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <p>Send BTC to {dao.publicKey}</p>
+                    <p>Send BTC to {user.fundingWalletPublicKey}</p>
 
                     <p>Once you've sent it, we keep track of the transaction and allow you to confirm the funds.</p>
                   </div>
