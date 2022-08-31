@@ -34,6 +34,7 @@ async function postHandler(
     }
 
     // Register on chain
+    // TODO: perform in background if broadcasting TX takes too long
     const registrationResult = await registerDao(req.body.address);
     const registrationTxId = registrationResult.txid;
     if (registrationTxId == undefined) {
