@@ -20,7 +20,6 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    // Get registration TX
     const { slug } = req.query;
     let resultDao = await prisma.dao.findUniqueOrThrow({
       where: {
@@ -28,7 +27,8 @@ async function postHandler(
       }
     });
 
-    if (resultDao.registrationStatus == RegistrationStatus.COMPLETED) {
+    // Check if verification needs to be done
+    if (resultDao.registrationStatus != RegistrationStatus.STARTED) {
       res.status(200).json(resultDao)
       return;
     }
@@ -36,7 +36,7 @@ async function postHandler(
     // Check DAO registration in SC
     const daoRegistered = await isDaoRegistered(resultDao.address);
 
-    let status: RegistrationStatus = RegistrationStatus.STARTED;
+    let status = resultDao.registrationStatus;
     if (daoRegistered) {
       status = RegistrationStatus.COMPLETED;
     } else if (resultDao.registrationTxId != null) {

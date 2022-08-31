@@ -53,7 +53,6 @@ async function postHandler(
           txId: sendBtcResult,
           wallet: { connect: { address: resultWallet.address } },
           dao: { connect: { address: req.body.daoAddress } },
-          registrationStatus: RegistrationStatus.STARTED,
           sats: req.body.sats
         },
       });

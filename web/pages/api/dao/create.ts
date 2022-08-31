@@ -34,15 +34,6 @@ async function postHandler(
       return;
     }
 
-    // Register on chain
-    // TODO: perform in background if broadcasting TX takes too long
-    const registrationResult = await registerDao(req.body.address);
-    const registrationTxId = registrationResult.txid;
-    if (registrationTxId == undefined) {
-      res.status(422).json('DAO could not be registered on chain');
-      return;
-    }
-
     // Save in DB
     const result = await prisma.dao.create({
       data: {
@@ -52,8 +43,6 @@ async function postHandler(
         about: req.body.about,
         raisingAmount: parseFloat(req.body.raisingAmount),
         raisingDeadline: new Date(req.body.raisingDeadline),
-        registrationTxId: registrationTxId,
-        registrationStatus: RegistrationStatus.STARTED,
       },
     });
     res.status(200).json(result);

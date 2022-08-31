@@ -35,7 +35,7 @@ async function postHandler(
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status: RegistrationStatus = RegistrationStatus.STARTED;
+    let status = resultUser.registrationStatus;
     if (userRegistered != null) {
       status = RegistrationStatus.COMPLETED;
     } else if (resultUser.registrationTxId != null) {

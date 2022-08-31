@@ -26,11 +26,16 @@ async function postHandler(
     }
   });
 
+  if (result.registrationStatus != RegistrationStatus.STARTED) {
+    res.status(200).json(result)
+    return;
+  }
+
   const txHex = await getTransactionHex(req.body.txId);
   const parsed = await getTransactionParsed(txHex);
 
   // Update registration status
-  let status: RegistrationStatus = RegistrationStatus.STARTED;
+  let status = result.registrationStatus;
   if (parsed) {
     status = RegistrationStatus.COMPLETED;
   } else if (result.registrationTxId != null) {
