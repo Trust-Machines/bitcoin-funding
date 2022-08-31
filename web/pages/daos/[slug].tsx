@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Dao, RegistrationStatus } from '@prisma/client'
-import { findDao, verifyDao, findDaoFundingTransactions } from '@/common/fetchers'
+import { findDao, verifyDao, findDaoFundingTransactions, getBtcPrice } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { ActivityFeedItem } from '@/components/ActivityFeedItem'
@@ -25,15 +25,14 @@ const DaoDetails: NextPage = () => {
       const [
         dao,
         transactions,
+        btcPrice
       ] = await Promise.all([
         findDao(slug),
         findDaoFundingTransactions(slug),
+        getBtcPrice()
       ]);
 
       setDao(dao);
-
-      // TODO: fetch BTC price
-      const btcPrice = 25000.00;
 
       // Get totals
       let members: string[] = [];
