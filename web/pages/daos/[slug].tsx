@@ -54,6 +54,8 @@ const DaoDetails: NextPage = () => {
           })
         )
       }
+
+      // TODO: this won't work once the API is paginated
       setTotalMembers(members.length);
       setTotalRaised(raised);
       setActivityFeedItems(feedItems);
