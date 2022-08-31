@@ -70,7 +70,6 @@
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
     (dao-id (unwrap! (unwrap! (contract-call? dao-registry get-dao-id-by-address receiver-address) ERR_DAO_NOT_FOUND) ERR_DAO_NOT_FOUND))
-
     (current-total (get-total-dao-funding dao-id))
     (current-user-total (get-user-dao-funding dao-id sender-address))
   )

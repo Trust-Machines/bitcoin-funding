@@ -17,8 +17,8 @@ import {
 
 const contractAddress = process.env.APP_ADDRESS as string;
 const contractName = "dao-funding-v1-1";
-const userAddress = process.env.USER_ADDRESS as string;
-const userPrivateKey = process.env.USER_PRIVATE_KEY as string;
+const managerAddress = process.env.MANAGER_ADDRESS as string;
+const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
 export async function getUserDaoFunding(daoId: number, userAddress: string): Promise<any> {
   const call = await callReadOnlyFunction({
@@ -29,7 +29,7 @@ export async function getUserDaoFunding(daoId: number, userAddress: string): Pro
       uintCV(daoId),
       bufferCV(decodeBtcAddressToBuffer(userAddress))
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -45,7 +45,7 @@ export async function getTotalDaoFunding(daoId: number): Promise<any> {
     functionArgs: [
       uintCV(daoId),
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -61,7 +61,7 @@ export async function getTransactionParsed(txHex: string): Promise<any> {
     functionArgs: [
       bufferCV(Buffer.from(hexToBytes(txHex))),
     ],
-    senderAddress: contractAddress,
+    senderAddress: managerAddress,
     network: stacksNetwork,
   });
 
@@ -82,7 +82,7 @@ export async function addUserFunding(
   senderAddress: string,
   receiverAddress: string
 ): Promise<any> {
-  const nonce = await getNonce(userAddress)
+  const nonce = await getNonce(managerAddress)
   const txOptions = {
     contractAddress,
     contractName,
@@ -105,7 +105,7 @@ export async function addUserFunding(
       bufferCV(decodeBtcAddressToBuffer(senderAddress)),
       bufferCV(decodeBtcAddressToBuffer(receiverAddress))
     ],
-    senderKey: userPrivateKey,
+    senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
     fee: (0.01 * 1000000),
