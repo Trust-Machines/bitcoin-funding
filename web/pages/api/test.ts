@@ -36,8 +36,10 @@ export default async function handler(
   // const createWalletResult = createWallet();
   // console.log("createWalletResult: ", createWalletResult);
 
-  // const xpub = 'xpub6CzDCPbtLrrn4VpVbyyQLHbdSMpZoHN4iuW64VswCyEpfjM2mJGdaHJ2DyuZwtst96E16VvcERb8BBeJdHSCVmAq9RhtRQg6eAZFrTKCNqf';
-  // const createWalletXpubResult = createWalletXpub(xpub, 0);
+  // const createWalletResult = await createXpubWallet();
+  // console.log("createWalletResult: ", createWalletResult);
+
+  // const createWalletXpubResult = createWalletXpub(process.env.XPUB_MNEMONIC as string, 0);
   // console.log("createWalletXpubResult: ", createWalletXpubResult);
 
   // const balanceResult = await getBalance("bcrt1qnqkywjp7dd0eq32rgeswsl6555vnzjdr77yz7z");
