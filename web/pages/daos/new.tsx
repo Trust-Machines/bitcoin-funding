@@ -205,7 +205,7 @@ const New: NextPage = () => {
           </div>
         </div>
 
-        <div className="pt-5">
+        <div className="pt-5 pb-5">
           <div className="flex justify-end">
             <Button onClick={() => submitCreateDao()}>
               Save
