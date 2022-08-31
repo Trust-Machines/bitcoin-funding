@@ -27,7 +27,7 @@ model Dao {
 
 model DaoAdmin {
   id                          Int                       @id @default(autoincrement())
-  dao                         Dao                       @relation(fields: [daoId], references: [publicKey])
+  dao                         Dao                       @relation(fields: [daoId], references: [address])
   user                        User                      @relation(fields: [userId], references: [appPrivateKey])
   daoId                       String
   userId                      String
