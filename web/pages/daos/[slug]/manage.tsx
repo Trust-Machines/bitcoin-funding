@@ -2,13 +2,10 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
 import { Dao } from '@prisma/client'
-
-import { findDao, updateDao } from '@/common/fetchers'
+import { findDao, isDaoAdmin, updateDao } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { StyledIcon } from '@/components/StyledIcon'
 import { getServerSideProps } from '@/common/session/index.ts'
 
 const ManageDao: NextPage = ({ dehydratedState }) => {
@@ -16,32 +13,25 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchDao = async () => {
-      const dao = await findDao(slug);
+    const fetchInfo = async (slug: string) => {
+      const [
+        dao,
+        isAdmin
+      ] = await Promise.all([
+        findDao(slug),
+        isDaoAdmin(slug, dehydratedState)
+      ]);
       setDao(dao);
-
-      const parsedState = JSON.parse(dehydratedState) || []
-      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
-        const account = parsedState[1][1][0];
-        const isAdmin = dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1;
-        if (!isAdmin) {
-          // Not an admin
-          // TODO: show error message
-          router.push('/');
-        }
-      } else {
-        // no admins found or not logged in - no management possible
-        // TODO: show error message
-        router.push('/');
-      }
+      setIsAdmin(isAdmin);
 
       setIsLoading(false);
     };
 
     if (slug) {
-      fetchDao();
+      fetchInfo(slug as string);
     }
   }, [slug]);
 
@@ -73,24 +63,30 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
         </div>
       ) : (
         <main className="py-10">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
-            <div className="flex items-center space-x-5">
-              <div>
-                <Link href={`/daos/${dao.slug}`}>
-                  <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
-                </Link>
-                <p className="text-sm font-medium text-gray-500">
-                  {dao.about}                  
-                </p>
-              </div>
+          <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-6">
+            <div className="space-y-6 lg:col-span-1">
+              <section>
+                <div className="w-full min-h-80 min-w-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75">
+                  <img
+                    src={`${dao.avatar}`}
+                    className="w-full h-full object-center object-cover lg:w-full lg:h-full"
+                  />
+                </div>
+              </section>
             </div>
-          </div>
 
-          <div className="mx-auto w-full px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8 mt-4">
-            <img
-              className="w-full max-h-60"
-              src="https://as1.ftcdn.net/v2/jpg/03/32/69/82/1000_F_332698203_XmQ4jYo8vDPfgeqZ3Ake9xfRMS7ChD15.jpg"
-            />
+            <section className="lg:col-span-3">
+              <div className="max-w-3xl mt-4 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl">
+                <div className="flex items-center space-x-5">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+                    <p className="text-sm font-medium text-gray-500">
+                      {dao.about}                  
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
 
           <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl">
@@ -120,6 +116,14 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                       </div>
                     </div>
 
+                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+                      <div className="mt-1 sm:mt-0 sm:col-span-2">
+                        {/* TODO: nice upload field */}
+                        <input type="file" name="image" onChange={handleInputChange} />
+                      </div>
+                    </div>
+
                     <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5 mt-5">
                       <label htmlFor="about" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"> About </label>
                       <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -135,14 +139,26 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <a
-                      onClick={() => { update() }}
-                      className="cursor-pointer block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
-                      Update DAO Information
-                    </a>
-                  </div>
+
+                  {isAdmin ? (
+                    <div>
+                      <a
+                        onClick={() => { update() }}
+                        className="cursor-pointer block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                      >
+                        Update DAO Information
+                      </a>
+                    </div>
+                  ):(
+                    <div>
+                      <p
+                        className="block bg-red-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
+                      >
+                        Only admins can update DAO information
+                      </p>
+                    </div>
+                  )}
+
                 </div>
               </section>
             </div>

@@ -45,6 +45,18 @@ export const findDao = async (slug: string) => {
   return json;
 };
 
+export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
+  if (dehydratedState == null) {
+    return false;
+  }
+  const res = await fetch(API_URL + '/api/dao/' + slug + "/is-admin?dehydratedState=" + dehydratedState, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+  });
+  const json = await res.json();
+  return json;
+};
+
 export const findDaoFundingTransactions = async (slug: string) => {
   const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions", {
     method: 'GET',

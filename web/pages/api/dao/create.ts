@@ -45,7 +45,7 @@ async function postHandler(
         return;
       }
 
-      const account = JSON.parse(fields.dehydratedState)[1][1][0];
+      const account = JSON.parse(fields.dehydratedState as string)[1][1][0];
       const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
       const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
       if (!user) {

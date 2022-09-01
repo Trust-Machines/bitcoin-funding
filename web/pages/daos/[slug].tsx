@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Dao, RegistrationStatus } from '@prisma/client'
-import { findDao, findDaoFundingTransactions, getBtcPrice } from '@/common/fetchers'
+import { findDao, findDaoFundingTransactions, getBtcPrice, isDaoAdmin } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -27,19 +27,16 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
       const [
         dao,
         transactions,
-        btcPrice
+        btcPrice,
+        isAdmin
       ] = await Promise.all([
         findDao(slug),
         findDaoFundingTransactions(slug),
-        getBtcPrice()
+        getBtcPrice(),
+        isDaoAdmin(slug, dehydratedState)
       ]);
       setDao(dao);
-
-      const parsedState = JSON.parse(dehydratedState) || []
-      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
-        const account = parsedState[1][1][0];
-        setIsAdmin(dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1);
-      }
+      setIsAdmin(isAdmin);
 
       // Get totals
       let members: string[] = [];
@@ -97,7 +94,7 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
           <Loading />
         </div>
       ) : (
-        <main className="py-1">
+        <main className="py-1 pb-10">
           {/* Page header */}
       
           <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-6">
@@ -120,18 +117,18 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                     <p className="text-sm font-medium text-gray-500">
                       {dao.about}                  
                     </p>
+                    
+                    {isAdmin ? (
+                        <Link
+                          href={`/daos/${dao.slug}/manage`}
+                          className="inline-flex items-center justify-center mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                        >
+                          Manage DAO
+                        </Link>
+                    ) : null}
+
                   </div>
                 </div>
-                {isAdmin ? (
-                  <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-                    <Link
-                      href={`/daos/${dao.slug}/manage`}
-                      className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-                    >
-                      Manage DAO
-                    </Link>
-                  </div>
-                ) : null}
               </div>
             </section>
           </div>
