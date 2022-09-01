@@ -11,5 +11,5 @@ export const getIronSession = (req: NextPageContext['req'], res: NextPageContext
  
 export const getDehydratedStateFromSession = async (ctx: GetServerSidePropsContext) => {
   const { dehydratedState } = await getIronSession(ctx.req, ctx.res);
-  return dehydratedState ? cleanDehydratedState(dehydratedState) : null;
+  return dehydratedState ? dehydratedState : null;
 };

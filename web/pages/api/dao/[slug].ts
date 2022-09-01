@@ -22,7 +22,8 @@ async function getHandler(
     const result = await prisma.dao.findUniqueOrThrow({
       where: {
         slug: slug as string,
-      }
+      },
+      include: { admins: true }
     });
     res.status(200).json(result)
   } catch (error) {

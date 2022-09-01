@@ -7,7 +7,7 @@ export const getBtcPrice = async () => {
 };
 
 export const saveSession = async (dehydratedState: string) => {
-  await fetch(API_URL + '/api/session/save', {
+  return await fetch(API_URL + '/api/session/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dehydratedState }),
@@ -80,4 +80,14 @@ export const findAllDaos = async (slug: string) => {
   const json = await res.json();
 
   return json;
+};
+
+export const updateDao = async (slug: string, formData: object, dehydratedState: string) => {
+  return await fetch(API_URL + '/api/dao/' + slug + '/update', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ dao: formData, dehydratedState })
+  });
 };

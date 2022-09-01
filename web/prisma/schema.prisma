@@ -23,6 +23,15 @@ model Dao {
   transactions                FundingTransaction[]
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
+  admins                      DaoAdmin[]
+}
+
+model DaoAdmin {
+  id                          Int                       @id @default(autoincrement())
+  dao                         Dao                       @relation(fields: [daoId], references: [address])
+  user                        User                      @relation(fields: [userId], references: [appPrivateKey])
+  daoId                       String
+  userId                      String
 }
 
 model User {
@@ -34,6 +43,7 @@ model User {
   registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
+  daoAdmins                   DaoAdmin[]
 }
 
 model FundingWallet {

@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao, RegistrationStatus } from '@prisma/client';
-import { registerDao } from '@/common/stacks/dao-registry-v1-1';
+import { Dao } from '@prisma/client';
 import slugify from 'slugify';
 import prisma from '@/common/db';
 import formidable from "formidable";
@@ -13,7 +12,6 @@ export const config = {
     bodyParser: false
   }
 };
-
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,7 +31,6 @@ async function postHandler(
   const form = new formidable.IncomingForm();
   form.parse(req, async function (err, fields, files) {
     try {
-
       // Check existing
       const slug = slugify(fields.name as string, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
       let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
@@ -41,18 +38,9 @@ async function postHandler(
         res.status(422).json('DAO with that name already exists');
         return;
       }
-      existingDao = await prisma.dao.findUnique({ where: { address: fields.address } });
+      existingDao = await prisma.dao.findUnique({ where: { address: fields.address as string } });
       if (existingDao) {
         res.status(422).json('DAO with that address already exists');
-        return;
-      }
-  
-      // Register on chain
-      // TODO: perform in background if broadcasting TX takes too long
-      const registrationResult = await registerDao(fields.address as string);
-      const registrationTxId = registrationResult.txid;
-      if (registrationTxId == undefined) {
-        res.status(422).json('DAO could not be registered on chain');
         return;
       }
 
@@ -67,15 +55,13 @@ async function postHandler(
       // Save info
       const result = await prisma.dao.create({
         data: {
-          address: fields.address,
-          name: fields.name,
+          address: fields.address as string,
+          name: fields.name as string,
           slug: slug,
           avatar: avatar,
-          about: fields.about,
+          about: fields.about as string,
           raisingAmount: parseInt(fields.raisingAmount as string),
           raisingDeadline: new Date(fields.raisingDeadline as string),
-          registrationTxId: registrationTxId,
-          registrationStatus: RegistrationStatus.STARTED,
         },
       });
       res.status(200).json(result);

@@ -5,8 +5,9 @@ import { Button } from '@/components/Button'
 import { createDao, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
+import { getServerSideProps } from '@/common/session/index.ts';
 
-const New: NextPage = () => {
+const New: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const [state, setState] = useState({
     name: 'Racing with Children',
@@ -58,7 +59,7 @@ const New: NextPage = () => {
     formData.append("raisingAmount", ((state.raisingAmount / btcPrice) * 100000000.0).toString());
     formData.append("address", state.address);
     formData.append("raisingDeadline", state.raisingDeadline);
-    formData.append("registrationTxId", "1");
+    formData.append("dehydratedState", dehydratedState);
     
     const res = await createDao(formData);
     const data = await res.json();
@@ -215,4 +216,5 @@ const New: NextPage = () => {
   )
 }
 
+export { getServerSideProps };
 export default New
