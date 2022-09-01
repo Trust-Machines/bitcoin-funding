@@ -3,7 +3,6 @@ import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import prisma from '@/common/db';
 import { getTransactionData } from '@/common/bitcoin/electrum-api';
 import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
-import { v2Endpoint } from 'micro-stacks/api';
 
 export default async function handler(
   req: NextApiRequest,
