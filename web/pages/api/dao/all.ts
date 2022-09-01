@@ -17,6 +17,6 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<Dao[]>
 ) {
-  const result = await prisma.dao.findMany();  
+  const result = await prisma.dao.findMany();
   res.status(200).json(result)
 }
