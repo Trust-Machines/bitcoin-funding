@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Dao, RegistrationStatus } from '@prisma/client'
-import { findDao, verifyDao, findDaoFundingTransactions, getBtcPrice } from '@/common/fetchers'
+import { findDao, findDaoFundingTransactions, getBtcPrice } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -71,15 +71,13 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
         var intervalId = window.setInterval(function(){
           fetchVerifyDao(intervalId);
         }, 15000);
-        fetchVerifyDao(intervalId);
       }
 
       setIsLoading(false);
     }
 
     const fetchVerifyDao = async (intervalId: number) => {
-      const dao = await verifyDao(slug as string);
-
+      const dao = await findDao(slug as string);
       // Stop polling if registration completed
       if (dao.registrationStatus != RegistrationStatus.STARTED) {
         setDao(dao);

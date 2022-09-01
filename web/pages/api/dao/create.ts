@@ -6,6 +6,7 @@ import formidable from "formidable";
 import fs from "fs";
 import { createAvatar } from '@dicebear/avatars';
 import * as style from '@dicebear/avatars-initials-sprites';
+import { hashAppPrivateKey } from '@/common/stacks/utils';
 
 export const config = {
   api: {
@@ -44,6 +45,13 @@ async function postHandler(
         return;
       }
 
+      const account = JSON.parse(fields.dehydratedState)[1][1][0];
+      const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
+      const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
+      if (!user) {
+        res.status(422).json('User does not exist');
+      }
+
       // Avatar
       let avatar = "";
       if (files.file != undefined) { 
@@ -62,6 +70,7 @@ async function postHandler(
           about: fields.about as string,
           raisingAmount: parseInt(fields.raisingAmount as string),
           raisingDeadline: new Date(fields.raisingDeadline as string),
+          admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
         },
       });
       res.status(200).json(result);

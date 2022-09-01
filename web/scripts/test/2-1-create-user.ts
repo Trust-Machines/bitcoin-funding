@@ -1,22 +1,10 @@
+require('dotenv').config({ path: '../../.env' });
 import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
-import { registerUser } from '@/common/stacks/user-registry-v1-1';
 
 const userAddress = process.env.USER_ADDRESS as string;
 
 export async function start() {
-
-  // New user forwarding wallet
-  const responseWallet = await axios({
-    method: 'POST',
-    url: appApiUrl + '/wallet/create',
-  });
-  console.log("[USER] New wallet API response:", responseWallet.data);
-
-  // Link funding wallet on-chain
-  const registerResult = await registerUser(userAddress, responseWallet.data.address);
-  const registerTxId = registerResult.txid;
-  console.log("[USER] SC registration transaction ID:", registerTxId);
 
   // Create dehydratedState
   const dehydratedState = [

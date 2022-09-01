@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { User, RegistrationStatus } from '@prisma/client';
+import { User, RegistrationStatus, PrismaClient } from '@prisma/client';
 import { getTransactionInfo, hashAppPrivateKey } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
 import { btcNetwork } from '@/common/constants';
@@ -21,21 +21,24 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse<User | string>
 ) {
-  try {
-    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
-
-    // Get registration TX
+  try {    
     let resultUser = await prisma.user.findUniqueOrThrow({
       where: {
-        appPrivateKey: hashedAppPrivateKey,
+        address: req.body.address,
       }
     });
+
+    // Check if verification needs to be done
+    if (resultUser.registrationStatus != RegistrationStatus.STARTED) {
+      res.status(200).json(resultUser)
+      return;
+    }
 
     // Check user registration in SC
     const userRegistered = await getStxToBtc(resultUser.address);
 
     // Update registration status
-    let status: RegistrationStatus = RegistrationStatus.STARTED;
+    let status: RegistrationStatus = resultUser.registrationStatus;
     if (userRegistered != null) {
       status = RegistrationStatus.COMPLETED;
     } else if (resultUser.registrationTxId != null) {
@@ -53,7 +56,7 @@ async function postHandler(
 
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: hashedAppPrivateKey,
+          address: req.body.address,
         },
         data: {
           registrationStatus: status,
@@ -65,7 +68,7 @@ async function postHandler(
       // Update status only
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: hashedAppPrivateKey,
+          address: req.body.address,
         },
         data: {
           registrationStatus: status,
