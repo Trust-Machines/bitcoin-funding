@@ -35,7 +35,7 @@ async function postHandler(
     }
 
     const account = JSON.parse(req.body.dehydratedState)[1][1][0];
-    const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
+    const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
     const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
     if (!user) {
       res.status(422).json('User does not exist');
