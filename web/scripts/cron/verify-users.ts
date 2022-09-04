@@ -18,7 +18,7 @@ export async function start() {
       method: 'POST',
       url: appApiUrl + '/user/verify',
       data: {
-        appPrivateKey: user.appPrivateKey
+        address: user.address
       }
     });
     console.log("[VERIFY USERS] verification response:", response.data);

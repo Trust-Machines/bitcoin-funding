@@ -48,20 +48,6 @@ export const findDaoFundingTransactions = async (slug: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({slug: slug}),
-  });
-  const json = await res.json();
-
-  return json;
-};
-
-export const verifyDao = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug + '/verify', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({slug: slug}),
   });
   const json = await res.json();
 

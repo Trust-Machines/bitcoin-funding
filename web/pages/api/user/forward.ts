@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { FundingTransaction, PrismaClient, RegistrationStatus } from '@prisma/client';
-import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
+import { getBalance, getTransactionData, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
+import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
 
 export default async function handler(
   req: NextApiRequest,
@@ -38,8 +39,7 @@ async function postHandler(
     if (req.body.sats == 0 || resultBalance < req.body.sats) {
       res.status(400).json("Insufficient balance: " + resultBalance + "/" + req.body.sats);
     } else {
-
-      // Send
+      // Send BTC
       const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultWallet.index)
       const sendBtcResult = await sendBtc(
         wallet.privateKey,
@@ -47,17 +47,14 @@ async function postHandler(
         req.body.sats
       );
 
-      // Save transaction info
       const resultTransaction = await prisma.fundingTransaction.create({
         data: {
           txId: sendBtcResult,
           wallet: { connect: { address: resultWallet.address } },
           dao: { connect: { address: req.body.daoAddress } },
-          registrationStatus: RegistrationStatus.STARTED,
-          sats: req.body.sats
+          sats: req.body.sats,
         },
       });
-
       res.status(200).json(resultTransaction)
     }
   } catch (error) {

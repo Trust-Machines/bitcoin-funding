@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../../.env' });
 import { stacksApiUrl } from '../constants';
 import bcrypt from 'bcrypt'
 

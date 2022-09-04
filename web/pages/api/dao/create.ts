@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Dao, RegistrationStatus } from '@prisma/client'
+import { Dao } from '@prisma/client'
 import slugify from 'slugify'
 import prisma from '@/common/db'
-import { registerDao } from '@/common/stacks/dao-registry-v1-1'
+import { hashAppPrivateKey } from '@/common/stacks/utils'
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,52 +20,40 @@ async function postHandler(
   res: NextApiResponse<Dao | string>
 ) {
   try {
-    // TODO: replace with singleton
-    const client = new PrismaClient();
-    const slug = slugify(req.body.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+    const slug = slugify(req.body.dao.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
     
     let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
     if (existingDao) {
-      // TODO: replace with slugify that adds a number to the end, DAO names shouldn't be unique
       res.status(422).json('DAO with that name already exists');
       return;
     }
 
-    existingDao = await prisma.dao.findUnique({ where: { address: req.body.address } });
+    existingDao = await prisma.dao.findUnique({ where: { address: req.body.dao.address } });
     if (existingDao) {
       res.status(422).json('DAO with that address already exists');
       return;
     }
 
-    // Register on chain
-    // TODO: perform in background if broadcasting TX takes too long
-    const registrationResult = await registerDao(req.body.address);
-    const registrationTxId = registrationResult.txid;
-    if (registrationTxId == undefined) {
-      res.status(422).json('DAO could not be registered on chain');
-      return;
-    }
-
     const account = JSON.parse(req.body.dehydratedState)[1][1][0];
-    const user = await client.user.findUnique({ where: { appPrivateKey: account['appPrivateKey'] } });
+    const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
+    const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
     if (!user) {
-      // TODO: throw error or create user?
+      res.status(422).json('User does not exist');
     }
-    data.admins = { create: [{ userId: user['appPrivateKey'] }] };
 
-    // Save in DB
+    // Save DAO in DB
     const result = await prisma.dao.create({
       data: {
-        address: req.body.address,
-        name: req.body.name,
+        address: req.body.dao.address,
+        name: req.body.dao.name,
         slug: slug,
-        about: req.body.about,
-        raisingAmount: parseFloat(req.body.raisingAmount),
-        raisingDeadline: new Date(req.body.raisingDeadline),
-        registrationTxId: registrationTxId,
-        registrationStatus: RegistrationStatus.STARTED,
+        about: req.body.dao.about,
+        raisingAmount: parseFloat(req.body.dao.raisingAmount),
+        raisingDeadline: new Date(req.body.dao.raisingDeadline),
+        admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
       },
     });
+
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json((error as Error).message);
