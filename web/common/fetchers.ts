@@ -70,7 +70,7 @@ export const verifyDao = async (slug: string) => {
   return json;
 };
 
-export const findAllDaos = async (slug: string) => {
+export const findAllDaos = async () => {
   const res = await fetch(API_URL + '/api/dao/all', {
     method: 'GET',
     headers: {

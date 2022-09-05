@@ -93,7 +93,7 @@ async function saveFile(file: any) {
 
 // TODO: save files to S3 in production?
 async function createPlaceholderAndSaveFile(seed: string) {
-  let data = createAvatar(style, {seed: seed, bold: true});
+  let data = createAvatar(style, {seed: seed, bold: true, fontSize: 30});
   const directory = `/avatars/${seed}.svg`;
   fs.writeFileSync(`./public/${directory}`, data);
   return directory;
