@@ -1,5 +1,11 @@
 import { API_URL } from './constants';
- 
+import redstone from 'redstone-api';
+
+export const getBtcPrice = async () => {
+  const price = await redstone.getPrice("BTC");
+  return price.value;
+};
+
 export const saveSession = async (dehydratedState: string) => {
   return await fetch(API_URL + '/api/session/save', {
     method: 'POST',
@@ -20,13 +26,10 @@ export const destroySession = async () => {
   }
 };
 
-export const createDao = async (formData: Object, dehydratedState: string) => {
+export const createDao = async (formData: FormData) => {
   return await fetch(API_URL + '/api/dao/create', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ dao: formData, dehydratedState })
+    body: formData,
   });
 };
 
@@ -48,6 +51,19 @@ export const findDaoFundingTransactions = async (slug: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
+  });
+  const json = await res.json();
+
+  return json;
+};
+
+export const verifyDao = async (slug: string) => {
+  const res = await fetch(API_URL + '/api/dao/' + slug + '/verify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({slug: slug}),
   });
   const json = await res.json();
 

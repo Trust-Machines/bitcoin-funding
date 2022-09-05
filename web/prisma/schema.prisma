@@ -14,6 +14,7 @@ model Dao {
   address                     String                    @id
   name                        String
   slug                        String                    @unique
+  avatar                      String
   about                       String?
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)

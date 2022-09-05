@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Dao, RegistrationStatus } from '@prisma/client'
-import { findDao, findDaoFundingTransactions } from '@/common/fetchers'
+import { findDao, findDaoFundingTransactions, getBtcPrice } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -27,9 +27,11 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
       const [
         dao,
         transactions,
+        btcPrice
       ] = await Promise.all([
         findDao(slug),
         findDaoFundingTransactions(slug),
+        getBtcPrice()
       ]);
       setDao(dao);
 
@@ -38,9 +40,6 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
         const account = parsedState[1][1][0];
         setIsAdmin(dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1);
       }
-
-      // TODO: fetch BTC price
-      const btcPrice = 25000.00;
 
       // Get totals
       let members: string[] = [];

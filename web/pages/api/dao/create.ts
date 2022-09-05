@@ -1,8 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client'
-import slugify from 'slugify'
-import prisma from '@/common/db'
-import { hashAppPrivateKey } from '@/common/stacks/utils'
+import { Dao } from '@prisma/client';
+import slugify from 'slugify';
+import prisma from '@/common/db';
+import formidable from "formidable";
+import fs from "fs";
+import { createAvatar } from '@dicebear/avatars';
+import * as style from '@dicebear/avatars-initials-sprites';
+import { hashAppPrivateKey } from '@/common/stacks/utils';
+
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,43 +29,72 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse<Dao | string>
 ) {
-  try {
-    const slug = slugify(req.body.dao.name, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
-    
-    let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
-    if (existingDao) {
-      res.status(422).json('DAO with that name already exists');
-      return;
+  const form = new formidable.IncomingForm();
+  form.parse(req, async function (err, fields, files) {
+    try {
+      // Check existing
+      const slug = slugify(fields.name as string, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+      let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
+      if (existingDao) {
+        res.status(422).json('DAO with that name already exists');
+        return;
+      }
+      existingDao = await prisma.dao.findUnique({ where: { address: fields.address as string } });
+      if (existingDao) {
+        res.status(422).json('DAO with that address already exists');
+        return;
+      }
+
+      const account = JSON.parse(fields.dehydratedState)[1][1][0];
+      const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
+      const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
+      if (!user) {
+        res.status(422).json('User does not exist');
+      }
+
+      // Avatar
+      let avatar = "";
+      if (files.file != undefined) { 
+        avatar = await saveFile(files.file);
+      } else {
+        avatar = await createPlaceholderAndSaveFile(slug)
+      }
+
+      // Save info
+      const result = await prisma.dao.create({
+        data: {
+          address: fields.address as string,
+          name: fields.name as string,
+          slug: slug,
+          avatar: avatar,
+          about: fields.about as string,
+          raisingAmount: parseInt(fields.raisingAmount as string),
+          raisingDeadline: new Date(fields.raisingDeadline as string),
+          admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
+        },
+      });
+      res.status(200).json(result);
+
+    } catch (error) {
+      res.status(400).json((error as Error).message);
     }
+  });
+}
 
-    existingDao = await prisma.dao.findUnique({ where: { address: req.body.dao.address } });
-    if (existingDao) {
-      res.status(422).json('DAO with that address already exists');
-      return;
-    }
+// TODO: save files to S3 in production?
+async function saveFile(file: any) {
+  const extension = file.originalFilename.split(".").pop();
+  const data = fs.readFileSync(file.filepath);
+  const directory = `/avatars/${file.newFilename}.${extension}`
+  fs.writeFileSync(`./public/${directory}`, data);
+  fs.unlinkSync(file.filepath);
+  return directory;
+}
 
-    const account = JSON.parse(req.body.dehydratedState)[1][1][0];
-    const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey']);
-    const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
-    if (!user) {
-      res.status(422).json('User does not exist');
-    }
-
-    // Save DAO in DB
-    const result = await prisma.dao.create({
-      data: {
-        address: req.body.dao.address,
-        name: req.body.dao.name,
-        slug: slug,
-        about: req.body.dao.about,
-        raisingAmount: parseFloat(req.body.dao.raisingAmount),
-        raisingDeadline: new Date(req.body.dao.raisingDeadline),
-        admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
-      },
-    });
-
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(400).json((error as Error).message);
-  }
+// TODO: save files to S3 in production?
+async function createPlaceholderAndSaveFile(seed: string) {
+  let data = createAvatar(style, {seed: seed, bold: true});
+  const directory = `/avatars/${seed}.svg`;
+  fs.writeFileSync(`./public/${directory}`, data);
+  return directory;
 }
