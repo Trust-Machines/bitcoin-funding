@@ -117,14 +117,14 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                     <p className="text-sm font-medium text-gray-500">
                       {dao.about}                  
                     </p>                    
-                      {isAdmin ? (
-                        <Link
-                          href={`/daos/${dao.slug}/manage`}
-                          className="inline-flex items-center justify-center mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-                        >
-                          Manage DAO
-                        </Link>
-                      ) : null}
+                    {isAdmin ? (
+                      <Link
+                        href={`/daos/${dao.slug}/manage`}
+                        className="inline-flex items-center justify-center mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                      >
+                        Manage DAO
+                      </Link>
+                    ) : null}
                   </div>
                 </div>
               </div>
