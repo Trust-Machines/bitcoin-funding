@@ -53,6 +53,7 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
           ActivityFeedItem({
             icon: "ExclamationCircleIcon", 
             title: dollarAmountToString(dollarRaised) + " funded", 
+            subtitle: "",
             details: dateToString(tx.createdAt)
           })
         )
@@ -117,7 +118,6 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                     <p className="text-sm font-medium text-gray-500">
                       {dao.about}                  
                     </p>
-                    
                     {isAdmin ? (
                         <Link
                           href={`/daos/${dao.slug}/manage`}
@@ -126,7 +126,6 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                           Manage DAO
                         </Link>
                     ) : null}
-
                   </div>
                 </div>
               </div>
