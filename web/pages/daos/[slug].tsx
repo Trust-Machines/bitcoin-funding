@@ -116,17 +116,15 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                     <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
                     <p className="text-sm font-medium text-gray-500">
                       {dao.about}                  
-                    </p>
-                    
-                    {isAdmin ? (
+                    </p>                    
+                      {isAdmin ? (
                         <Link
                           href={`/daos/${dao.slug}/manage`}
                           className="inline-flex items-center justify-center mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
                         >
                           Manage DAO
                         </Link>
-                    ) : null}
-
+                      ) : null}
                   </div>
                 </div>
               </div>
