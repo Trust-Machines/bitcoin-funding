@@ -3,10 +3,8 @@ import { Dao } from '@prisma/client';
 import slugify from 'slugify';
 import prisma from '@/common/db';
 import formidable from "formidable";
-import fs from "fs";
-import { createAvatar } from '@dicebear/avatars';
-import * as style from '@dicebear/avatars-initials-sprites';
 import { hashAppPrivateKey } from '@/common/stacks/utils';
+import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
 
 export const config = {
   api: {
@@ -79,22 +77,4 @@ async function postHandler(
       res.status(400).json((error as Error).message);
     }
   });
-}
-
-// TODO: save files to S3 in production?
-async function saveFile(file: any, name: string) {
-  const extension = file.originalFilename.split(".").pop();
-  const data = fs.readFileSync(file.filepath);
-  const directory = `/avatars/${name}.${extension}`
-  fs.writeFileSync(`./public/${directory}`, data);
-  fs.unlinkSync(file.filepath);
-  return directory;
-}
-
-// TODO: save files to S3 in production?
-async function createPlaceholderAndSaveFile(seed: string) {
-  let data = createAvatar(style, {seed: seed, bold: true, fontSize: 30});
-  const directory = `/avatars/${seed}.svg`;
-  fs.writeFileSync(`./public/${directory}`, data);
-  return directory;
 }
