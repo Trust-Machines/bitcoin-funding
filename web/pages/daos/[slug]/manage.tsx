@@ -18,6 +18,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   const [avatar, setAvatar] = useState();
   const [isAdmin, setIsAdmin] = useState(false);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -41,7 +42,16 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
     setAvatarRemoved(true);
   }
 
+  const showErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
   const update = async () => {
+    if (dao.name == '') {
+      showErrorMessage('Please enter a name.'); return;
+    }
+
     const formData = new FormData();
     formData.append("file", avatar);
     formData.append("updateAvatar", avatarRemoved);
@@ -51,13 +61,12 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
     formData.append("dehydratedState", dehydratedState);
 
     const res = await updateDao(dao.slug, formData);
+    const data = await res.json();
     if (res.status === 200) {
       console.log(res);
-      const data = await res.json();
       router.push(`/daos/${data.slug}`);
     } else {
-      console.log(res);
-      console.log('TODO: DAO update did not succeed.. show error message');
+      showErrorMessage(data);
     }
   }
 
@@ -114,6 +123,14 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
               </div>
             </section>
           </div>
+
+          {errorMessage != "" ? (
+            <div className="mt-3">
+              <Alert type={Alert.type.ERROR}>
+                  {errorMessage}
+              </Alert>
+            </div>
+          ): null}
 
           {!isAdmin ? (
             <div className="mt-3">
