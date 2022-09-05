@@ -55,7 +55,7 @@ async function postHandler(
       // Avatar
       let avatar = "";
       if (files.file != undefined) { 
-        avatar = await saveFile(files.file);
+        avatar = await saveFile(files.file, slug);
       } else {
         avatar = await createPlaceholderAndSaveFile(slug)
       }
@@ -82,10 +82,10 @@ async function postHandler(
 }
 
 // TODO: save files to S3 in production?
-async function saveFile(file: any) {
+async function saveFile(file: any, name: string) {
   const extension = file.originalFilename.split(".").pop();
   const data = fs.readFileSync(file.filepath);
-  const directory = `/avatars/${file.newFilename}.${extension}`
+  const directory = `/avatars/${name}.${extension}`
   fs.writeFileSync(`./public/${directory}`, data);
   fs.unlinkSync(file.filepath);
   return directory;

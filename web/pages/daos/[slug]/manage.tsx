@@ -17,6 +17,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   const [dao, setDao] = useState<Dao>({});
   const [avatar, setAvatar] = useState();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [avatarRemoved, setAvatarRemoved] = useState(false);
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -36,9 +37,14 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
     }
   }
 
+  const removeAvatar = async () => {
+    setAvatarRemoved(true);
+  }
+
   const update = async () => {
     const formData = new FormData();
     formData.append("file", avatar);
+    formData.append("updateAvatar", avatarRemoved);
     formData.append("name", dao.name);
     formData.append("about", dao.about);
     formData.append("slug", dao.slug);
@@ -138,8 +144,25 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
-                {/* TODO: nice upload field */}
-                <input type="file" name="avatar" onChange={handleInputChange} />
+                {avatarRemoved ? (
+                  // TODO: nice upload field
+                  <input type="file" name="avatar" onChange={handleInputChange} />
+                ):(
+                  <div className="max-w-3xl mx-auto grid grid-cols-1 gap-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-6">
+                    <div className="w-20 h-20 rounded-md overflow-hidden">
+                      <img
+                        src={`${dao.avatar}`}
+                        className="w-full h-full object-center object-cover lg:w-full lg:h-full"
+                      />
+                    </div>
+
+                    <section className="lg:col-span-3"> 
+                      <button className='text-red-500 mt-6' onClick={() => removeAvatar()}>
+                        Remove
+                      </button>
+                    </section>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -58,13 +58,13 @@ async function postHandler(
       }
 
       // Avatar
-      let avatar = "";
-      if (files.file != undefined) { 
-        console.log("SAVE FILE");
-        avatar = await saveFile(files.file);
-      } else {
-        console.log("GENERATE FILE");
-        avatar = await createPlaceholderAndSaveFile(slug as string)
+      let avatar = resultDao!.avatar;
+      if (fields.updateAvatar == 'true') {
+        if (files.file != undefined) { 
+          avatar = await saveFile(files.file, slug as string);
+        } else {
+          avatar = await createPlaceholderAndSaveFile(slug as string)
+        }
       }
   
       const result = await prisma.dao.update({
@@ -85,10 +85,10 @@ async function postHandler(
 
 // TODO: save files to S3 in production?
 // TODO: refactor to avoid code duplication with create.ts
-async function saveFile(file: any) {
+async function saveFile(file: any, name: string) {
   const extension = file.originalFilename.split(".").pop();
   const data = fs.readFileSync(file.filepath);
-  const directory = `/avatars/${file.newFilename}.${extension}`
+  const directory = `/avatars/${name}.${extension}`
   fs.writeFileSync(`./public/${directory}`, data);
   fs.unlinkSync(file.filepath);
   return directory;
