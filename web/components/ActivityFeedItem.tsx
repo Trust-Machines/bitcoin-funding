@@ -24,7 +24,7 @@ export function ActivityFeedItem({
             <p className="text-sm text-gray-500">
               {title}
             </p>
-            <p className="text-sm text-gray-400 -mt-2">
+            <p className="text-xs text-gray-400 -mt-1">
               {subtitle}
             </p>
           </div>

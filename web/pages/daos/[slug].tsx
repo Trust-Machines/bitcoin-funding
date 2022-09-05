@@ -8,7 +8,7 @@ import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
 import { ActivityFeedItem } from '@/components/ActivityFeedItem'
-import { dollarAmountToString } from '@/common/utils'
+import { dollarAmountToString, shortAddress } from '@/common/utils'
 import { stacksApiUrl } from '@/common/constants'
 import { dateToString, daysToDate } from '@/common/utils'
 import { Alert } from '@/components/Alert'
@@ -46,7 +46,7 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
 
       feedItems.push(
         ActivityFeedItem({
-          icon: "PlusCircleIcon", 
+          icon: "CheckCircleIcon", 
           title: "DAO created", 
           subtitle: "",
           details: dateToString(dao.createdAt)
@@ -59,12 +59,11 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
         }
         const dollarRaised = (tx.sats / 100000000.00) * btcPrice;
         raised += dollarRaised;
-
         feedItems.push(
           ActivityFeedItem({
-            icon: "ExclamationCircleIcon", 
+            icon: "PlusCircleIcon", 
             title: dollarAmountToString(dollarRaised) + " funded", 
-            subtitle: "By " + "xxx..xxxx",
+            subtitle: "By " + shortAddress(tx.wallet.user.address),
             details: dateToString(tx.createdAt)
           })
         )

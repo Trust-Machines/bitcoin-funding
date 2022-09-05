@@ -27,7 +27,12 @@ async function getHandler(
     where: {
       daoAddress: resultDao.address,
       registrationStatus: RegistrationStatus.COMPLETED
-    }
+    },
+    include: {
+      wallet: { select: { user: { select: {
+        address: true
+      } } } },
+    },
   });  
   res.status(200).json(resultTransactions)
 }

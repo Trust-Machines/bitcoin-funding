@@ -23,10 +23,12 @@ export function dollarAmountToString(amount: number): string {
 }
 
 export function dateToString(date: Date): string {
-  const datePart = date.toString().split("T")[0];
+  const yearPart = date.toString().split("T")[0].split("-")[0];
+  const monthPart = date.toString().split("T")[0].split("-")[1];
+  const dayPart = date.toString().split("T")[0].split("-")[2];
   const hoursPart = date.toString().split("T")[1].split(":")[0];
   const minutesPart = date.toString().split("T")[1].split(":")[1];
-  return datePart + " " + hoursPart + ":" + minutesPart;
+  return hoursPart + ":" + minutesPart + " " + dayPart + "-" + monthPart  + "-" + yearPart;
 }
 
 export function daysToDate(date: Date): number {
@@ -35,4 +37,8 @@ export function daysToDate(date: Date): number {
   let difference = deadline.getTime() - now.getTime();
   let days = Math.ceil(difference / (1000 * 3600 * 24));
   return days;
+}
+
+export function shortAddress(address: string): string {
+  return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
 }
