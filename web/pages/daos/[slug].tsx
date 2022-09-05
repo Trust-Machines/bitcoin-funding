@@ -11,6 +11,7 @@ import { ActivityFeedItem } from '@/components/ActivityFeedItem'
 import { dollarAmountToString } from '@/common/utils'
 import { stacksApiUrl } from '@/common/constants'
 import { dateToString, daysToDate } from '@/common/utils'
+import { Alert } from '@/components/Alert'
 
 const DaoDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -42,6 +43,16 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
       let members: string[] = [];
       let raised = 0;
       let feedItems = [];
+
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "PlusCircleIcon", 
+          title: "DAO created", 
+          subtitle: "",
+          details: dateToString(dao.createdAt)
+        })
+      )
+
       for (const tx of transactions) {
         if (!members.includes(tx.wallet)) {
           members.push(tx.walletAddress);
@@ -53,6 +64,7 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
           ActivityFeedItem({
             icon: "ExclamationCircleIcon", 
             title: dollarAmountToString(dollarRaised) + " funded", 
+            subtitle: "By " + "xxx..xxxx",
             details: dateToString(tx.createdAt)
           })
         )
@@ -94,56 +106,62 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
           <Loading />
         </div>
       ) : (
-        <main className="py-1 pb-10">
-          {/* Page header */}
-      
-          <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-6">
-            <div className="space-y-6 lg:col-span-1">
-              <section>
-                <div className="w-full min-h-80 min-w-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75">
-                  <img
-                    src={`${dao.avatar}`}
-                    className="w-full h-full object-center object-cover lg:w-full lg:h-full"
-                  />
+        <main className="py-3 pb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+
+            {/* COL - AVATAR + NAME + INFO */}
+            <div className="col-span-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+
+                {/* COL - AVATAR  */}
+                <div className="col-span-1">
+                  <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
+                    <div className="rounded-md overflow-hidden">
+                      <img src={`${dao.avatar}`}/>
+                    </div>
+                  </section>
                 </div>
-              </section>
-            </div>
 
-            <section className="lg:col-span-3">
-              <div className="max-w-3xl mt-4 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl">
-                <div className="flex items-center space-x-5">
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
-                    <p className="text-sm font-medium text-gray-500">
-                      {dao.about}                  
-                    </p>
-                    
-                    {isAdmin ? (
-                        <Link
-                          href={`/daos/${dao.slug}/manage`}
-                          className="inline-flex items-center justify-center mt-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-                        >
-                          Manage DAO
-                        </Link>
-                    ) : null}
+                {/* COL - NAME */}
+                <div className="col-span-3">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{dao.name}</h1>
+                  {isAdmin ? (
+                    <Link
+                      href={`/daos/${dao.slug}/manage`}
+                      className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                    >
+                      Manage DAO
+                    </Link>
+                  ):null}
+                  {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                    <Link
+                      href={`/daos/${dao.slug}/fund`}
+                      className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                    >
+                      Fund DAO
+                    </Link>
+                  ):null}
+                </div>
+              </div> 
 
+              {/* INFO */}
+              <section className='mt-6'>
+                {dao.registrationStatus != RegistrationStatus.COMPLETED ? (
+                  <div className='mb-4'>
+                    <Alert type={Alert.type.WARNING}>
+                      The DAO is being registered on chain. Funding will be available once the registration is done.
+                    </Alert>
                   </div>
-                </div>
-              </div>
-            </section>
-          </div>
+                ):null}
 
-          <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
-            <div className="space-y-6 lg:col-start-1 lg:col-span-2">
-              <section>
                 <div className="bg-white shadow sm:rounded-lg">
-                  <div className="px-4 py-5 sm:px-6">
+                  <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
                     <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
                       About {dao.name}
                     </h2>
                   </div>
-                  <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
+                  <div className="px-4 py-5 sm:px-6">
+                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 mt-5">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
@@ -159,63 +177,32 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                         <dd className="mt-1 text-sm text-gray-900">{daysToDate(dao.raisingDeadline)}</dd>
                       </div>
                       <div className="sm:col-span-3">
-                        <dt className="text-sm font-medium text-gray-500">Our Story</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {dao.about}
-                        </dd>
+                        <dt className="text-sm font-medium text-gray-500">About</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{dao.about}</dd>
                       </div>
                     </dl>
                   </div>
-
-                  <div>
-                    {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
-                      <a
-                        href="#"
-                        className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                      >
-                        Fund DAO
-                      </a>
-                    ):(
-                      <a
-                        href={stacksApiUrl + "/extended/v1/tx/" + dao.registrationTxId}
-                        target="_blank"
-                        className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-orange-700 sm:rounded-b-lg"
-                      >
-                        The DAO is being registered on chain. Funding will be available once the registration is done.
-                      </a>
-                    )}
-                  </div>
-
                 </div>
               </section>
             </div>
 
-            <section aria-labelledby="timeline-title" className="lg:col-start-3 lg:col-span-1">
-              <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
-                <h2 id="timeline-title" className="text-lg font-medium text-gray-900">
-                  Timeline
-                </h2>
-
-                {/* Activity Feed */}
-                <div className="mt-6 flow-root">
-                  <ul role="list" className="-mb-8">
-                    {activityFeedItems}
-                  </ul>
-                </div>
-
-                {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
-                  <div className="mt-6 flex flex-col justify-stretch">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Fund DAO
-                    </button>
+            {/* COL - Activity feed */}
+            <div className="col-span-2">
+              <section>
+                <div className="bg-white shadow sm:rounded-lg">
+                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h2 id="activity" className="text-lg leading-6 font-medium text-gray-900">
+                      Activity feed
+                    </h2>
                   </div>
-                ):null}
-                
-              </div>
-            </section>
+                  <div className="px-4 sm:px-6 pt-4">
+                    <ul role="list" className="">
+                      {activityFeedItems}
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </main>
       )}
