@@ -10,8 +10,8 @@ import { useAccount } from '@micro-stacks/react';
 import { findDao, findUser } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-
 import { StyledIcon } from '@/components/StyledIcon'
+import { RegisterAddressModal } from '@/components/RegisterAddressModal';
 
 const steps = [
   { id: '01', name: 'Connect Hiro Wallet', href: '#', status: 'complete' },
@@ -27,7 +27,7 @@ const FundDao: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
   const [user, setUser] = useState<User>({});
-  const [userHasWallet, setUserHasWallet] = useState(false);
+  const [userHasWallet, setUserHasWallet] = useState(true);
 
   useEffect(() => {
     const fetchDao = async () => {
@@ -38,6 +38,7 @@ const FundDao: NextPage = () => {
       const user = await findUser(account['appPrivateKey']);
       if (!user || !user['fundingWalletPublicKey']) {
         console.log('TODO: redirect to a route to register BTC address on-chain');
+        setUserHasWallet(false);
       }
       setUser(user);
       setIsLoading(false);
@@ -51,6 +52,9 @@ const FundDao: NextPage = () => {
 
   return (
     <Container className="min-h-screen">
+      {!userHasWallet ? (
+        <RegisterAddressModal />
+      ) : null}
       {isLoading ? (
         <div className="flex flex-wrap mb-12">
           <Loading />
