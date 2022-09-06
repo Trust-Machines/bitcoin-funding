@@ -56,29 +56,31 @@ const FundDao: NextPage = () => {
           <Loading />
         </div>
       ) : (
-        <main className="py-10">
-          {/* Page header */}
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
-            <div className="flex items-center space-x-5">
-              <div>
-                <Link href={`/daos/${dao.slug}`}>
-                  <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
-                </Link>
-                <p className="text-sm font-medium text-gray-500">
-                  {dao.about}                  
-                </p>
+        <main className="py-3 pb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+
+            {/* COL - AVATAR + NAME + INFO */}
+            <div className="col-span-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+
+                {/* COL - AVATAR  */}
+                <div className="col-span-1">
+                  <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
+                    <div className="rounded-md overflow-hidden">
+                      <img src={`${dao.avatar}`}/>
+                    </div>
+                  </section>
+                </div>
+
+                <div className="col-span-3">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{dao.name}</h1>
+                </div>
+
               </div>
             </div>
           </div>
 
-          <div className="mx-auto w-full px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8 mt-4">
-            <img
-              className="w-full max-h-60"
-              src="https://as1.ftcdn.net/v2/jpg/03/32/69/82/1000_F_332698203_XmQ4jYo8vDPfgeqZ3Ake9xfRMS7ChD15.jpg"
-            />
-          </div>
-
-          <nav aria-label="Progress" className="mx-auto w-full px-4 sm:px-6 mt-12">
+          <nav aria-label="Progress" className="mx-auto w-full mt-12">
             <ol role="list" className="border border-gray-300 rounded-md divide-y divide-gray-300 md:flex md:divide-y-0">
               {steps.map((step, stepIdx) => (
                 <li key={step.name} className="relative md:flex-1 md:flex">
