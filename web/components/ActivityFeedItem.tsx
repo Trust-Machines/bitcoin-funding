@@ -7,7 +7,7 @@ export function ActivityFeedItem({
   details
 }) {
   return (
-    <li key={title}>
+    <li key={title+subtitle+details}>
       <div className="relative flex space-x-3 items-center pb-3">
         <div>
           <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>

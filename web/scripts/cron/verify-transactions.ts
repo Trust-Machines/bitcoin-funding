@@ -10,7 +10,7 @@ export async function start() {
     url: appApiUrl + '/transaction/unverified',
   })).data as FundingTransaction[];
 
-  console.log("[VERIFY TXS] unverified users:", unverified.length);
+  console.log("[VERIFY TXS] unverified transactions:", unverified.length);
 
   // Try to verify
   for (const transaction of unverified) {

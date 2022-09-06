@@ -2,9 +2,16 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { Dao } from '@prisma/client';
 import prisma from '@/common/db';
 
+export type DaosPaged = {
+  daos: Dao[]
+  total: number
+  totalPages: number
+  currentPage: number
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao[] | string>
+  res: NextApiResponse<DaosPaged | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -15,8 +22,24 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao[]>
+  res: NextApiResponse<DaosPaged>
 ) {
-  const result = await prisma.dao.findMany();
-  res.status(200).json(result)
+  const { page } = req.query;
+  const pageSize = 15;
+
+  const result = await prisma.dao.findMany({
+    skip: parseInt(page as string) * pageSize,
+    take: pageSize,
+  });
+
+  const daoCount = await prisma.dao.aggregate({
+    _count: true,
+  });
+
+  res.status(200).json({
+    daos: result,
+    total: daoCount._count,
+    totalPages: Math.ceil(daoCount._count / pageSize),
+    currentPage: parseInt(page as string)
+  })
 }

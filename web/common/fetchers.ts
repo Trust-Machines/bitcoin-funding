@@ -41,7 +41,6 @@ export const findDao = async (slug: string) => {
     }
   });
   const json = await res.json();
-
   return json;
 };
 
@@ -57,15 +56,14 @@ export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
   return json;
 };
 
-export const findDaoFundingTransactions = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions", {
+export const findDaoFundingTransactions = async (slug: string, page: number) => {
+  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions?page=" + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
   const json = await res.json();
-
   return json;
 };
 
@@ -78,19 +76,17 @@ export const verifyDao = async (slug: string) => {
     body: JSON.stringify({slug: slug}),
   });
   const json = await res.json();
-
   return json;
 };
 
-export const findAllDaos = async () => {
-  const res = await fetch(API_URL + '/api/dao/all', {
+export const findAllDaos = async (page: Number) => {
+  const res = await fetch(API_URL + '/api/dao/all?page=' + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     }
   });
   const json = await res.json();
-
   return json;
 };
 
