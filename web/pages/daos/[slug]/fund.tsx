@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { useAccount } from '@micro-stacks/react';
 
 import { getServerSideProps } from '@/common/session/index.ts';
-import { findDao, findUser } from '@/common/fetchers';
+import { findDao, findUser, getUserBalance, forwardUserFunds } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -29,10 +29,21 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   const [dao, setDao] = useState<Dao>({});
   const [user, setUser] = useState<User>({});
   const [userHasWallet, setUserHasWallet] = useState(true);
+  const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
     const fetchDao = async () => {
       setDao(await findDao(slug));
+    };
+
+    const fetchBalance = async () => {
+      try {
+        // TODO: get balance from Electrum Server
+        // const res = await getUserBalance(account['appPrivateKey']);
+        // console.log(res);
+      } catch {
+        setWalletBalance(0);
+      }
     };
 
     const fetchUser = async () => {
@@ -41,8 +52,10 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         // TODO: check if on-chain TX has been mined (and user is verified)
         // When verification is going on, show a pending verification modal
         setUserHasWallet(false);
+      } else {
+        setUser(user);
+        fetchBalance();
       }
-      setUser(user);
       setIsLoading(false);
     }
 
@@ -51,6 +64,13 @@ const FundDao: NextPage = ({ dehydratedState }) => {
       fetchUser();
     }
   }, [slug]);
+
+  const forwardFunds = async () => {
+    const res = await forwardUserFunds(10000, account['appPrivateKey']);
+    console.log(res);
+    // TODO: make sats number dynamic
+    // TODO: feedback + loading on status of btc FundingTransaction
+  };
 
   return (
     <Container className="min-h-screen">
@@ -160,14 +180,15 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                       <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                         <p>Send BTC to {user.fundingWalletAddress}</p>
 
-                        <p>Once you've sent it, we keep track of the transaction and allow you to confirm the funds.</p>
+                        <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
                       </div>
                       <div>
                         <a
-                          href="#"
+                          onClick={() => { if (walletBalance > 0) { forwardFunds(); } }}
+                          disabled={walletBalance === 0}
                           className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                         >
-                          Fund DAO
+                          Fund {walletBalance} sats
                         </a>
                       </div>
                     </div>

@@ -106,10 +106,29 @@ export const findUser = async (appPrivateKey: string) => {
   return json;
 };
 
+export const getUserBalance = async (appPrivateKey: string) => {
+  const res = await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
+    method: 'GET',
+  });
+  const json = await res.json();
+
+  return json;
+};
+
 export const createBtcAddressForUser = async (appPrivateKey: string) => {
   const res = await fetch(API_URL + '/api/user/register', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey })
+  });
+  const json = await res.json();
+
+  return json;
+};
+
+export const forwardUserFunds = async (appPrivateKey: string, sats: number) => {
+  const res = await fetch(API_URL + '/api/user/forward', {
+    method: 'POST',
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats })
   });
   const json = await res.json();
 
