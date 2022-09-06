@@ -63,7 +63,8 @@ async function postHandler(
           appPrivateKey: hashedAppPrivateKey,
         },
         data: {
-          registrationTxId: registrationTxId
+          registrationTxId: registrationTxId,
+          fundingWalletAddress: newWallet.address
         },
       });
       res.status(200).json(result)

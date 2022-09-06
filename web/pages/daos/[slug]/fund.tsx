@@ -36,8 +36,8 @@ const FundDao: NextPage = () => {
 
     const fetchUser = async () => {
       const user = await findUser(account['appPrivateKey']);
-      if (!user || !user['fundingWalletPublicKey']) {
-        // TODO: check if on-chain TX has been mined when fundingWalletPublicKey has been set
+      if (!user || !user['fundingWalletAddress']) {
+        // TODO: check if on-chain TX has been mined when fundingWalletAddress has been set
         setUserHasWallet(false);
       }
       setUser(user);
@@ -156,7 +156,7 @@ const FundDao: NextPage = () => {
                         </h2>
                       </div>
                       <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <p>Send BTC to {user.fundingWalletPublicKey}</p>
+                        <p>Send BTC to {user.fundingWalletAddress}</p>
 
                         <p>Once you've sent it, we keep track of the transaction and allow you to confirm the funds.</p>
                       </div>

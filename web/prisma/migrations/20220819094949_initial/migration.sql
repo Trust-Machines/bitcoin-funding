@@ -18,7 +18,7 @@ CREATE TABLE "Dao" (
 CREATE TABLE "User" (
     "appPrivateKey" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "fundingWalletPublicKey" TEXT,
+    "fundingWalletAddress" TEXT,
     "registrationTxId" TEXT,
     "registrationStatus" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,7 +53,7 @@ CREATE TABLE "FundingTransaction" (
 CREATE UNIQUE INDEX "Dao_slug_key" ON "Dao"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_fundingWalletPublicKey_key" ON "User"("fundingWalletPublicKey");
+CREATE UNIQUE INDEX "User_fundingWalletAddress_key" ON "User"("fundingWalletPublicKey");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_fundingWalletPublicKey_fkey" FOREIGN KEY ("fundingWalletPublicKey") REFERENCES "FundingWallet"("publicKey") ON DELETE SET NULL ON UPDATE CASCADE;
