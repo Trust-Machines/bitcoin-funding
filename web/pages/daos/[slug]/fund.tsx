@@ -36,10 +36,10 @@ const FundDao: NextPage = () => {
 
     const fetchUser = async () => {
       const user = await findUser(account['appPrivateKey']);
-      setUser(user);
       if (!user || !user['fundingWalletPublicKey']) {
         console.log('TODO: redirect to a route to register BTC address on-chain');
       }
+      setUser(user);
       setIsLoading(false);
     }
 
