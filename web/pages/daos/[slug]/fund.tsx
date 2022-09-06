@@ -38,7 +38,8 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     const fetchUser = async () => {
       const user = await findUser(account['appPrivateKey']);
       if (!user || !user['fundingWalletAddress']) {
-        // TODO: check if on-chain TX has been mined when fundingWalletAddress has been set
+        // TODO: check if on-chain TX has been mined (and user is verified)
+        // When verification is going on, show a pending verification modal
         setUserHasWallet(false);
       }
       setUser(user);
