@@ -4,10 +4,21 @@ import { StyledIcon } from '@/components/StyledIcon'
 import { useRouter } from 'next/router'
 import { createBtcAddressForUser } from '@/common/fetchers'
 
-export function RegisterAddressModal() {
+export function RegisterAddressModal({ dehydratedState }) {
   const router = useRouter();
-  const closeAndRedirect = async () => {
+  const closeAndRedirect = () => {
     router.push('/');
+  };
+
+  const register = async () => {
+    const account = JSON.parse(dehydratedState as string)[1][1][0];
+    if (!dehydratedState) {
+      closeAndRedirect();
+      return;
+    }
+
+    const res = await createBtcAddressForUser(account['appPrivateKey']);
+    console.log(res);    
   };
 
   return (
@@ -38,11 +49,11 @@ export function RegisterAddressModal() {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md sm:p-6">
                 <div>
-                  <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                    <button type="button" onClick={() => { closeAndRedirect(); }} class="rounded-md bg-white text-gray-400 hover:text-gray-500">
-                      <span class="sr-only">Close</span>
-                      <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                    <button type="button" onClick={() => { closeAndRedirect(); }} className="rounded-md bg-white text-gray-400 hover:text-gray-500">
+                      <span className="sr-only">Close</span>
+                      <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </div>
@@ -68,6 +79,7 @@ export function RegisterAddressModal() {
                 <div className="mt-5 sm:mt-6">
                   <button
                     type="button"
+                    onClick={() => { register(); }}
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
                   >
                     Create an account

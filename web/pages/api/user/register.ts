@@ -21,20 +21,24 @@ async function postHandler(
   res: NextApiResponse<User | string>
 ) {
   try {
-    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
+    const body = JSON.parse(req.body);
+    const hashedAppPrivateKey = await hashAppPrivateKey(body.appPrivateKey);
+    console.log(hashedAppPrivateKey);
 
     // Get registration TX
-    let resultUser = await prisma.user.findUniqueOrThrow({
+    const resultUser = await prisma.user.findUniqueOrThrow({
       where: {
         appPrivateKey: hashedAppPrivateKey,
       }
     });
+    console.log(resultUser);
 
     // Check if already registered
     if (resultUser.registrationStatus == RegistrationStatus.COMPLETED) {
       res.status(200).json(resultUser)
       return;
     }
+    console.log('Found user', user);
 
     // Check if registration already started
     if (resultUser.registrationStatus == RegistrationStatus.STARTED && resultUser.registrationTxId != null) {
@@ -43,7 +47,7 @@ async function postHandler(
     }
 
     // Create new funding wallet for user
-    const resultAllWallets = await prisma.fundingWallet.findMany();  
+    const resultAllWallets = await prisma.fundingWallet.findMany(); // TODO: is this performant? shouldn't we just get the count?
     const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultAllWallets.length);
     const resultWallet = await prisma.fundingWallet.create({
       data: {

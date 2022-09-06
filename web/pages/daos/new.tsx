@@ -59,7 +59,7 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("address", state.address);
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
-    
+
     const res = await createDao(formData);
     const data = await res.json();
     if (res.status === 200) {

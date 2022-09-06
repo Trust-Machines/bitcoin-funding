@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount } from '@micro-stacks/react';
 
+import { getServerSideProps } from '@/common/session/index.ts';
 import { findDao, findUser } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
@@ -20,7 +21,7 @@ const steps = [
   { id: '04', name: 'Confirm', href: '#', status: 'upcoming' },
 ]
 
-const FundDao: NextPage = () => {
+const FundDao: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const { slug } = router.query;
   const account = useAccount();
@@ -82,7 +83,7 @@ const FundDao: NextPage = () => {
           </div>
 
           {!userHasWallet ? (
-            <RegisterAddressModal />
+            <RegisterAddressModal dehydratedState={dehydratedState} />
           ) : (
             <>
               <nav aria-label="Progress" className="mx-auto w-full mt-12">
@@ -180,4 +181,5 @@ const FundDao: NextPage = () => {
   )
 };
 
+export { getServerSideProps };
 export default FundDao

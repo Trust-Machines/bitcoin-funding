@@ -107,8 +107,9 @@ export const findUser = async (appPrivateKey: string) => {
 };
 
 export const createBtcAddressForUser = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/register?appPrivateKey=' + appPrivateKey, {
+  const res = await fetch(API_URL + '/api/user/register', {
     method: 'POST',
+    body: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
   const json = await res.json();
 
