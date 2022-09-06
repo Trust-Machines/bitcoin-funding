@@ -52,9 +52,16 @@ export function HomeGrid() {
                   <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                     {daos.daos.map(dao => <DaoThumbnail key={dao.address} dao={dao} />)}
                   </div>
-                  <div className='mt-8 text-center'>
-                    <Pagination totalPages={daos.totalPages} currentPage={daos.currentPage} pageSelected={pageSelected}/>
-                  </div>
+                  {daos.totalPages > 1 ? (
+                    <div className='mt-8 text-center'>
+                      <Pagination 
+                        key={daos.currentPage} 
+                        totalPages={daos.totalPages} 
+                        currentPage={daos.currentPage} 
+                        pageSelected={pageSelected}
+                      />
+                    </div>
+                  ):null}
                 </>
               ) : (
                 <span>No daos yet...</span>

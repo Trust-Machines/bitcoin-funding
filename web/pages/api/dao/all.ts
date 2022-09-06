@@ -39,7 +39,7 @@ async function getHandler(
   res.status(200).json({
     daos: result,
     total: daoCount._count,
-    totalPages: daoCount._count / pageSize,
+    totalPages: Math.ceil(daoCount._count / pageSize),
     currentPage: parseInt(page as string)
   })
 }

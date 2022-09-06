@@ -60,7 +60,7 @@ export const PaginationButton: FC<PaginationButtonParams> = ({
 
 }) => {
   return (
-    <>
+    <span key={pageNumber}>
       {pageNumber == currentPage ? (
         <button aria-current="page" onClick={() => pageSelected(pageNumber)} className="relative z-10 inline-flex items-center border border-indigo-500 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 focus:z-20">
           {pageNumber+1}
@@ -70,6 +70,6 @@ export const PaginationButton: FC<PaginationButtonParams> = ({
           {pageNumber+1}
         </button>
       )}
-    </>
+    </span>
   )
 }

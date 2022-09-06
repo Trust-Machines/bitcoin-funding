@@ -9,70 +9,85 @@ import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
 import { ActivityFeedItem } from '@/components/ActivityFeedItem'
 import { dollarAmountToString, shortAddress } from '@/common/utils'
-import { stacksApiUrl } from '@/common/constants'
 import { dateToString, daysToDate } from '@/common/utils'
 import { Alert } from '@/components/Alert'
+import { Pagination } from '@/components/Pagination'
+import { TransactionsPaged } from 'pages/api/dao/[slug]/transactions'
 
 const DaoDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
+  const [transactions, setTransactions] = useState<TransactionsPaged>({});
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activityFeedItems, setActivityFeedItems] = useState([{}]);
+  const [activityFeedItems, setActivityFeedItems] = useState([]);
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalRaised, setTotalRaised] = useState(0);
+  const [btcPrice, setBtcPrice] = useState(0);
 
-  useEffect(() => {
-    const fetchInfo = async (slug: string) => {
-      const [
-        dao,
-        transactions,
-        btcPrice,
-        isAdmin
-      ] = await Promise.all([
-        findDao(slug),
-        findDaoFundingTransactions(slug),
-        getBtcPrice(),
-        isDaoAdmin(slug, dehydratedState)
-      ]);
-      setDao(dao);
-      setIsAdmin(isAdmin);
+  const pageSelected = async (page: number) => {
+    if (page >= 0 && page < transactions.totalPages) {
+      const result = await findDaoFundingTransactions(slug as string, page);
+      setupActivityItems(dao, result, btcPrice);
+    }
+  }
 
-      // Get totals
-      let members: string[] = [];
-      let raised = 0;
-      let feedItems = [];
+  const setupActivityItems = (daoData: Dao, txData: TransactionsPaged, btcPriceData: number) => {
 
+    let feedItems = [];
+    if (txData.currentPage == 0) {
       feedItems.push(
         ActivityFeedItem({
           icon: "CheckCircleIcon", 
           title: "DAO created", 
           subtitle: "",
-          details: dateToString(dao.createdAt)
+          details: dateToString(daoData.createdAt)
         })
       )
+    }
 
-      for (const tx of transactions) {
-        if (!members.includes(tx.wallet)) {
-          members.push(tx.walletAddress);
-        }
-        const dollarRaised = (tx.sats / 100000000.00) * btcPrice;
-        raised += dollarRaised;
-        feedItems.push(
-          ActivityFeedItem({
-            icon: "PlusCircleIcon", 
-            title: dollarAmountToString(dollarRaised) + " funded", 
-            subtitle: "By " + shortAddress(tx.wallet.user.address),
-            details: dateToString(tx.createdAt)
-          })
-        )
-      }
+    for (const tx of txData.transactions) {
+      const dollarRaised = (tx.sats / 100000000.00) * btcPriceData;
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "PlusCircleIcon", 
+          title: dollarAmountToString(dollarRaised) + " funded", 
+          subtitle: "By " + shortAddress(tx.wallet.user.address),
+          details: dateToString(tx.createdAt)
+        })
+      )
+    }
 
+    setActivityFeedItems(feedItems);
+    setTransactions(txData);
+  }
+
+  useEffect(() => {
+    const fetchInfo = async (slug: string) => {
+      const [
+        daoData,
+        transactionsData,
+        btcPriceData,
+        isAdmin
+      ] = await Promise.all([
+        findDao(slug),
+        findDaoFundingTransactions(slug, 0),
+        getBtcPrice(),
+        isDaoAdmin(slug, dehydratedState)
+      ]);
+      setDao(daoData);
+      setIsAdmin(isAdmin);
+      setBtcPrice(btcPriceData);
+
+      setupActivityItems(daoData, transactionsData, btcPriceData);
+
+      // Get totals
+      let members: string[] = [];
+      let raised = 0;
       // TODO: this won't work once the API is paginated
       setTotalMembers(members.length);
       setTotalRaised(raised);
-      setActivityFeedItems(feedItems);
 
       // Start polling if registration not completed yet
       if (dao.registrationStatus == RegistrationStatus.STARTED) {
@@ -199,6 +214,16 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                       {activityFeedItems}
                     </ul>
                   </div>
+                  {transactions.totalPages > 1 ? (
+                    <div className='mt-3 pb-3 text-center'>
+                      <Pagination 
+                        key={transactions.currentPage} 
+                        totalPages={transactions.totalPages} 
+                        currentPage={transactions.currentPage} 
+                        pageSelected={pageSelected}
+                      />
+                    </div>
+                  ):null}
                 </div>
               </section>
             </div>

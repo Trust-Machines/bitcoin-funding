@@ -56,8 +56,8 @@ export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
   return json;
 };
 
-export const findDaoFundingTransactions = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions", {
+export const findDaoFundingTransactions = async (slug: string, page: number) => {
+  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions?page=" + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
