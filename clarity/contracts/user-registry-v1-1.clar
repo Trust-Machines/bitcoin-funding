@@ -16,16 +16,16 @@
 ;; Getters
 ;; 
 
-(define-read-only (get-btc-to-stx (public-key (buff 33)))
-  (map-get? btc-to-stx public-key)
+(define-read-only (get-btc-to-stx (address (buff 33)))
+  (map-get? btc-to-stx address)
 )
 
 (define-read-only (get-stx-to-btc (address principal))
   (map-get? stx-to-btc address)
 )
 
-(define-read-only (is-btc-registered (public-key (buff 33)))
-  (not (is-none (map-get? btc-to-stx public-key)))
+(define-read-only (is-btc-registered (address (buff 33)))
+  (not (is-none (map-get? btc-to-stx address)))
 )
 
 (define-read-only (is-stx-registered (address principal))
@@ -36,10 +36,11 @@
 ;; Register
 ;; 
 
-(define-public (register-user (public-key (buff 33)))
+(define-public (register-user (user principal) (address (buff 33)))
   (begin
-    (asserts! (map-insert btc-to-stx public-key tx-sender) ERR_BTC_EXISTS)
-    (map-set stx-to-btc tx-sender public-key)    
+    (asserts! (map-insert btc-to-stx address tx-sender) ERR_BTC_EXISTS)
+    (try! (contract-call? .main check-is-enabled))
+    (map-set stx-to-btc user address)    
     (ok true)
   )
 )

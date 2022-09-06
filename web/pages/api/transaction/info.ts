@@ -16,7 +16,7 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  const { txId, senderPublicKey, receiverPublicKey } = req.query;
-  const txData = await getTransactionData(txId as string, senderPublicKey as string, receiverPublicKey as string);
+  const { txId, senderAddress, receiverAddress } = req.query;
+  const txData = await getTransactionData(txId as string, senderAddress as string, receiverAddress as string);
   res.status(200).json(txData)
 }

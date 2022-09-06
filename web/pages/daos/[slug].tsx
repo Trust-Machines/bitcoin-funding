@@ -2,14 +2,16 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
-import { Dao } from '@prisma/client'
-
-import { findDao } from '@/common/fetchers'
+import { Dao, RegistrationStatus } from '@prisma/client'
+import { findDao, findDaoFundingTransactions, getBtcPrice, isDaoAdmin } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { StyledIcon } from '@/components/StyledIcon'
 import { getServerSideProps } from '@/common/session/index.ts';
+import { ActivityFeedItem } from '@/components/ActivityFeedItem'
+import { dollarAmountToString, shortAddress } from '@/common/utils'
+import { stacksApiUrl } from '@/common/constants'
+import { dateToString, daysToDate } from '@/common/utils'
+import { Alert } from '@/components/Alert'
 
 const DaoDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -17,23 +19,82 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activityFeedItems, setActivityFeedItems] = useState([{}]);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [totalRaised, setTotalRaised] = useState(0);
 
   useEffect(() => {
-    const fetchDao = async () => {
-      const dao = await findDao(slug);
+    const fetchInfo = async (slug: string) => {
+      const [
+        dao,
+        transactions,
+        btcPrice,
+        isAdmin
+      ] = await Promise.all([
+        findDao(slug),
+        findDaoFundingTransactions(slug),
+        getBtcPrice(),
+        isDaoAdmin(slug, dehydratedState)
+      ]);
       setDao(dao);
+      setIsAdmin(isAdmin);
 
-      const parsedState = JSON.parse(dehydratedState) || []
-      if (dao.admins && dao.admins.length > 0 && parsedState.length > 0) {
-        const account = parsedState[1][1][0];
-        setIsAdmin(dao.admins.findIndex(i => i['userId'] === account['appPrivateKey']) !== -1);
+      // Get totals
+      let members: string[] = [];
+      let raised = 0;
+      let feedItems = [];
+
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "CheckCircleIcon", 
+          title: "DAO created", 
+          subtitle: "",
+          details: dateToString(dao.createdAt)
+        })
+      )
+
+      for (const tx of transactions) {
+        if (!members.includes(tx.wallet)) {
+          members.push(tx.walletAddress);
+        }
+        const dollarRaised = (tx.sats / 100000000.00) * btcPrice;
+        raised += dollarRaised;
+        feedItems.push(
+          ActivityFeedItem({
+            icon: "PlusCircleIcon", 
+            title: dollarAmountToString(dollarRaised) + " funded", 
+            subtitle: "By " + shortAddress(tx.wallet.user.address),
+            details: dateToString(tx.createdAt)
+          })
+        )
+      }
+
+      // TODO: this won't work once the API is paginated
+      setTotalMembers(members.length);
+      setTotalRaised(raised);
+      setActivityFeedItems(feedItems);
+
+      // Start polling if registration not completed yet
+      if (dao.registrationStatus == RegistrationStatus.STARTED) {
+        var intervalId = window.setInterval(function(){
+          fetchVerifyDao(intervalId);
+        }, 15000);
       }
 
       setIsLoading(false);
-    };
+    }
+
+    const fetchVerifyDao = async (intervalId: number) => {
+      const dao = await findDao(slug as string);
+      // Stop polling if registration completed
+      if (dao.registrationStatus != RegistrationStatus.STARTED) {
+        setDao(dao);
+        clearInterval(intervalId);
+      }
+    }
 
     if (slug) {
-      fetchDao();
+      fetchInfo(slug as string);
     }
   }, [slug]);
 
@@ -44,132 +105,103 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
           <Loading />
         </div>
       ) : (
-        <main className="py-10">
-          {/* Page header */}
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
-            <div className="flex items-center space-x-5">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
-                <p className="text-sm font-medium text-gray-500">
-                  {dao.about}
-                </p>
-              </div>
-            </div>
-            {isAdmin ? (
-              <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-                <Link
-                  href={`/daos/${dao.slug}/manage`}
-                  className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
-                >
-                  Manage DAO
-                </Link>
-              </div>
-            ) : null}
-          </div>
+        <main className="py-3 pb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
 
-          <div className="mx-auto w-full px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8 mt-4">
-            <img
-              className="w-full max-h-60"
-              src="https://as1.ftcdn.net/v2/jpg/03/32/69/82/1000_F_332698203_XmQ4jYo8vDPfgeqZ3Ake9xfRMS7ChD15.jpg"
-            />
-          </div>
+            {/* COL - AVATAR + NAME + INFO */}
+            <div className="col-span-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
 
-          <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
-            <div className="space-y-6 lg:col-start-1 lg:col-span-2">
-              <section>
+                {/* COL - AVATAR  */}
+                <div className="col-span-1">
+                  <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
+                    <div className="rounded-md overflow-hidden">
+                      <img src={`${dao.avatar}`}/>
+                    </div>
+                  </section>
+                </div>
+
+                {/* COL - NAME */}
+                <div className="col-span-3">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{dao.name}</h1>
+                  {isAdmin ? (
+                    <Link
+                      href={`/daos/${dao.slug}/manage`}
+                      className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                    >
+                      Manage DAO
+                    </Link>
+                  ):null}
+                  {dao.registrationStatus == RegistrationStatus.COMPLETED ? (
+                    <Link
+                      href={`/daos/${dao.slug}/fund`}
+                      className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                    >
+                      Fund DAO
+                    </Link>
+                  ):null}
+                </div>
+              </div> 
+
+              {/* INFO */}
+              <section className='mt-6'>
+                {dao.registrationStatus != RegistrationStatus.COMPLETED ? (
+                  <div className='mb-4'>
+                    <Alert type={Alert.type.WARNING}>
+                      The DAO is being registered on chain. Funding will be available once the registration is done.
+                    </Alert>
+                  </div>
+                ):null}
+
                 <div className="bg-white shadow sm:rounded-lg">
-                  <div className="px-4 py-5 sm:px-6">
+                  <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
                     <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
                       About {dao.name}
                     </h2>
                   </div>
-                  <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
+                  <div className="px-4 py-5 sm:px-6">
+                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 mt-5">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
-                        <dd className="mt-1 text-sm text-gray-900">$80,000</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {dollarAmountToString(totalRaised)}
+                      </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">84</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{totalMembers}</dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">17</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(dao.raisingDeadline)}</dd>
                       </div>
                       <div className="sm:col-span-3">
-                        <dt className="text-sm font-medium text-gray-500">Our Story</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {dao.about}
-                        </dd>
+                        <dt className="text-sm font-medium text-gray-500">About</dt>
+                        <dd className="mt-1 text-sm text-gray-900">{dao.about}</dd>
                       </div>
                     </dl>
-                  </div>
-                  <div>
-                    <Link
-                      href={`/daos/${dao.slug}/fund`}
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
-                      Fund DAO
-                    </Link>
                   </div>
                 </div>
               </section>
             </div>
 
-            <section aria-labelledby="timeline-title" className="lg:col-start-3 lg:col-span-1">
-              <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
-                <h2 id="timeline-title" className="text-lg font-medium text-gray-900">
-                  Timeline
-                </h2>
-
-                {/* Activity Feed */}
-                <div className="mt-6 flow-root">
-                  <ul role="list" className="-mb-8">
-                    <li key='1'>
-                      <div className="relative pb-8">
-                        {false ? (
-                          <span
-                            className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        <div className="relative flex space-x-3">
-                          <div>
-                            <span className='bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
-                              <StyledIcon
-                                as="ExclamationCircleIcon"
-                                size={6}
-                                solid={false}
-                                className="text-white"
-                              />
-                            </span>
-                          </div>
-                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                            <div>
-                              <p className="text-sm text-gray-500">
-                                SP123.... funded the DAO
-                              </p>
-                            </div>
-                            <div className="text-right text-sm whitespace-nowrap text-gray-500">
-                              <time dateTime='2022-01-08'>Aug, 2022</time>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
+            {/* COL - Activity feed */}
+            <div className="col-span-2">
+              <section>
+                <div className="bg-white shadow sm:rounded-lg">
+                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+                    <h2 id="activity" className="text-lg leading-6 font-medium text-gray-900">
+                      Activity feed
+                    </h2>
+                  </div>
+                  <div className="px-4 sm:px-6 pt-4">
+                    <ul role="list" className="">
+                      {activityFeedItems}
+                    </ul>
+                  </div>
                 </div>
-                <div className="mt-6 flex flex-col justify-stretch">
-                  <Link
-                    href={`/daos/${dao.slug}/fund`}
-                    className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Fund DAO
-                  </Link>
-                </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
         </main>
       )}

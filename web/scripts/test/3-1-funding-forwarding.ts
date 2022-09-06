@@ -1,16 +1,15 @@
 import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
-import { publicKeyToAddress } from '@/common/bitcoin/bitcoin-js'
 
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
-  const daoPublicKey = process.argv.slice(2)[1];
+  const daoAddress = process.argv.slice(2)[1];
   if (appPrivateKey == undefined) {
     console.log("[FUNDING] Add the user app private key as first parameter")
     return;
   }
-  if (daoPublicKey == undefined) {
-    console.log("[FUNDING] Add the DAO public key as second parameter")
+  if (daoAddress == undefined) {
+    console.log("[FUNDING] Add the DAO address as second parameter")
     return;
   }
 
@@ -24,10 +23,6 @@ export async function start() {
   });
   console.log("[FUNDING] Wallet balance:", responseBalance.data);
 
-  // Get DAO address from public key
-  const daoAddress = publicKeyToAddress(daoPublicKey);
-  console.log("[FUNDING] DAO address:", daoAddress);
-
   // Forward to DAO
   const responsseForward = await axios({
     method: 'POST',
@@ -35,7 +30,7 @@ export async function start() {
     data: {
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
-      sats: responseBalance.data
+      sats: 10000000      // TODO: this works with '10000000' but not with data
     }
   });
   console.log("[FUNDING] Forward API response:", responsseForward.data);
