@@ -68,7 +68,6 @@ async function postHandler(
         },
         data: {
           registrationTxId: registrationTxId,
-          fundingWalletAddress: newWallet.address
         },
       });
       res.status(200).json(result)
