@@ -23,6 +23,9 @@ async function postHandler(
   const result = await prisma.fundingTransaction.findUniqueOrThrow({
     where: {
       txId: req.body.txId,
+    },
+    include: {
+      dao: true
     }
   });
 
@@ -47,13 +50,41 @@ async function postHandler(
     }
   }
 
-  const resultUpdate = await prisma.fundingTransaction.update({
+  // Check if member had already funded
+  const memberCount = await prisma.fundingTransaction.aggregate({
+    where: {
+      walletAddress: result.walletAddress,
+      registrationStatus: RegistrationStatus.COMPLETED
+    },
+    _count: true,
+  });
+
+  // Update status
+  const updateTransaction = prisma.fundingTransaction.update({
     where: {
       txId: req.body.txId,
     },
     data: {
-      registrationStatus: status,
+      registrationStatus: status
     },
   });
-  res.status(200).json(resultUpdate)
+  
+  if (status == RegistrationStatus.COMPLETED) {
+    // Update totals
+    const updateDao = prisma.dao.update({
+      where: {
+        address: result.dao.address
+      },
+      data: {
+        totalSats: result.dao.totalSats + result.sats,
+        totalMembers: memberCount._count > 0 ? result.dao.totalMembers : result.dao.totalMembers + 1
+      }
+    });
+
+    const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateDao]);
+    res.status(200).json(resultUpdateTransaction)
+  } else {
+    const [resultUpdateTransaction] = await prisma.$transaction([updateTransaction]);
+    res.status(200).json(resultUpdateTransaction)
+  }
 }
