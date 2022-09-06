@@ -1,13 +1,17 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { StyledIcon } from '@/components/StyledIcon'
+import { useRouter } from 'next/router'
 
 export function RegisterAddressModal() {
-  const [open, setOpen] = useState(true)
+  const router = useRouter();
+  const closeAndRedirect = async () => {
+    router.push('/');
+  };
 
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={true} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -33,9 +37,17 @@ export function RegisterAddressModal() {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md sm:p-6">
                 <div>
+                  <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                    <button type="button" onClick={() => { closeAndRedirect(); }} class="rounded-md bg-white text-gray-400 hover:text-gray-500">
+                      <span class="sr-only">Close</span>
+                      <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     <StyledIcon
-                      as="CheckIcon"
+                      as="PlusIcon"
                       size={6}
                       solid={false}
                       className="text-green-600"
