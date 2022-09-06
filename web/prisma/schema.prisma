@@ -24,6 +24,8 @@ model Dao {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   admins                      DaoAdmin[]
+  totalSats                   Int                       @default(0)
+  totalMembers                Int                       @default(0)
 }
 
 model DaoAdmin {

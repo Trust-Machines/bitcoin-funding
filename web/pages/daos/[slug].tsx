@@ -22,8 +22,6 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
   const [transactions, setTransactions] = useState<TransactionsPaged>({});
   const [isAdmin, setIsAdmin] = useState(false);
   const [activityFeedItems, setActivityFeedItems] = useState([]);
-  const [totalMembers, setTotalMembers] = useState(0);
-  const [totalRaised, setTotalRaised] = useState(0);
   const [btcPrice, setBtcPrice] = useState(0);
 
   const pageSelected = async (page: number) => {
@@ -80,14 +78,8 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
       setIsAdmin(isAdmin);
       setBtcPrice(btcPriceData);
 
+      // Setup activity items
       setupActivityItems(daoData, transactionsData, btcPriceData);
-
-      // Get totals
-      let members: string[] = [];
-      let raised = 0;
-      // TODO: this won't work once the API is paginated
-      setTotalMembers(members.length);
-      setTotalRaised(raised);
 
       // Start polling if registration not completed yet
       if (dao.registrationStatus == RegistrationStatus.STARTED) {
@@ -179,12 +171,12 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {dollarAmountToString(totalRaised)}
+                          {dollarAmountToString((dao.totalSats / 100000000.00) * btcPrice)}
                       </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{totalMembers}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{dao.totalMembers}</dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
