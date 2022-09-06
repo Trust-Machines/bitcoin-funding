@@ -15,12 +15,6 @@ plan:
             path: contracts/test/test-utils.clar
             anchor-block-only: true
         - contract-publish:
-            contract-name: clarity-bitcoin
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 421940
-            path: contracts/clarity-bitcoin.clar
-            anchor-block-only: true
-        - contract-publish:
             contract-name: main
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 10340
@@ -33,6 +27,18 @@ plan:
             path: contracts/dao-registry-trait-v1-1.clar
             anchor-block-only: true
         - contract-publish:
+            contract-name: dao-registry-v1-1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 11400
+            path: contracts/dao-registry-v1-1.clar
+            anchor-block-only: true
+        - contract-publish:
+            contract-name: clarity-bitcoin
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 421940
+            path: contracts/test/clarity-bitcoin.clar
+            anchor-block-only: true
+        - contract-publish:
             contract-name: dao-funding-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 32260
@@ -43,10 +49,4 @@ plan:
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 8770
             path: contracts/user-registry-v1-1.clar
-            anchor-block-only: true
-        - contract-publish:
-            contract-name: dao-registry-v1-1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 11400
-            path: contracts/dao-registry-v1-1.clar
             anchor-block-only: true
