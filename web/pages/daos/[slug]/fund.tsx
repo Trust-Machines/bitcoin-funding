@@ -37,6 +37,7 @@ const FundDao: NextPage = () => {
     const fetchUser = async () => {
       const user = await findUser(account['appPrivateKey']);
       if (!user || !user['fundingWalletPublicKey']) {
+        // TODO: check if on-chain TX has been mined when fundingWalletPublicKey has been set
         setUserHasWallet(false);
       }
       setUser(user);

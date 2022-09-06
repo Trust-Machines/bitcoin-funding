@@ -100,9 +100,15 @@ export const updateDao = async (slug: string, formData: FormData) => {
 export const findUser = async (appPrivateKey: string) => {
   const res = await fetch(API_URL + '/api/user/info?appPrivateKey=' + appPrivateKey, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
+  });
+  const json = await res.json();
+
+  return json;
+};
+
+export const createBtcAddressForUser = async (appPrivateKey: string) => {
+  const res = await fetch(API_URL + '/api/user/register?appPrivateKey=' + appPrivateKey, {
+    method: 'POST',
   });
   const json = await res.json();
 

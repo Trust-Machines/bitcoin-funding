@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { StyledIcon } from '@/components/StyledIcon'
 import { useRouter } from 'next/router'
+import { createBtcAddressForUser } from '@/common/fetchers'
 
 export function RegisterAddressModal() {
   const router = useRouter();
