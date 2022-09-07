@@ -100,7 +100,9 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
         <main className="max-w-5xl">
 
           {/* HEADER */}
-          <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+          <Link href={`/daos/${dao.slug}`}>
+            <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+          </Link>
 
           {/* ERROR MESSAGES */}
           {errorMessage != "" ? (
