@@ -47,7 +47,6 @@ const FundDao: NextPage = ({ dehydratedState }) => {
       if (user.registrationStatus == RegistrationStatus.COMPLETED) {
         const txId = localStorage.getItem('fund-tx');
 
-
         // If forwarding transaction yet
         if (txId == undefined) {
           currentStep = 2;
@@ -85,10 +84,13 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         var intervalId = window.setInterval(function(){
           pollUser(intervalId);
         }, 15000);
+      } else {
+        currentStep = 1;
       }
     }
 
     // Update steps data
+    console.log('we are at', currentStep);
     for (let step = 0; step < 4; step++) {
       steps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
     }
@@ -272,8 +274,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   </a>
                 </div>
               </div>
-              
-            ): steps[1].status == "current" ? (
+            ) : steps[1].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
@@ -290,7 +291,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   ):null}
                 </div>
                 <div>
-                  {user.registrationStatus == RegistrationStatus.STARTED ? (
+                  {user.registrationTxId ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
@@ -299,6 +300,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   ):(
                     <a
                       onClick={() => { registerUserAddress() }}
+                      href="#"
                       className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                     >
                       Create BTC account
