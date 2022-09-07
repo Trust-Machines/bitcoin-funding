@@ -107,12 +107,9 @@ export const findUser = async (appPrivateKey: string) => {
 };
 
 export const getUserBalance = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
+  return await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
     method: 'GET',
   });
-  const json = await res.json();
-
-  return json;
 };
 
 export const registerUser = async (appPrivateKey: string) => {

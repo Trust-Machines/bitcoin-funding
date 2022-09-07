@@ -50,16 +50,19 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         // If forwarding transaction yet
         if (txId == undefined) {
           currentStep = 2;
-          const userBalance = await getUserBalance(account.appPrivateKey as string);
-          setWalletBalance(userBalance);
+          const balanceResult = await getUserBalance(account.appPrivateKey as string);
+          if (balanceResult.status === 200) {
+            // If status is not 200, something went wrong. Most likely app is down or Electrum server is not reachable
+            const userBalance = await balanceResult.json();
+            setWalletBalance(userBalance);
 
-          // Start polling for balance
-          if (userBalance == 0) {
-            var intervalId = window.setInterval(function(){
-              pollUserBalance(intervalId);
-            }, 15000);
+            // Start polling for balance
+            if (userBalance == 0) {
+              var intervalId = window.setInterval(function(){
+                pollUserBalance(intervalId);
+              }, 15000);
+            }
           }
-
         // User has unverified transactions
         } else {          
           const tx = await getTransaction(txId);
@@ -90,7 +93,6 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     }
 
     // Update steps data
-    console.log('we are at', currentStep);
     for (let step = 0; step < 4; step++) {
       steps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
     }
@@ -131,7 +133,12 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const pollUserBalance = async (intervalId: number) => {
-    const balance = await getUserBalance(account.appPrivateKey as string);
+    const balanceResult = await getUserBalance(account.appPrivateKey as string);
+    if (balanceResult.status != 200) {
+      return;
+    }
+
+    const balance = await balanceResult.json();
     if (balance > 0) {
       clearInterval(intervalId);
       fetchInfo();
@@ -322,7 +329,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
-                      Waiting for your BTC to arrive..
+                      Waiting for your BTC to arrive...
                     </div>
                   ):(
                     <a
