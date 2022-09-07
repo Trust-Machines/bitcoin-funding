@@ -115,22 +115,24 @@ export const getUserBalance = async (appPrivateKey: string) => {
   return json;
 };
 
-export const createBtcAddressForUser = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/register', {
+export const registerUser = async (appPrivateKey: string) => {
+  return await fetch(API_URL + '/api/user/register', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
-  const json = await res.json();
-
-  return json;
 };
 
-export const forwardUserFunds = async (appPrivateKey: string, sats: number) => {
-  const res = await fetch(API_URL + '/api/user/forward', {
+export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoAddress: string) => {
+  return await fetch(API_URL + '/api/user/forward', {
     method: 'POST',
-    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats })
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, daoAddress: daoAddress })
+  });
+};
+
+export const getUnverifiedTransactions = async (walletAddress: string, daoAddress: string) => {
+  const res = await fetch(API_URL + '/api/transaction/unverified?walletAddress=' + walletAddress + "&daoAddress=" + daoAddress, {
+    method: 'GET',
   });
   const json = await res.json();
-
   return json;
 };

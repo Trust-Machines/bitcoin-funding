@@ -1,76 +1,121 @@
 import type { NextPage } from 'next'
-import Link from 'next/link'
-
-import { Dao, User } from '@prisma/client'
-
+import { Dao, RegistrationStatus, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useAccount } from '@micro-stacks/react';
-
+import { useAccount, useAuth } from '@micro-stacks/react';
 import { getServerSideProps } from '@/common/session/index.ts';
-import { findDao, findUser, getUserBalance, forwardUserFunds } from '@/common/fetchers';
+import { findDao, findUser, getUserBalance, forwardUserFunds, registerUser, getUnverifiedTransactions } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
-import { RegisterAddressModal } from '@/components/RegisterAddressModal';
 
 const steps = [
-  { id: '01', name: 'Connect Hiro Wallet', href: '#', status: 'complete' },
-  { id: '02', name: 'Register BTC address', href: '#', status: 'complete' },
-  { id: '03', name: 'Send BTC to DAO', href: '#', status: 'current' },
-  { id: '04', name: 'Confirm', href: '#', status: 'upcoming' },
+  { id: '01', name: 'Connect Hiro Wallet', status: 'complete' },
+  { id: '02', name: 'Register BTC address', status: 'complete' },
+  { id: '03', name: 'Send BTC to DAO', status: 'current' },
+  { id: '04', name: 'Confirm', status: 'upcoming' },
 ]
 
 const FundDao: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const { slug } = router.query;
   const account = useAccount();
+  const { openAuthRequest, isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
   const [user, setUser] = useState<User>({});
-  const [userHasWallet, setUserHasWallet] = useState(true);
   const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
-    const fetchDao = async () => {
-      setDao(await findDao(slug));
-    };
-
-    const fetchBalance = async () => {
-      try {
-        // TODO: get balance from Electrum Server
-        // const res = await getUserBalance(account['appPrivateKey']);
-        // console.log(res);
-      } catch {
-        setWalletBalance(0);
-      }
-    };
-
-    const fetchUser = async () => {
-      const user = await findUser(account['appPrivateKey']);
-      if (!user || !user['fundingWalletAddress']) {
-        // TODO: check if on-chain TX has been mined (and user is verified)
-        // When verification is going on, show a pending verification modal
-        setUserHasWallet(false);
-      } else {
-        setUser(user);
-        fetchBalance();
-      }
-      setIsLoading(false);
-    }
-
     if (slug) {
-      fetchDao();
-      fetchUser();
+      fetchInfo();
     }
   }, [slug]);
 
+  const fetchInfo = async () => {
+    const dao = await findDao(slug as string);
+    setDao(dao);
+    
+    let currentStep = 0;
+    if (isSignedIn) {
+      currentStep = 1;
+      const user = await findUser(account.appPrivateKey as string);
+      setUser(user);
+
+      // User signed in and completed registration
+      if (user.registrationStatus == RegistrationStatus.COMPLETED) {
+        const unverifiedTransactions = await getUnverifiedTransactions(user.fundingWalletAddress, dao.address);
+
+        // If no unverified transactions, user funds still need to arrive
+        if (unverifiedTransactions.length == 0) {
+          currentStep = 2;
+          const userBalance = await getUserBalance(account.appPrivateKey as string);
+          setWalletBalance(userBalance);
+
+          // Start polling for balance
+          if (userBalance == 0) {
+            var intervalId = window.setInterval(function(){
+              pollUserBalance(intervalId);
+            }, 15000);
+          }
+
+        // User has unverified transactions
+        } else {
+          currentStep = 3;
+          
+          // TODO: finish flow
+
+        }
+
+      // User signed in and started registration
+      } else if (user.registrationTxId != null) {
+        // Start polling
+        var intervalId = window.setInterval(function(){
+          pollUser(intervalId);
+        }, 15000);
+      }
+    }
+
+    // Update steps data
+    for (let step = 0; step < 4; step++) {
+      steps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
+    }
+
+    setIsLoading(false);
+  }
+
+  const registerUserAddress = async () => {
+    const result = await registerUser(account.appPrivateKey as string);
+    if (result.status === 200) {
+      fetchInfo();
+    }
+  }
+
   const forwardFunds = async () => {
-    const res = await forwardUserFunds(10000, account['appPrivateKey']);
-    console.log(res);
-    // TODO: make sats number dynamic
-    // TODO: feedback + loading on status of btc FundingTransaction
-  };
+    // TODO: forward actual walletBalance
+    // const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
+    const result = await forwardUserFunds(account.appPrivateKey as string, 10000000, dao.address);
+    if (result.status === 200) {
+      fetchInfo();
+    }
+  }
+
+  const pollUserBalance = async (intervalId: number) => {
+    const balance = await getUserBalance(account.appPrivateKey as string);
+    console.log("poll balance:", balance);
+    if (balance > 0) {
+      clearInterval(intervalId);
+      fetchInfo();
+    }
+  }
+
+  const pollUser = async (intervalId: number) => {
+    const user = await findUser(account.appPrivateKey as string);
+    if (user.registrationStatus != RegistrationStatus.STARTED) {
+      clearInterval(intervalId);
+      fetchInfo();
+    }
+  }
 
   return (
     <Container className="min-h-screen">
@@ -103,100 +148,177 @@ const FundDao: NextPage = ({ dehydratedState }) => {
             </div>
           </div>
 
-          {!userHasWallet ? (
-            <RegisterAddressModal dehydratedState={dehydratedState} />
-          ) : (
-            <>
-              <nav aria-label="Progress" className="mx-auto w-full mt-12">
-                <ol role="list" className="border border-gray-300 rounded-md divide-y divide-gray-300 md:flex md:divide-y-0">
-                  {steps.map((step, stepIdx) => (
-                    <li key={step.name} className="relative md:flex-1 md:flex">
-                      {step.status === 'complete' ? (
-                        <a href={step.href} className="group flex items-center w-full">
-                          <span className="px-6 py-4 flex items-center text-sm font-medium">
-                            <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-600 rounded-full group-hover:bg-blue-800">
-                              <StyledIcon
-                                as="CheckIcon"
-                                size={6}
-                                solid={false}
-                                className="text-white"
-                              />
-                            </span>
-                            <span className="ml-4 text-sm font-medium text-gray-900">{step.name}</span>
-                          </span>
-                        </a>
-                      ) : step.status === 'current' ? (
-                        <a href={step.href} className="px-6 py-4 flex items-center text-sm font-medium" aria-current="step">
-                          <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-blue-600 rounded-full">
-                            <span className="text-blue-600">{step.id}</span>
-                          </span>
-                          <span className="ml-4 text-sm font-medium text-blue-600">{step.name}</span>
-                        </a>
-                      ) : (
-                        <a href={step.href} className="group flex items-center">
-                          <span className="px-6 py-4 flex items-center text-sm font-medium">
-                            <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-full group-hover:border-gray-400">
-                              <span className="text-gray-500 group-hover:text-gray-900">{step.id}</span>
-                            </span>
-                            <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900">{step.name}</span>
-                          </span>
-                        </a>
-                      )}
+          <nav aria-label="Progress" className="mx-auto w-full mt-12">
+            <ol role="list" className="border border-gray-300 rounded-md divide-y divide-gray-300 md:flex md:divide-y-0">
+              {steps.map((step, stepIdx) => (
+                <li key={step.name} className="relative md:flex-1 md:flex">
+                  {step.status === 'complete' ? (
+                    <a href={step.href} className="group flex items-center w-full">
+                      <span className="px-6 py-4 flex items-center text-sm font-medium">
+                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-600 rounded-full group-hover:bg-blue-800">
+                          <StyledIcon
+                            as="CheckIcon"
+                            size={6}
+                            solid={false}
+                            className="text-white"
+                          />
+                        </span>
+                        <span className="ml-4 text-sm font-medium text-gray-900">{step.name}</span>
+                      </span>
+                    </a>
+                  ) : step.status === 'current' ? (
+                    <a href={step.href} className="px-6 py-4 flex items-center text-sm font-medium" aria-current="step">
+                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-blue-600 rounded-full">
+                        <span className="text-blue-600">{step.id}</span>
+                      </span>
+                      <span className="ml-4 text-sm font-medium text-blue-600">{step.name}</span>
+                    </a>
+                  ) : (
+                    <a href={step.href} className="group flex items-center">
+                      <span className="px-6 py-4 flex items-center text-sm font-medium">
+                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-gray-300 rounded-full group-hover:border-gray-400">
+                          <span className="text-gray-500 group-hover:text-gray-900">{step.id}</span>
+                        </span>
+                        <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900">{step.name}</span>
+                      </span>
+                    </a>
+                  )}
 
-                      {stepIdx !== steps.length - 1 ? (
-                        <>
-                          {/* Arrow separator for lg screens and up */}
-                          <div className="hidden md:block absolute top-0 right-0 h-full w-5" aria-hidden="true">
-                            <svg
-                              className="h-full w-full text-gray-300"
-                              viewBox="0 0 22 80"
-                              fill="none"
-                              preserveAspectRatio="none"
-                            >
-                              <path
-                                d="M0 -2L20 40L0 82"
-                                vectorEffect="non-scaling-stroke"
-                                stroke="currentcolor"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        </>
-                      ) : null}
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-
-              <div className="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense">
-                <div className="space-y-6 lg:col-start-1 lg:col-span-2">
-                  <section>
-                    <div className="bg-white shadow sm:rounded-lg">
-                      <div className="px-4 py-5 sm:px-6">
-                        <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
-                          Fund {dao.name}
-                        </h2>
-                      </div>
-                      <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <p>Send BTC to {user.fundingWalletAddress}</p>
-
-                        <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
-                      </div>
-                      <div>
-                        <a
-                          onClick={() => { if (walletBalance > 0) { forwardFunds(); } }}
-                          disabled={walletBalance === 0}
-                          className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                  {stepIdx !== steps.length - 1 ? (
+                    <>
+                      {/* Arrow separator for lg screens and up */}
+                      <div className="hidden md:block absolute top-0 right-0 h-full w-5" aria-hidden="true">
+                        <svg
+                          className="h-full w-full text-gray-300"
+                          viewBox="0 0 22 80"
+                          fill="none"
+                          preserveAspectRatio="none"
                         >
-                          Fund {walletBalance} sats
-                        </a>
+                          <path
+                            d="M0 -2L20 40L0 82"
+                            vectorEffect="non-scaling-stroke"
+                            stroke="currentcolor"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       </div>
-                    </div>
-                  </section>
+                    </>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <section className="mt-8">
+            {steps[0].status == "current" ? (
+              <div className="bg-white shadow sm:rounded-lg">
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p>
+                    Connect your Stacks wallet.
+                  </p>
+                  <p>
+                    No wallet installed yet? Download the Hiro wallet 
+                    <a 
+                      className="ml-1 text-blue-700"
+                      target="_blank"
+                      href="https://wallet.hiro.so/"
+                    > 
+                      here
+                    </a>.
+                  </p>
+                </div>
+                <div>
+                  <a
+                    onClick={async () => { await openAuthRequest() }}
+                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                  >
+                    Connect Stacks wallet
+                  </a>
                 </div>
               </div>
-            </>
-          )}
+              
+            ): steps[1].status == "current" ? (
+              <div className="bg-white shadow sm:rounded-lg">
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p>
+                    It seems like this is your first time funding on BallotBox. 
+                    We will create an internal BTC account for you and register this on-chain. 
+                    Don't worry, gas is on us!
+                  </p>
+                </div>
+                <div>
+                  {user.registrationTxId ? (
+                    <div
+                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
+                    >
+                      Your BTC account is being created. This can take 10-20 minutes.
+                    </div>
+                  ):(
+                    <a
+                      onClick={() => { registerUserAddress() }}
+                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                    >
+                      Create BTC account
+                    </a>
+                  )}
+                </div>
+              </div>
+
+            ): steps[2].status == "current" ? (
+              <div className="bg-white shadow sm:rounded-lg">
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p>Send BTC to 
+                    <span className="font-bold"> {user.fundingWalletAddress}</span>
+                  </p>
+                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
+                </div>
+                <div>
+                  {walletBalance == 0 ? (
+                    <div
+                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
+                    >
+                      Waiting for your BTC to arrive..
+                    </div>
+                  ):(
+                    <a
+                      onClick={() => { forwardFunds() }}
+                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                    >
+                      Fund {' '}
+                      {(walletBalance / 100000000.0).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 4,
+                      })} BTC
+                    </a>
+                  )}
+                </div>
+              </div>
+
+            ): steps[3].status == "current" ? (
+              <div className="bg-white shadow sm:rounded-lg">
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  The DAO is being funded with your BTC. 
+                  It takes 10-20 minutes for the funding to be registered on chain. 
+                  No further action is required.
+                </div>
+                <div>
+                  {walletBalance == 0 ? (
+                    <div
+                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
+                    >
+                      Waiting for your transaction registration..
+                    </div>
+                  ):(
+                    <a
+                      onClick={() => { forwardFunds() }}
+                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                    >
+                      View DAO
+                    </a>
+                  )}
+                </div>
+              </div>
+            ): null}
+          </section>
         </main>
       )}
     </Container>

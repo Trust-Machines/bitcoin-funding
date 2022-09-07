@@ -22,7 +22,8 @@ async function postHandler(
   res: NextApiResponse<FundingTransaction | string>
 ) {
   try {
-    const hashedAppPrivateKey = await hashAppPrivateKey(req.body.appPrivateKey);
+    const body = JSON.parse(req.body);
+    const hashedAppPrivateKey = await hashAppPrivateKey(body.appPrivateKey);
     const resultUser = await prisma.user.findUniqueOrThrow({
       where: {
         appPrivateKey: hashedAppPrivateKey,
@@ -36,23 +37,23 @@ async function postHandler(
 
     // Check if enough balance
     const resultBalance = await getBalance(resultWallet.address);    
-    if (req.body.sats == 0 || resultBalance < req.body.sats) {
-      res.status(400).json("Insufficient balance: " + resultBalance + "/" + req.body.sats);
+    if (body.sats == 0 || resultBalance < body.sats) {
+      res.status(400).json("Insufficient balance: " + resultBalance + "/" + body.sats);
     } else {
       // Send BTC
       const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultWallet.index)
       const sendBtcResult = await sendBtc(
         wallet.privateKey,
-        req.body.daoAddress,
-        req.body.sats
+        body.daoAddress,
+        body.sats
       );
 
       const resultTransaction = await prisma.fundingTransaction.create({
         data: {
           txId: sendBtcResult,
           wallet: { connect: { address: resultWallet.address } },
-          dao: { connect: { address: req.body.daoAddress } },
-          sats: req.body.sats,
+          dao: { connect: { address: body.daoAddress } },
+          sats: body.sats,
         },
       });
       res.status(200).json(resultTransaction)
