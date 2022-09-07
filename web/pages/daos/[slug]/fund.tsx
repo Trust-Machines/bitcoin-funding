@@ -295,7 +295,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
-                      Your BTC account is being created. This can take 10-20 minutes.
+                      Your BTC account is being created. This can take up to 30 minutes.
                     </div>
                   ):(
                     <a
