@@ -30,7 +30,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     if (slug) {
       fetchInfo();
     }
-  }, [slug]);
+  }, [slug, isSignedIn]);
 
   const fetchInfo = async () => {
     const dao = await findDao(slug as string);
@@ -82,6 +82,11 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     }
 
     setIsLoading(false);
+  }
+
+  const connectWallet = async () => {
+    await openAuthRequest();
+    fetchInfo();
   }
 
   const registerUserAddress = async () => {
@@ -142,6 +147,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
 
                 <div className="col-span-3">
                   <h1 className="text-2xl font-bold text-gray-900 mb-3">{dao.name}</h1>
+                  <p className="text-sm text-gray-900">{dao.about}</p>
                 </div>
 
               </div>
@@ -228,7 +234,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                 </div>
                 <div>
                   <a
-                    onClick={async () => { await openAuthRequest() }}
+                    onClick={async () => { connectWallet() }}
                     className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                   >
                     Connect Stacks wallet
