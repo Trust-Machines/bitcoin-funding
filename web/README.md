@@ -29,3 +29,7 @@ The project is using Electrum servers to facilitate fetching of wallet data end 
 
  1. Copy `.env.example` to `.env`
  2. Run `npm run dev`
+
+## Run cron jobs in the ./web/scripts folder
+
+use `npx ts-node register-daos.ts`

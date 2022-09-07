@@ -41,7 +41,6 @@ const New: NextPage = ({ dehydratedState }) => {
   }
 
   const submitCreateDao = async () => {
-
     if (state.name == '') {
       showErrorMessage('Please enter a name.'); return;
     } else if (state.raisingAmount == 0) {
@@ -60,7 +59,7 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("address", state.address);
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
-    
+
     const res = await createDao(formData);
     const data = await res.json();
     if (res.status === 200) {
@@ -71,14 +70,12 @@ const New: NextPage = ({ dehydratedState }) => {
   }
 
   useEffect(() => {
-
     const fetchBtcPrice = async () => {
       const btcPrice = await getBtcPrice();
       setBtcPrice(btcPrice);
     };
 
     fetchBtcPrice();
-
   }, []);
 
   return (
