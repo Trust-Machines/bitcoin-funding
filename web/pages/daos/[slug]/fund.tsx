@@ -8,6 +8,7 @@ import { findDao, findUser, getUserBalance, forwardUserFunds, registerUser, getT
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
+import { Alert } from '@/components/Alert';
 
 const steps = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'complete' },
@@ -280,9 +281,16 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                     We will create an internal BTC account for you and register this on-chain. 
                     Don't worry, gas is on us!
                   </p>
+                  {user.registrationStatus == RegistrationStatus.FAILED ? (
+                    <div className="mt-3">
+                      <Alert type={Alert.type.ERROR}>
+                        The registration failed. Please try again.
+                      </Alert>
+                    </div>
+                  ):null}
                 </div>
                 <div>
-                  {user.registrationTxId ? (
+                  {user.registrationStatus == RegistrationStatus.STARTED ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >

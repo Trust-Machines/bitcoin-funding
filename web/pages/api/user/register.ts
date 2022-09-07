@@ -67,6 +67,7 @@ async function postHandler(
           appPrivateKey: hashedAppPrivateKey,
         },
         data: {
+          registrationStatus: RegistrationStatus.STARTED,
           registrationTxId: registrationTxId,
         },
       });
