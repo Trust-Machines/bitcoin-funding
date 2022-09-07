@@ -129,9 +129,12 @@ export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoA
   });
 };
 
-export const getUnverifiedTransactions = async (walletAddress: string, daoAddress: string) => {
-  const res = await fetch(API_URL + '/api/transaction/unverified?walletAddress=' + walletAddress + "&daoAddress=" + daoAddress, {
+export const getTransaction = async (txId: string) => {
+  const res = await fetch(API_URL + '/api/transaction/' + txId, {
     method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
   });
   const json = await res.json();
   return json;

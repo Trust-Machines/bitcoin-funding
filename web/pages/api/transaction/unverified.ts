@@ -17,23 +17,10 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction[]>
 ) {
-  const { walletAddress, daoAddress } = req.query;
-
-  if (walletAddress == null || daoAddress == null) {
-    const result = await prisma.FundingTransaction.findMany({
-      where: { 
-        registrationStatus: RegistrationStatus.STARTED 
-      }
-    });  
-    res.status(200).json(result)
-  } else {
-    const result = await prisma.FundingTransaction.findMany({
-      where: { 
-        registrationStatus: RegistrationStatus.STARTED,
-        walletAddress: walletAddress,
-        daoAddress: daoAddress
-      }
-    });  
-    res.status(200).json(result)
-  }
+  const result = await prisma.FundingTransaction.findMany({
+    where: { 
+      registrationStatus: RegistrationStatus.STARTED 
+    }
+  });  
+  res.status(200).json(result)
 }

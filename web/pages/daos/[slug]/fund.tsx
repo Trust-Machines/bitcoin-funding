@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
-import { Dao, RegistrationStatus, User } from '@prisma/client'
+import { Dao, FundingTransaction, RegistrationStatus, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount, useAuth } from '@micro-stacks/react';
 import { getServerSideProps } from '@/common/session/index.ts';
-import { findDao, findUser, getUserBalance, forwardUserFunds, registerUser, getUnverifiedTransactions } from '@/common/fetchers';
+import { findDao, findUser, getUserBalance, forwardUserFunds, registerUser, getTransaction } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -24,6 +24,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [dao, setDao] = useState<Dao>({});
   const [user, setUser] = useState<User>({});
+  const [transaction, setTransaction] = useState<FundingTransaction>({});
   const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
@@ -38,16 +39,16 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     
     let currentStep = 0;
     if (isSignedIn) {
-      currentStep = 1;
       const user = await findUser(account.appPrivateKey as string);
       setUser(user);
 
       // User signed in and completed registration
       if (user.registrationStatus == RegistrationStatus.COMPLETED) {
-        const unverifiedTransactions = await getUnverifiedTransactions(user.fundingWalletAddress, dao.address);
+        const txId = localStorage.getItem('fund-tx');
 
-        // If no unverified transactions, user funds still need to arrive
-        if (unverifiedTransactions.length == 0) {
+
+        // If forwarding transaction yet
+        if (txId == undefined) {
           currentStep = 2;
           const userBalance = await getUserBalance(account.appPrivateKey as string);
           setWalletBalance(userBalance);
@@ -60,15 +61,25 @@ const FundDao: NextPage = ({ dehydratedState }) => {
           }
 
         // User has unverified transactions
-        } else {
-          currentStep = 3;
-          
-          // TODO: finish flow
+        } else {          
+          const tx = await getTransaction(txId);
+          setTransaction(tx);
 
+          // Start polling for transaction completion
+          if (tx.registrationStatus == RegistrationStatus.STARTED) {
+            currentStep = 3;
+            var intervalId = window.setInterval(function(){
+              pollTransaction(intervalId);
+            }, 15000);
+          } else  {
+            currentStep = 4;
+          }
         }
 
       // User signed in and started registration
       } else if (user.registrationTxId != null) {
+        currentStep = 1;
+
         // Start polling
         var intervalId = window.setInterval(function(){
           pollUser(intervalId);
@@ -96,18 +107,28 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     }
   }
 
+  const newFunding = async () => {
+    localStorage.removeItem('fund-tx');
+    fetchInfo();
+  }
+
+  const viewDao = async () => {
+    router.push(`/daos/${dao.slug}`);
+  }
+
   const forwardFunds = async () => {
     // TODO: forward actual walletBalance
     // const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
     const result = await forwardUserFunds(account.appPrivateKey as string, 10000000, dao.address);
     if (result.status === 200) {
+      const json = await result.json();
+      localStorage.setItem('fund-tx', json.txId);
       fetchInfo();
     }
   }
 
   const pollUserBalance = async (intervalId: number) => {
     const balance = await getUserBalance(account.appPrivateKey as string);
-    console.log("poll balance:", balance);
     if (balance > 0) {
       clearInterval(intervalId);
       fetchInfo();
@@ -117,6 +138,15 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   const pollUser = async (intervalId: number) => {
     const user = await findUser(account.appPrivateKey as string);
     if (user.registrationStatus != RegistrationStatus.STARTED) {
+      clearInterval(intervalId);
+      fetchInfo();
+    }
+  }
+
+  const pollTransaction = async (intervalId: number) => {
+    const txId = localStorage.getItem('fund-tx');
+    const tx = await getTransaction(txId as string);
+    if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -302,28 +332,47 @@ const FundDao: NextPage = ({ dehydratedState }) => {
             ): steps[3].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p>
                   The DAO is being funded with your BTC. 
                   It takes 10-20 minutes for the funding to be registered on chain. 
                   No further action is required.
+                  </p>
                 </div>
                 <div>
-                  {walletBalance == 0 ? (
-                    <div
-                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
-                    >
-                      Waiting for your transaction registration..
-                    </div>
-                  ):(
-                    <a
-                      onClick={() => { forwardFunds() }}
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
-                      View DAO
-                    </a>
-                  )}
+                <div
+                  className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
+                >
+                  Waiting for your transaction registration..
+                </div>
                 </div>
               </div>
-            ): null}
+            ): (
+              <div className="bg-white shadow sm:rounded-lg">
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p>
+                    You have succesfully funded the DAO with {' '}
+                    {(transaction.sats / 100000000.0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 4,
+                    })} BTC!
+                  </p>
+                  <a
+                    onClick={() => { newFunding() }}
+                    className="text-blue-700"
+                  >
+                    Fund again
+                  </a>
+                </div>
+                <div>
+                  <a
+                    onClick={() => { viewDao() }}
+                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                  >
+                    View DAO
+                  </a>
+                </div>
+              </div>
+            )}
           </section>
         </main>
       )}
