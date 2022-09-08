@@ -14,11 +14,15 @@ export async function start() {
 
   // Register on chain
   for (const dao of unregistered) {
-    const response = await axios({
-      method: 'POST',
-      url: appApiUrl + '/dao/' + dao.slug + '/register',
-    });
-    console.log("[REGISTER DAOS] registration response:", response.data);
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: appApiUrl + '/dao/' + dao.slug + '/register',
+      });
+      console.log("[REGISTER DAOS] registration response:", response.data);
+    } catch (error) {
+      console.log("[REGISTER DAOS] ERROR:", error);
+    }
   }
 }
 
