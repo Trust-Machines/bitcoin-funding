@@ -52,10 +52,10 @@ async function postHandler(
 
       // Avatar
       let avatar = "";
-      if (files.file != undefined) { 
+      if (files.file != undefined) {
         avatar = await saveFile(files.file, slug);
       } else {
-        avatar = await createPlaceholderAndSaveFile(slug)
+        avatar = await createPlaceholderAndSaveFile(slug);
       }
 
       // Save info
