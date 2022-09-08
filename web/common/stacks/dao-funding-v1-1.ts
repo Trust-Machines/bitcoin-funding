@@ -109,7 +109,7 @@ export async function addUserFunding(
     senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
-    fee: (0.01 * 1000000),
+    fee: (0.001 * 1000000),
     network: stacksNetwork,
     anchorMode: AnchorMode.Any
   };
