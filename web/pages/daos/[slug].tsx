@@ -123,7 +123,7 @@ const DaoDetails: NextPage = ({ dehydratedState }) => {
                 <div className="col-span-1">
                   <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
-                      <img src={`${dao.avatar}`}/>
+                      <img src={dao.avatar} />
                     </div>
                   </section>
                 </div>

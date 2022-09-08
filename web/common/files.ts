@@ -35,7 +35,7 @@ export async function saveFile(file: any, name: string) {
 
 export async function createPlaceholderAndSaveFile(seed: string) {
   try {
-    const data = createAvatar(style, {seed: seed, bold: true, fontSize: 30});
+    const data = createAvatar(style, { seed: seed, bold: true, fontSize: 30 });
     const result = await saveToS3(data, `${seed}.svg`);
     return result.Location;
   } catch (e) {
