@@ -5,6 +5,7 @@ import prisma from '@/common/db';
 import formidable from "formidable";
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
+import fs from "fs";
 
 export const config = {
   api: {
@@ -49,11 +50,19 @@ async function postHandler(
         const user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
         if (!user) {
           res.status(422).json('User does not exist');
+          return;
         }
 
         // Avatar
         let avatar = "";
         if (files.file != undefined) {
+          const stats = fs.statSync(files.file.filepath);
+          const size = stats.size;
+          if (size > 5000000) { // ~5MB
+            res.status(422).json('The chosen avatar is too big (max 5mb)');
+            return;
+          }
+
           avatar = await saveFile(files.file, slug);
         } else {
           avatar = await createPlaceholderAndSaveFile(slug);
