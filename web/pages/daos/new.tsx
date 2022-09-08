@@ -6,6 +6,7 @@ import { createDao, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
 import { getServerSideProps } from '@/common/session/index.ts';
+import { validate } from 'bitcoin-address-validation';
 
 const New: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
@@ -45,7 +46,7 @@ const New: NextPage = ({ dehydratedState }) => {
       showErrorMessage('Please enter a name.'); return;
     } else if (state.raisingAmount == 0) {
       showErrorMessage('Please enter an amount to raise.'); return;
-    } else if (state.address == '') {
+    } else if (state.address == '' || !validate(state.address)) {
       showErrorMessage('Please enter a valid BTC address.'); return;
     } else if (state.raisingDeadline == '') {
       showErrorMessage('Please enter a raising deadline.'); return;
