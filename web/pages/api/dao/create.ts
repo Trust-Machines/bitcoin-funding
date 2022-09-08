@@ -57,8 +57,7 @@ async function postHandler(
         let avatar = "";
         if (files.file != undefined) {
           const stats = fs.statSync(files.file.filepath);
-          const size = stats.size;
-          if (size > 5000000) { // ~5MB
+          if (stats.size > 5000000 || !stats.isFile()) { // ~5MB
             res.status(422).json('The chosen avatar is too big (max 5mb)');
             return;
           }
