@@ -40,6 +40,6 @@ export async function parseTx(tx: string): Promise<any> {
     network: stacksNetwork,
   });
 
-  const result = cvToJSON(call).value.value.outs;
+  const result = cvToJSON(call);
   return result;
 }

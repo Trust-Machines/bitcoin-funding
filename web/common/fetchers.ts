@@ -120,9 +120,11 @@ export const registerUser = async (appPrivateKey: string) => {
 };
 
 export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoAddress: string) => {
+  const fee = 20000;
+  const satsLeft = sats - fee;
   return await fetch(API_URL + '/api/user/forward', {
     method: 'POST',
-    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, daoAddress: daoAddress })
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: satsLeft, fee: fee, daoAddress: daoAddress })
   });
 };
 

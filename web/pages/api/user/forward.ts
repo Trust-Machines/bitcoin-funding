@@ -45,7 +45,8 @@ async function postHandler(
       const sendBtcResult = await sendBtc(
         wallet.privateKey,
         body.daoAddress,
-        body.sats
+        body.sats,
+        body.fee
       );
 
       const resultTransaction = await prisma.fundingTransaction.create({

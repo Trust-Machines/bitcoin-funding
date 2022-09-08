@@ -44,7 +44,7 @@ export async function getBalance(address: string): Promise<number> {
   return parseInt(balance.toString());
 }
 
-export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 500): Promise<string> {
+export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 20000): Promise<string> {
   const client = await newElectrumClient();
 
   const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: btcNetwork });
@@ -65,13 +65,20 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
     index: unspent.tx_pos,
     nonWitnessUtxo: txHex,
   });
+
+  // When parsing a BTC transaction in clarity, we can only check the addresses of the outputs and not inputs.
+  // So we need to make sure the sender is also added as output.
+  // If we forward all funds, the sender can not be added as output. So we need to keep some dust.
+  let senderValueLeft = unspent.value - amount - fee;
+  let dust = senderValueLeft == 0 ? 500 : 0;
+
   psbt.addOutput({
     address: senderAddress,
-    value: unspent.value - amount - fee,
+    value: senderValueLeft + dust,
   });
   psbt.addOutput({
     address: receiverAddress,
-    value: amount,
+    value: amount - dust,
   });
 
   psbt.signAllInputs(signer);

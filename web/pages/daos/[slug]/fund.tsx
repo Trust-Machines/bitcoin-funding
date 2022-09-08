@@ -122,9 +122,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const forwardFunds = async () => {
-    // TODO: forward actual walletBalance
-    // const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
-    const result = await forwardUserFunds(account.appPrivateKey as string, 10000000, dao.address);
+    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
     if (result.status === 200) {
       const json = await result.json();
       localStorage.setItem('fund-tx', json.txId);

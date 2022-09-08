@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { appApiUrl } from '@/common/constants';
+import { parseTx } from '@/common/stacks/clarity-bitcoin';
+import Parser from '@dicebear/avatars/dist/parser';
 
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
@@ -24,6 +26,8 @@ export async function start() {
   console.log("[FUNDING] Wallet balance:", responseBalance.data);
 
   // Forward to DAO
+  const fee = 20000;
+  const sats = responseBalance.data - fee;
   const responsseForward = await axios({
     method: 'POST',
     url: appApiUrl + '/user/forward',
@@ -31,7 +35,8 @@ export async function start() {
     data: JSON.stringify({ 
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
-      sats: 10000000      // TODO: this works with '10000000' but not with data
+      sats: sats,
+      fee: fee
     })
   });
   console.log("[FUNDING] Forward API response:", responsseForward.data);
