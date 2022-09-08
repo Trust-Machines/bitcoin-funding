@@ -45,7 +45,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
 
       // User signed in and completed registration
       if (user.registrationStatus == RegistrationStatus.COMPLETED) {
-        const txId = localStorage.getItem('fund-tx');
+        const txId = localStorage.getItem(dao.slug);
 
         // If forwarding transaction yet
         if (txId == undefined) {
@@ -113,7 +113,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const newFunding = async () => {
-    localStorage.removeItem('fund-tx');
+    localStorage.removeItem(dao.slug);
     fetchInfo();
   }
 
@@ -125,7 +125,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
     if (result.status === 200) {
       const json = await result.json();
-      localStorage.setItem('fund-tx', json.txId);
+      localStorage.setItem(dao.slug, json.txId);
       fetchInfo();
     }
   }
@@ -152,7 +152,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const pollTransaction = async (intervalId: number) => {
-    const txId = localStorage.getItem('fund-tx');
+    const txId = localStorage.getItem(dao.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
