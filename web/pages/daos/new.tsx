@@ -117,9 +117,9 @@ const New: NextPage = ({ dehydratedState }) => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+                <label htmlFor="image" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <label htmlFor="avatar" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                  <label htmlFor="image" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
                     <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
                       <div className="space-y-1 text-center">
                         <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -131,7 +131,7 @@ const New: NextPage = ({ dehydratedState }) => {
                           ) : (
                             <span>Upload a file</span>
                           )}
-                          <input id="avatar" name="avatar" type="file" className="sr-only" onChange={handleInputChange} />
+                          <input id="image" name="image" type="file" className="sr-only" onChange={handleInputChange} />
                         </div>
                         {!fileName ? (
                           <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
