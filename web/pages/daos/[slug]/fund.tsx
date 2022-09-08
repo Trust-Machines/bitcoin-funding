@@ -296,7 +296,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   ):null}
                 </div>
                 <div>
-                  {user.registrationStatus == RegistrationStatus.STARTED ? (
+                  {user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
