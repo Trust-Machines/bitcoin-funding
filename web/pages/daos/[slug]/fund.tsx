@@ -55,9 +55,9 @@ const FundDao: NextPage = ({ dehydratedState }) => {
             // If status is not 200, something went wrong. Most likely app is down or Electrum server is not reachable
             const userBalance = await balanceResult.json();
             setWalletBalance(userBalance);
-
+            
             // Start polling for balance
-            if (userBalance == 0) {
+            if (userBalance < 1000) {
               var intervalId = window.setInterval(function(){
                 pollUserBalance(intervalId);
               }, 15000);
@@ -323,7 +323,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
                 </div>
                 <div>
-                  {walletBalance == 0 ? (
+                  {walletBalance < 1000 ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
