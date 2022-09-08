@@ -36,12 +36,14 @@ async function newElectrumClient(): Promise<ElectrumClient> {
 export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
-  const output = btcAddress.toOutputScript(address, btcNetwork);
-  const scriptHash = getScriptHash(output);
-
-  const balances = await client.blockchainScripthash_getBalance(bytesToHex(scriptHash)) as BtcBalance;
-  const balance = BigInt(balances.unconfirmed) + BigInt(balances.confirmed);
-  return parseInt(balance.toString());
+  const user = payments.p2wpkh({
+    address: address,
+    network: btcNetwork,
+  });
+  const scriptHash = getScriptHash(user.output!);
+  const unspents = await client.blockchainScripthash_listunspent(bytesToHex(scriptHash)) as [UnspentObject];
+  const unspent = unspents.sort((a, b) => (a.value < b.value ? 1 : -1))[0];
+  return unspent.value;
 }
 
 export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 20000): Promise<string> {
