@@ -6,6 +6,7 @@ import formidable from "formidable";
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
 import fs from "fs";
+import { Magic, MAGIC_MIME_TYPE } from 'mmmagic';
 
 export const config = {
   api: {
@@ -59,6 +60,22 @@ async function postHandler(
           const stats = fs.statSync(files.file.filepath);
           if (stats.size > 5000000 || !stats.isFile()) { // ~5MB
             res.status(422).json('The chosen avatar is too big (max 5mb)');
+            return;
+          }
+
+          const magic = new Magic(MAGIC_MIME_TYPE);
+          const promise = new Promise(function (fulfill, reject) {
+            magic.detectFile(files.file.filepath, function (err, res) {
+              if (err) {
+                reject(err);
+              } else {
+                fulfill(res);
+              }
+            });
+          });
+          const mimeType = await promise;
+          if (!mimeType.includes('image/')) {
+            res.status(422).json('Invalid file type found, please use png or jpeg');
             return;
           }
 
