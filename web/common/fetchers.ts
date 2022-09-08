@@ -107,30 +107,32 @@ export const findUser = async (appPrivateKey: string) => {
 };
 
 export const getUserBalance = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
+  return await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
     method: 'GET',
   });
-  const json = await res.json();
-
-  return json;
 };
 
-export const createBtcAddressForUser = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/register', {
+export const registerUser = async (appPrivateKey: string) => {
+  return await fetch(API_URL + '/api/user/register', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
-  const json = await res.json();
-
-  return json;
 };
 
-export const forwardUserFunds = async (appPrivateKey: string, sats: number) => {
-  const res = await fetch(API_URL + '/api/user/forward', {
+export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoAddress: string) => {
+  return await fetch(API_URL + '/api/user/forward', {
     method: 'POST',
-    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats })
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, daoAddress: daoAddress })
+  });
+};
+
+export const getTransaction = async (txId: string) => {
+  const res = await fetch(API_URL + '/api/transaction/' + txId, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
   });
   const json = await res.json();
-
   return json;
 };

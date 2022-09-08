@@ -44,9 +44,6 @@ async function postHandler(
     }
 
     // Create new funding wallet for user
-    // TODO: check if user already has a wallet just to be sure
-    // in case there are front-end bugs, we need to make sure the API just returns the user's BTC xpub wallet
-    // and doesn't create a new one
     const resultAllWallets = await prisma.fundingWallet.findMany(); // TODO: is this performant? shouldn't we just get the count?
     const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultAllWallets.length);
     const resultWallet = await prisma.fundingWallet.create({
@@ -67,6 +64,7 @@ async function postHandler(
           appPrivateKey: hashedAppPrivateKey,
         },
         data: {
+          registrationStatus: RegistrationStatus.STARTED,
           registrationTxId: registrationTxId,
         },
       });

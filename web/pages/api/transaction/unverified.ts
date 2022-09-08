@@ -18,7 +18,9 @@ async function getHandler(
   res: NextApiResponse<FundingTransaction[]>
 ) {
   const result = await prisma.FundingTransaction.findMany({
-    where: { registrationStatus: RegistrationStatus.STARTED }
+    where: { 
+      registrationStatus: RegistrationStatus.STARTED 
+    }
   });  
   res.status(200).json(result)
 }
