@@ -27,11 +27,12 @@ export async function start() {
   const responsseForward = await axios({
     method: 'POST',
     url: appApiUrl + '/user/forward',
-    data: {
+    headers: { 'Content-Type': 'text/plain' },
+    data: JSON.stringify({ 
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
       sats: 10000000      // TODO: this works with '10000000' but not with data
-    }
+    })
   });
   console.log("[FUNDING] Forward API response:", responsseForward.data);
 }
