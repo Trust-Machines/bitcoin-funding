@@ -80,15 +80,15 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         }
 
       // User signed in and started registration
-      } else if (user.registrationTxId != null) {
-        currentStep = 1;
-
-        // Start polling
-        var intervalId = window.setInterval(function(){
-          pollUser(intervalId);
-        }, 15000);
       } else {
         currentStep = 1;
+
+        // Start polling if registration started
+        if (user.registrationTxId != null) {
+          var intervalId = window.setInterval(function(){
+            pollUser(intervalId);
+          }, 15000);  
+        }
       }
     }
 
@@ -298,7 +298,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   ):null}
                 </div>
                 <div>
-                  {user.registrationTxId ? (
+                  {user.registrationStatus == RegistrationStatus.STARTED ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
