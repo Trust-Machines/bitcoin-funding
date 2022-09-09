@@ -22,7 +22,7 @@ Clarinet.test({name: "dao registry: initial values",
     ], deployer.address);
     call.result.expectOk().expectUint(0);
 
-    call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-by-id", [
+    call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-address-by-id", [
       types.uint(0)
     ], deployer.address);
     call.result.expectOk().expectNone();
@@ -57,11 +57,10 @@ Clarinet.test({name: "dao registry: register DAO",
     ], deployer.address);
     call.result.expectOk().expectUint(1);
 
-    call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-by-id", [
+    call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-address-by-id", [
       types.uint(0)
     ], deployer.address);
-    call.result.expectOk().expectSome().expectTuple()['admin'].expectPrincipal(wallet_1.address);
-    call.result.expectOk().expectSome().expectTuple()['address'].expectBuff(address);
+    call.result.expectOk().expectSome().expectBuff(address);
 
     call = await chain.callReadOnlyFn("dao-registry-v1-1", "get-dao-id-by-address", [
       types.buff(address)      
