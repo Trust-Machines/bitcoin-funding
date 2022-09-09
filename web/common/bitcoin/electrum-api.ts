@@ -42,6 +42,9 @@ export async function getBalance(address: string): Promise<number> {
   });
   const scriptHash = getScriptHash(user.output!);
   const unspents = await client.blockchainScripthash_listunspent(bytesToHex(scriptHash)) as [UnspentObject];
+  if (!unspents.length) {
+    return 0;
+  }
   const unspent = unspents.sort((a, b) => (a.value < b.value ? 1 : -1))[0];
   return unspent.value;
 }
