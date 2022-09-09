@@ -1,41 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { DaoThumbnail } from '@/components/DaoThumbnail'
-import { findAllDaos } from '@/common/fetchers'
-import { DaosPaged } from 'pages/api/dao/all'
+import { fundThumbnail } from '@/components/fundThumbnail'
+import { findAllfunds } from '@/common/fetchers'
+import { fundsPaged } from 'pages/api/fund/all'
 import { Pagination } from './Pagination'
 
 export function HomeGrid() {
 
   const [isLoading, setIsLoading] = useState(true);
-  const [daos, setDaos] = useState<DaosPaged>({});
+  const [funds, setfunds] = useState<fundsPaged>({});
 
   const pageSelected = (page: Number) => {
-    if (page >= 0 && page < daos.totalPages) {
-      fetchDaos(page);
+    if (page >= 0 && page < funds.totalPages) {
+      fetchfunds(page);
     }
   }
 
-  const fetchDaos = async (page: Number) => {
+  const fetchfunds = async (page: Number) => {
     setIsLoading(true);
-    setDaos(await findAllDaos(page));
+    setfunds(await findAllfunds(page));
     setIsLoading(false);
   }
   
   useEffect(() => {
 
     if (isLoading) {
-      fetchDaos(0);
+      fetchfunds(0);
     }
   }, []);
 
   return (
-    <section id="home-grid" aria-label="Explore and fund one of our DAOs" className="pt-20 pb-14 sm:pb-20 sm:pt-32 lg:pb-32">
+    <section id="home-grid" aria-label="Explore and fund one of our funds" className="pt-20 pb-14 sm:pb-20 sm:pt-32 lg:pb-32">
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
-            Fund one of our DAOs
+            Fund one of our funds
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700">
             Because you’d probably be a little confused if we didn't ask you to fund any, right?
@@ -47,24 +47,24 @@ export function HomeGrid() {
             <Loading />
           ) : (
             <>
-              {daos.total > 0 ? (
+              {funds.total > 0 ? (
                 <>
                   <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                    {daos.daos.map(dao => <DaoThumbnail key={dao.address} dao={dao} />)}
+                    {funds.funds.map(fund => <fundThumbnail key={fund.address} fund={fund} />)}
                   </div>
-                  {daos.totalPages > 1 ? (
+                  {funds.totalPages > 1 ? (
                     <div className='mt-8 text-center'>
                       <Pagination 
-                        key={daos.currentPage} 
-                        totalPages={daos.totalPages} 
-                        currentPage={daos.currentPage} 
+                        key={funds.currentPage} 
+                        totalPages={funds.totalPages} 
+                        currentPage={funds.currentPage} 
                         pageSelected={pageSelected}
                       />
                     </div>
                   ):null}
                 </>
               ) : (
-                <span>No daos yet...</span>
+                <span>No funds yet...</span>
               )}
             </>
           )}

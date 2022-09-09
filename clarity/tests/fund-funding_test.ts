@@ -12,18 +12,18 @@ import { hexToBytes } from "./utils.ts"
 // Core
 // 
 
-Clarinet.test({name: "dao funding: initial values",
+Clarinet.test({name: "fund funding: initial values",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
     let receiverAddress = hexToBytes('0x00149bb0bab766d6fabf0da9f2e9bbb065010a0bf656');
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-total-fund-funding", [
       types.uint(0)
     ], deployer.address);
     call.result.expectUint(0);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-user-fund-funding", [
       types.uint(0),
       types.buff(receiverAddress)
     ], deployer.address);
@@ -31,7 +31,7 @@ Clarinet.test({name: "dao funding: initial values",
   }
 });
 
-Clarinet.test({name: "dao funding: can parse and validate BTC transaction",
+Clarinet.test({name: "fund funding: can parse and validate BTC transaction",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -48,7 +48,7 @@ Clarinet.test({name: "dao funding: can parse and validate BTC transaction",
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "parse-and-validate-tx", [
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "parse-and-validate-tx", [
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -69,7 +69,7 @@ Clarinet.test({name: "dao funding: can parse and validate BTC transaction",
   }
 });
 
-Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
+Clarinet.test({name: "fund funding: can add user funding via BTC transaction",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -87,14 +87,14 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+      Tx.contractCall("fund-registry-v1-1", "register-fund", [
         types.buff(receiverAddress)      
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectUint(0);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -113,12 +113,12 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
     ], deployer.address);
     call.result.expectOk().expectUint(555);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-total-fund-funding", [
       types.uint(0)
     ], deployer.address);
     call.result.expectUint(555);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-user-fund-funding", [
       types.uint(0),
       types.buff(senderAddress)
     ], deployer.address);
@@ -130,7 +130,7 @@ Clarinet.test({name: "dao funding: can add user funding via BTC transaction",
 // Errors
 // 
 
-Clarinet.test({name: "dao funding: can not add user funding if DAO not registered",
+Clarinet.test({name: "fund funding: can not add user funding if fund not registered",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -147,8 +147,8 @@ Clarinet.test({name: "dao funding: can not add user funding if DAO not registere
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -169,7 +169,7 @@ Clarinet.test({name: "dao funding: can not add user funding if DAO not registere
   }
 });
 
-Clarinet.test({name: "dao funding: can not add user funding with wrong sender/receiver",
+Clarinet.test({name: "fund funding: can not add user funding with wrong sender/receiver",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -187,14 +187,14 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+      Tx.contractCall("fund-registry-v1-1", "register-fund", [
         types.buff(receiverAddress)      
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectUint(0);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -213,8 +213,8 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
     ], deployer.address);
     call.result.expectErr().expectUint(20004);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -235,7 +235,7 @@ Clarinet.test({name: "dao funding: can not add user funding with wrong sender/re
   }
 });
 
-Clarinet.test({name: "dao funding: can only add user funding via BTC transaction once",
+Clarinet.test({name: "fund funding: can only add user funding via BTC transaction once",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -253,14 +253,14 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+      Tx.contractCall("fund-registry-v1-1", "register-fund", [
         types.buff(receiverAddress)      
       ], deployer.address),
     ]);
     block.receipts[0].result.expectOk().expectUint(0);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -279,8 +279,8 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     ], deployer.address);
     call.result.expectOk().expectUint(555);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
@@ -299,12 +299,12 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
     ], deployer.address);
     call.result.expectErr().expectUint(20006);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-total-dao-funding", [
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-total-fund-funding", [
       types.uint(0)
     ], deployer.address);
     call.result.expectUint(555);
 
-    call = await chain.callReadOnlyFn("dao-funding-v1-1", "get-user-dao-funding", [
+    call = await chain.callReadOnlyFn("fund-funding-v1-1", "get-user-fund-funding", [
       types.uint(0),
       types.buff(senderAddress)
     ], deployer.address);
@@ -312,7 +312,7 @@ Clarinet.test({name: "dao funding: can only add user funding via BTC transaction
   }
 });
 
-Clarinet.test({name: "dao funding: can not fund dao if protocol disabled",
+Clarinet.test({name: "fund funding: can not fund fund if protocol disabled",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -330,7 +330,7 @@ Clarinet.test({name: "dao funding: can not fund dao if protocol disabled",
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("dao-registry-v1-1", "register-dao", [
+      Tx.contractCall("fund-registry-v1-1", "register-fund", [
         types.buff(receiverAddress)      
       ], deployer.address),
     ]);
@@ -343,8 +343,8 @@ Clarinet.test({name: "dao funding: can not fund dao if protocol disabled",
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    let call = await chain.callReadOnlyFn("dao-funding-v1-1", "add-user-funding", [
-      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dao-registry-v1-1"),
+    let call = await chain.callReadOnlyFn("fund-funding-v1-1", "add-user-funding", [
+      types.principal("ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fund-registry-v1-1"),
       types.tuple({
         "header": types.buff(new ArrayBuffer(80)),
         "height": types.uint(1)
