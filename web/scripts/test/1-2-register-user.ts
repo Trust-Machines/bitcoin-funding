@@ -11,9 +11,8 @@ export async function start() {
   const response = await axios({
     method: 'POST',
     url: appApiUrl + '/user/register',
-    data: {
-      appPrivateKey: appPrivateKey
-    }
+    headers: { 'Content-Type': 'text/plain' },
+    data: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
   console.log("[USER] registration API result:", response.data);
 }

@@ -14,14 +14,18 @@ export async function start() {
 
   // Try to verify
   for (const transaction of unverified) {
-    const response = await axios({
-      method: 'POST',
-      url: appApiUrl + '/transaction/verify',
-      data: {
-        txId: transaction.txId
-      }
-    });
-    console.log("[VERIFY TXS] verification response:", response.data);
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: appApiUrl + '/transaction/verify',
+        data: {
+          txId: transaction.txId
+        }
+      });
+      console.log("[VERIFY TXS] verification response:", response.data);
+    } catch (error) {
+      console.log("[VERIFY TXS] ERROR:", error);
+    }
   }
 }
 

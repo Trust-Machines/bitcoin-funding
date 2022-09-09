@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FundingTransaction, PrismaClient, RegistrationStatus } from '@prisma/client';
-import { getBalance, getTransactionData, sendBtc } from '@/common/bitcoin/electrum-api';
+import { FundingTransaction } from '@prisma/client';
+import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
-import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
 
 export default async function handler(
   req: NextApiRequest,
@@ -45,7 +44,7 @@ async function postHandler(
       const sendBtcResult = await sendBtc(
         wallet.privateKey,
         body.daoAddress,
-        body.sats
+        body.sats,
       );
 
       const resultTransaction = await prisma.fundingTransaction.create({

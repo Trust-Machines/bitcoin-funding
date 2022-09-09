@@ -14,14 +14,18 @@ export async function start() {
 
   // Try to verify
   for (const user of unverified) {
-    const response = await axios({
-      method: 'POST',
-      url: appApiUrl + '/user/verify',
-      data: {
-        address: user.address
-      }
-    });
-    console.log("[VERIFY USERS] verification response:", response.data);
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: appApiUrl + '/user/verify',
+        data: {
+          address: user.address
+        }
+      });
+      console.log("[VERIFY USERS] verification response:", response.data);
+    } catch (error) {
+      console.log("[VERIFY USERS] ERROR:", error);
+    }
   }
 }
 

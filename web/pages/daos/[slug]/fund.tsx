@@ -40,12 +40,12 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     
     let currentStep = 0;
     if (isSignedIn) {
-      const user = await findUser(account.appPrivateKey as string);
-      setUser(user);
+      const userInfo = await findUser(account.appPrivateKey as string);
+      setUser(userInfo);
 
       // User signed in and completed registration
-      if (user.registrationStatus == RegistrationStatus.COMPLETED) {
-        const txId = localStorage.getItem('fund-tx');
+      if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
+        const txId = localStorage.getItem(dao.slug);
 
         // If forwarding transaction yet
         if (txId == undefined) {
@@ -55,9 +55,9 @@ const FundDao: NextPage = ({ dehydratedState }) => {
             // If status is not 200, something went wrong. Most likely app is down or Electrum server is not reachable
             const userBalance = await balanceResult.json();
             setWalletBalance(userBalance);
-
+            
             // Start polling for balance
-            if (userBalance == 0) {
+            if (userBalance < 1000) {
               var intervalId = window.setInterval(function(){
                 pollUserBalance(intervalId);
               }, 15000);
@@ -84,7 +84,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         currentStep = 1;
 
         // Start polling if registration started
-        if (user.registrationTxId != null) {
+        if (userInfo.registrationTxId != null) {
           var intervalId = window.setInterval(function(){
             pollUser(intervalId);
           }, 15000);  
@@ -113,7 +113,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const newFunding = async () => {
-    localStorage.removeItem('fund-tx');
+    localStorage.removeItem(dao.slug);
     fetchInfo();
   }
 
@@ -122,12 +122,10 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const forwardFunds = async () => {
-    // TODO: forward actual walletBalance
-    // const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
-    const result = await forwardUserFunds(account.appPrivateKey as string, 10000000, dao.address);
+    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
     if (result.status === 200) {
       const json = await result.json();
-      localStorage.setItem('fund-tx', json.txId);
+      localStorage.setItem(dao.slug, json.txId);
       fetchInfo();
     }
   }
@@ -146,15 +144,15 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const pollUser = async (intervalId: number) => {
-    const user = await findUser(account.appPrivateKey as string);
-    if (user.registrationStatus != RegistrationStatus.STARTED) {
+    const userInfo = await findUser(account.appPrivateKey as string);
+    if (userInfo.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
       fetchInfo();
     }
   }
 
   const pollTransaction = async (intervalId: number) => {
-    const txId = localStorage.getItem('fund-tx');
+    const txId = localStorage.getItem(dao.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
@@ -298,7 +296,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   ):null}
                 </div>
                 <div>
-                  {user.registrationStatus == RegistrationStatus.STARTED ? (
+                  {user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >
@@ -325,7 +323,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
                 </div>
                 <div>
-                  {walletBalance == 0 ? (
+                  {walletBalance < 1000 ? (
                     <div
                       className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
                     >

@@ -14,14 +14,18 @@ export async function start() {
 
   // Register on chain
   for (const tx of unregistered) {
-    const response = await axios({
-      method: 'POST',
-      url: appApiUrl + '/transaction/register',
-      data: {
-        txId: tx.txId,
-      }
-    });
-    console.log("[REGISTER TX] registration response:", response.data);
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: appApiUrl + '/transaction/register',
+        data: {
+          txId: tx.txId,
+        }
+      });
+      console.log("[REGISTER TX] registration response:", response.data);
+    } catch (error) {
+      console.log("[REGISTER TX] ERROR:", error);
+    }
   }
 }
 

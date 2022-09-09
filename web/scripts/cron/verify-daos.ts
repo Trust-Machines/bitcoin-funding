@@ -14,11 +14,15 @@ export async function start() {
 
   // Try to verify
   for (const dao of unverified) {
-    const response = await axios({
-      method: 'POST',
-      url: appApiUrl + '/dao/' + dao.slug + '/verify',
-    });
-    console.log("[VERIFY DAOS] verification response:", response.data);
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: appApiUrl + '/dao/' + dao.slug + '/verify',
+      });
+      console.log("[VERIFY DAOS] verification response:", response.data);
+    } catch (error) {
+      console.log("[VERIFY DAOS] ERROR:", error);
+    }
   }
 }
 
