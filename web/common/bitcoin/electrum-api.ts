@@ -3,7 +3,7 @@ import { address as btcAddress } from 'bitcoinjs-lib';
 import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
-import { btcNetwork, electrumHost, electrumPort } from '../constants';
+import { BTC_NETWORK, ELECTRUM_HOST, ELECTRUM_PORT } from '../constants';
 import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
 
 interface BtcBalance {
@@ -24,7 +24,7 @@ interface TransactionObject {
 }
 
 async function newElectrumClient(): Promise<ElectrumClient> {
-  const client = new ElectrumClient(electrumPort, electrumHost, 'tcp');
+  const client = new ElectrumClient(ELECTRUM_PORT, ELECTRUM_HOST, 'tcp');
   await client.initElectrum({client: 'electrum-client-js', version: ['1.2', '1.4']}, {
       retryPeriod: 5000,
       maxRetry: 10,
@@ -38,7 +38,7 @@ export async function getBalance(address: string): Promise<number> {
 
   const user = payments.p2wpkh({
     address: address,
-    network: btcNetwork,
+    network: BTC_NETWORK,
   });
   const scriptHash = getScriptHash(user.output!);
   const unspents = await client.blockchainScripthash_listunspent(bytesToHex(scriptHash)) as [UnspentObject];
@@ -76,10 +76,10 @@ export async function getEstimatedFee(): Promise<number> {
 export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number): Promise<string> {
   const client = await newElectrumClient();
 
-  const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: btcNetwork });
+  const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: BTC_NETWORK });
   const sender = payments.p2wpkh({
     pubkey: signer.publicKey,
-    network: btcNetwork,
+    network: BTC_NETWORK,
   });
   const senderAddress = sender.address!;
   const scriptHash = getScriptHash(sender.output!);
@@ -88,7 +88,7 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const tx = await client.blockchainTransaction_get(unspent.tx_hash, true) as TransactionObject;
   const txHex = Buffer.from(tx.hex, 'hex');
 
-  const psbt = new Psbt({ network: btcNetwork });
+  const psbt = new Psbt({ network: BTC_NETWORK });
   psbt.addInput({
     hash: unspent.tx_hash,
     index: unspent.tx_pos,

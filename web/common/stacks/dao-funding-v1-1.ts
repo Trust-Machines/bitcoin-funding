@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../../.env' });
-import { stacksNetwork } from '../constants';
+import { STACKS_NETWORK } from '../constants';
 import { getNonce } from './utils'
 import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import { hexToBytes } from '../utils';
@@ -31,7 +31,7 @@ export async function getUserDaoFunding(daoId: number, userAddress: string): Pro
       bufferCV(decodeBtcAddressToBuffer(userAddress))
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value;
@@ -47,7 +47,7 @@ export async function getTotalDaoFunding(daoId: number): Promise<any> {
       uintCV(daoId),
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value;
@@ -63,7 +63,7 @@ export async function getTransactionParsed(txHex: string): Promise<any> {
       bufferCV(Buffer.from(hexToBytes(txHex))),
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value;
@@ -110,11 +110,11 @@ export async function addUserFunding(
     nonce: nonce,
     postConditionMode: 1,
     fee: (0.001 * 1000000),
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
     anchorMode: AnchorMode.Any
   };
 
   const transaction = await makeContractCall(txOptions);
-  const result = await broadcastTransaction(transaction, stacksNetwork);
+  const result = await broadcastTransaction(transaction, STACKS_NETWORK);
   return result;
 }
