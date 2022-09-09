@@ -1,5 +1,4 @@
 import { ElectrumClient } from "@samouraiwallet/electrum-client";
-import { address as btcAddress } from 'bitcoinjs-lib';
 import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
