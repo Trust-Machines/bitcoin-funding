@@ -3,20 +3,20 @@ require('dotenv').config({ path: '../.env' });
 import { networks } from 'bitcoinjs-lib';
 import { StacksTestnet, StacksMainnet } from '@stacks/network';
 
-export let btcNetwork = networks.regtest;
-export let btcExplorerUrl = 'http://devnet:devnet@localhost:8001';
+export let BTC_NETWORK = networks.regtest;
+export let BTC_EXPLORER_URL = 'http://devnet:devnet@localhost:8001';
 
-export let electrumHost = 'localhost';
-export let electrumPort = 50001;
+export let ELECTRUM_HOST = 'localhost';
+export let ELECTRUM_PORT = 50001;
 
-export let stacksNetwork = new StacksTestnet({ url: 'http://localhost:3999' });
-export let stacksApiUrl = 'http://localhost:3999';
+export let STACKS_NETWORK = new StacksTestnet({ url: 'http://localhost:3999' });
+export let STACKS_API_URL = 'http://localhost:3999';
 
 if (process.env.NETWORK === 'mainnet') {
-  btcNetwork = networks.bitcoin;
+  BTC_NETWORK = networks.bitcoin;
 
-  stacksNetwork = new StacksMainnet();
-  stacksApiUrl = 'https://stacks-node-api.mainnet.stacks.co';
+  STACKS_NETWORK = new StacksMainnet();
+  STACKS_API_URL = 'https://stacks-node-api.mainnet.stacks.co';
 } 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
