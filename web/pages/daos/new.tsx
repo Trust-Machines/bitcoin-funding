@@ -145,7 +145,7 @@ const New: NextPage = ({ dehydratedState }) => {
                             <input id="image" name="image" type="file" className="sr-only" onChange={handleInputChange} />
                           </div>
                           {!fileName ? (
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
                           ) : null}
                         </div>
                       </div>
