@@ -35,7 +35,7 @@ export async function getDaoById(id: number): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-by-id',
+    functionName: 'get-dao-address-by-id',
     functionArgs: [
       uintCV(id)
     ],

@@ -16,11 +16,8 @@
 ;; Maps
 ;; 
 
-(define-map dao-by-id uint {
-  address: (buff 33),   ;; address before encoding
-  admin: principal
-})
-
+;; Address is not encoded
+(define-map dao-address-by-id uint (buff 33))
 (define-map dao-id-by-address (buff 33) uint)
 
 ;; 
@@ -31,8 +28,8 @@
   (ok (var-get dao-count))
 )
 
-(define-read-only (get-dao-by-id (dao-id uint))
-  (ok (map-get? dao-by-id dao-id))
+(define-read-only (get-dao-address-by-id (dao-id uint))
+  (ok (map-get? dao-address-by-id dao-id))
 )
 
 (define-read-only (get-dao-id-by-address (address (buff 33)))
@@ -54,11 +51,7 @@
     (try! (contract-call? .main check-is-enabled))
     (asserts! (map-insert dao-id-by-address address dao-id) ERR_DAO_EXISTS)
 
-    (map-set dao-by-id dao-id {
-      address: address,
-      admin: tx-sender
-    })
-
+    (map-set dao-address-by-id dao-id address)
     (var-set dao-count (+ dao-id u1))
     (ok dao-id)
   )
