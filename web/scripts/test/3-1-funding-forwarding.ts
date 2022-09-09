@@ -26,8 +26,6 @@ export async function start() {
   console.log("[FUNDING] Wallet balance:", responseBalance.data);
 
   // Forward to DAO
-  const fee = 20000;
-  const sats = responseBalance.data - fee;
   const responsseForward = await axios({
     method: 'POST',
     url: appApiUrl + '/user/forward',
@@ -35,8 +33,7 @@ export async function start() {
     data: JSON.stringify({ 
       appPrivateKey: appPrivateKey,
       daoAddress: daoAddress,
-      sats: sats,
-      fee: fee
+      sats: responseBalance.data
     })
   });
   console.log("[FUNDING] Forward API response:", responsseForward.data);
