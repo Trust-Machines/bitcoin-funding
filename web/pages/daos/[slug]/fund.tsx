@@ -40,11 +40,11 @@ const FundDao: NextPage = ({ dehydratedState }) => {
     
     let currentStep = 0;
     if (isSignedIn) {
-      const user = await findUser(account.appPrivateKey as string);
-      setUser(user);
+      const userInfo = await findUser(account.appPrivateKey as string);
+      setUser(userInfo);
 
       // User signed in and completed registration
-      if (user.registrationStatus == RegistrationStatus.COMPLETED) {
+      if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
         const txId = localStorage.getItem(dao.slug);
 
         // If forwarding transaction yet
@@ -84,7 +84,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
         currentStep = 1;
 
         // Start polling if registration started
-        if (user.registrationTxId != null) {
+        if (userInfo.registrationTxId != null) {
           var intervalId = window.setInterval(function(){
             pollUser(intervalId);
           }, 15000);  
@@ -144,8 +144,8 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const pollUser = async (intervalId: number) => {
-    const user = await findUser(account.appPrivateKey as string);
-    if (user.registrationStatus != RegistrationStatus.STARTED) {
+    const userInfo = await findUser(account.appPrivateKey as string);
+    if (userInfo.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
       fetchInfo();
     }
