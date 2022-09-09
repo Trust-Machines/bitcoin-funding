@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createWallet } from '@/common/bitcoin/bitcoin-js';
-import { getFundCount } from "@/common/stacks/Fund-registry-v1-1"
+import { getFundCount } from "@/common/stacks/fund-registry-v1-1"
 import { API_URL } from '@/common/constants';
 import FormData from 'form-data';
 import { User } from '@prisma/client';
@@ -14,12 +14,12 @@ export async function start() {
   }
 
   // Number of registered Funds
-  const FundCount = await getFundCount();
-  console.log("[Fund] Total number of Funds in SC:", FundCount);
+  const fundCount = await getFundCount();
+  console.log("[Fund] Total number of Funds in SC:", fundCount);
 
   // New Fund wallet
-  const FundWallet = createWallet();
-  console.log("[Fund] New Fund wallet:", FundWallet);
+  const fundWallet = createWallet();
+  console.log("[Fund] New Fund wallet:", fundWallet);
 
   // Get user
   const user = (await axios({
@@ -42,8 +42,8 @@ export async function start() {
 
   // Form data
   const formData = new FormData();
-  formData.append("address", FundWallet.address);
-  formData.append("name", "Fund #" + FundCount);
+  formData.append("address", fundWallet.address);
+  formData.append("name", "Fund #" + fundCount);
   formData.append("about", "A great fund");
   formData.append("raisingAmount", (10 * 100000000).toString()); // in sats
   formData.append("raisingDeadline", "01/01/2023");
@@ -52,7 +52,7 @@ export async function start() {
   // Register Fund with API
   const response = await axios({
     method: 'POST',
-    url: API_URL + '/Fund/create',
+    url: API_URL + '/fund/create',
     data: formData
   });
   console.log("[Fund] Registration API response:", response.data);
