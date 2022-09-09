@@ -7,7 +7,7 @@ export const getBtcPrice = async () => {
 };
 
 export const saveSession = async (dehydratedState: string) => {
-  return await fetch(API_URL + '/api/session/save', {
+  return await fetch(API_URL + '/session/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ dehydratedState }),
@@ -16,7 +16,7 @@ export const saveSession = async (dehydratedState: string) => {
  
 export const destroySession = async () => {
   try {
-    await fetch(API_URL + '/api/session/destroy', {
+    await fetch(API_URL + '/session/destroy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: null,
@@ -27,14 +27,14 @@ export const destroySession = async () => {
 };
 
 export const createDao = async (formData: FormData) => {
-  return await fetch(API_URL + '/api/dao/create', {
+  return await fetch(API_URL + '/dao/create', {
     method: 'POST',
     body: formData,
   });
 };
 
 export const findDao = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug, {
+  const res = await fetch(API_URL + '/dao/' + slug, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
   if (dehydratedState == null) {
     return false;
   }
-  const res = await fetch(API_URL + '/api/dao/' + slug + "/is-admin?dehydratedState=" + dehydratedState, {
+  const res = await fetch(API_URL + '/dao/' + slug + "/is-admin?dehydratedState=" + dehydratedState, {
     method: 'GET',
     headers: {'Content-Type': 'application/json'},
   });
@@ -57,7 +57,7 @@ export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
 };
 
 export const findDaoFundingTransactions = async (slug: string, page: number) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug + "/transactions?page=" + page, {
+  const res = await fetch(API_URL + '/dao/' + slug + "/transactions?page=" + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export const findDaoFundingTransactions = async (slug: string, page: number) => 
 };
 
 export const verifyDao = async (slug: string) => {
-  const res = await fetch(API_URL + '/api/dao/' + slug + '/verify', {
+  const res = await fetch(API_URL + '/dao/' + slug + '/verify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const verifyDao = async (slug: string) => {
 };
 
 export const findAllDaos = async (page: Number) => {
-  const res = await fetch(API_URL + '/api/dao/all?page=' + page, {
+  const res = await fetch(API_URL + '/dao/all?page=' + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -91,14 +91,14 @@ export const findAllDaos = async (page: Number) => {
 };
 
 export const updateDao = async (slug: string, formData: FormData) => {
-  return await fetch(API_URL + '/api/dao/' + slug + '/update', {
+  return await fetch(API_URL + '/dao/' + slug + '/update', {
     method: 'PATCH',
     body: formData
   });
 };
 
 export const findUser = async (appPrivateKey: string) => {
-  const res = await fetch(API_URL + '/api/user/info?appPrivateKey=' + appPrivateKey, {
+  const res = await fetch(API_URL + '/user/info?appPrivateKey=' + appPrivateKey, {
     method: 'GET',
   });
   const json = await res.json();
@@ -107,27 +107,27 @@ export const findUser = async (appPrivateKey: string) => {
 };
 
 export const getUserBalance = async (appPrivateKey: string) => {
-  return await fetch(API_URL + '/api/user/balance?appPrivateKey=' + appPrivateKey, {
+  return await fetch(API_URL + '/user/balance?appPrivateKey=' + appPrivateKey, {
     method: 'GET',
   });
 };
 
 export const registerUser = async (appPrivateKey: string) => {
-  return await fetch(API_URL + '/api/user/register', {
+  return await fetch(API_URL + '/user/register', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
 };
 
 export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoAddress: string) => {
-  return await fetch(API_URL + '/api/user/forward', {
+  return await fetch(API_URL + '/user/forward', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, daoAddress: daoAddress })
   });
 };
 
 export const getTransaction = async (txId: string) => {
-  const res = await fetch(API_URL + '/api/transaction/' + txId, {
+  const res = await fetch(API_URL + '/transaction/' + txId, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

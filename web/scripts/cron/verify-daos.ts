@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 import { Dao } from '@prisma/client';
 
 export async function start() {
@@ -7,7 +7,7 @@ export async function start() {
   // Get unverified
   const unverified = (await axios({
     method: 'GET',
-    url: appApiUrl + '/dao/unverified',
+    url: API_URL + '/dao/unverified',
   })).data as Dao[];
 
   console.log("[VERIFY DAOS] unverified daos:", unverified.length);
@@ -17,7 +17,7 @@ export async function start() {
     try {
       const response = await axios({
         method: 'POST',
-        url: appApiUrl + '/dao/' + dao.slug + '/verify',
+        url: API_URL + '/dao/' + dao.slug + '/verify',
       });
       console.log("[VERIFY DAOS] verification response:", response.data);
     } catch (error) {

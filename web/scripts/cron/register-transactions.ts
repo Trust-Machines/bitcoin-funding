@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 import { FundingTransaction } from '@prisma/client';
 
 export async function start() {
@@ -7,7 +7,7 @@ export async function start() {
   // Get unregistered
   const unregistered = (await axios({
     method: 'GET',
-    url: appApiUrl + '/transaction/unregistered',
+    url: API_URL + '/transaction/unregistered',
   })).data as FundingTransaction[];
 
   console.log("[REGISTER TX] unregistered transactions:", unregistered.length);
@@ -17,7 +17,7 @@ export async function start() {
     try {
       const response = await axios({
         method: 'POST',
-        url: appApiUrl + '/transaction/register',
+        url: API_URL + '/transaction/register',
         data: {
           txId: tx.txId,
         }

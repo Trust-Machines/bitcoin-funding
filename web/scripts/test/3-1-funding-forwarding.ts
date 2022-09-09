@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 import { parseTx } from '@/common/stacks/clarity-bitcoin';
 import Parser from '@dicebear/avatars/dist/parser';
 
@@ -18,7 +18,7 @@ export async function start() {
   // Check wallet balance
   const responseBalance = await axios({
     method: 'GET',
-    url: appApiUrl + '/user/balance',
+    url: API_URL + '/user/balance',
     params: {
       appPrivateKey: appPrivateKey,
     }
@@ -28,7 +28,7 @@ export async function start() {
   // Forward to DAO
   const responsseForward = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/forward',
+    url: API_URL + '/user/forward',
     headers: { 'Content-Type': 'text/plain' },
     data: JSON.stringify({ 
       appPrivateKey: appPrivateKey,
