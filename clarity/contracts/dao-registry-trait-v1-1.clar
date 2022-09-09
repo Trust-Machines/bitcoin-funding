@@ -4,7 +4,7 @@
 
     (get-dao-id-by-address ((buff 33)) (response (optional uint) uint))
 
-    (get-dao-by-id (uint) (response (optional (tuple (address (buff 33)) (admin principal))) uint))
+    (get-dao-address-by-id (uint) (response (optional (buff 33)) uint))
 
     (is-dao-registered ((buff 33)) (response bool uint))
   )

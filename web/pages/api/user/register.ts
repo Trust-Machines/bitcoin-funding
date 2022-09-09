@@ -44,12 +44,12 @@ async function postHandler(
     }
 
     // Create new funding wallet for user
-    const resultAllWallets = await prisma.fundingWallet.findMany(); // TODO: is this performant? shouldn't we just get the count?
-    const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultAllWallets.length);
+    const walletCount = await prisma.fundingWallet.aggregate({ _count: true });
+    const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, walletCount._count);
     const resultWallet = await prisma.fundingWallet.create({
       data: {
         address: newWallet.address,
-        index: resultAllWallets.length
+        index: walletCount._count
       },
     });
 

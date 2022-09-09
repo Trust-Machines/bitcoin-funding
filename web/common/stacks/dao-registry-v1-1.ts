@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../../.env' });
-import { stacksNetwork } from '../constants';
+import { STACKS_NETWORK } from '../constants';
 import { getNonce } from './utils'
 import { decodeBtcAddressToBuffer } from '../bitcoin/encoding';
 import {
@@ -24,7 +24,7 @@ export async function getDaoCount(): Promise<number> {
     functionName: 'get-dao-count',
     functionArgs: [],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value.value;
@@ -35,12 +35,12 @@ export async function getDaoById(id: number): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-by-id',
+    functionName: 'get-dao-address-by-id',
     functionArgs: [
       uintCV(id)
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value;
@@ -56,7 +56,7 @@ export async function getDaoIdByAddress(address: string): Promise<any> {
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value.value;
@@ -72,7 +72,7 @@ export async function isDaoRegistered(address: string): Promise<any> {
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderAddress: managerAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value.value;
@@ -92,12 +92,12 @@ export async function registerDao(address: string): Promise<any> {
     senderKey: managerPrivateKey,
     nonce: nonce,
     postConditionMode: 1,
-    fee: (0.01 * 1000000),
-    network: stacksNetwork,
+    fee: (0.001 * 1000000),
+    network: STACKS_NETWORK,
     anchorMode: AnchorMode.Any
   };
 
   const transaction = await makeContractCall(txOptions);
-  const result = await broadcastTransaction(transaction, stacksNetwork);
+  const result = await broadcastTransaction(transaction, STACKS_NETWORK);
   return result;
 }

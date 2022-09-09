@@ -3,7 +3,7 @@ import { address as btcAddress } from 'bitcoinjs-lib';
 import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
-import { btcNetwork, electrumHost, electrumPort } from '../constants';
+import { BTC_NETWORK, ELECTRUM_HOST, ELECTRUM_PORT } from '../constants';
 import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
 
 interface BtcBalance {
@@ -24,7 +24,7 @@ interface TransactionObject {
 }
 
 async function newElectrumClient(): Promise<ElectrumClient> {
-  const client = new ElectrumClient(electrumPort, electrumHost, 'tcp');
+  const client = new ElectrumClient(ELECTRUM_PORT, ELECTRUM_HOST, 'tcp');
   await client.initElectrum({client: 'electrum-client-js', version: ['1.2', '1.4']}, {
       retryPeriod: 5000,
       maxRetry: 10,
@@ -36,21 +36,50 @@ async function newElectrumClient(): Promise<ElectrumClient> {
 export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
-  const output = btcAddress.toOutputScript(address, btcNetwork);
-  const scriptHash = getScriptHash(output);
-
-  const balances = await client.blockchainScripthash_getBalance(bytesToHex(scriptHash)) as BtcBalance;
-  const balance = BigInt(balances.unconfirmed) + BigInt(balances.confirmed);
-  return parseInt(balance.toString());
+  const user = payments.p2wpkh({
+    address: address,
+    network: BTC_NETWORK,
+  });
+  const scriptHash = getScriptHash(user.output!);
+  const unspents = await client.blockchainScripthash_listunspent(bytesToHex(scriptHash)) as [UnspentObject];
+  if (!unspents.length) {
+    return 0;
+  }
+  const unspent = unspents.sort((a, b) => (a.value < b.value ? 1 : -1))[0];
+  return unspent.value;
 }
 
-export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number, fee: number = 500): Promise<string> {
+export async function getEstimatedFee(): Promise<number> {
   const client = await newElectrumClient();
 
-  const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: btcNetwork });
+  // Get estimated fee to be confirmed in 1 block
+  const estimatedFee = await client.blockchainEstimatefee(1);
+  const estimatedFeeSats = Math.ceil(parseFloat(estimatedFee as string) * 100000000);  
+
+  // Get relay fee
+  const relayFee = await client.blockchain_relayfee();
+  const relayFeeSats = Math.ceil(parseFloat(estimatedFee as string) * 100000000); 
+  
+  // Min relay fee
+  const minimumFeeSats = 1000;
+
+  // In production the estimation should always return a correct number
+  // In dev the estimations only start working after some txs have been made
+  if (estimatedFeeSats < minimumFeeSats && relayFeeSats < minimumFeeSats) {
+    return minimumFeeSats;
+  } else if (estimatedFeeSats < relayFeeSats) {
+    return relayFeeSats;
+  }
+  return estimatedFeeSats;
+}
+
+export async function sendBtc(senderPrivateKey: string, receiverAddress: string, amount: number): Promise<string> {
+  const client = await newElectrumClient();
+
+  const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: BTC_NETWORK });
   const sender = payments.p2wpkh({
     pubkey: signer.publicKey,
-    network: btcNetwork,
+    network: BTC_NETWORK,
   });
   const senderAddress = sender.address!;
   const scriptHash = getScriptHash(sender.output!);
@@ -59,19 +88,30 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const tx = await client.blockchainTransaction_get(unspent.tx_hash, true) as TransactionObject;
   const txHex = Buffer.from(tx.hex, 'hex');
 
-  const psbt = new Psbt({ network: btcNetwork });
+  const psbt = new Psbt({ network: BTC_NETWORK });
   psbt.addInput({
     hash: unspent.tx_hash,
     index: unspent.tx_pos,
     nonWitnessUtxo: txHex,
   });
+
+  // Get estimated fee
+  const fee = await getEstimatedFee();
+
+  // When parsing a BTC transaction in clarity, we can only check the addresses of the outputs and not inputs.
+  // So we need to make sure the sender is also added as output.
+  // If we forward all funds, the sender can not be added as output. So we need to keep some dust.
+  const actualAmount = amount - fee;
+  const senderValueLeft = unspent.value - amount;
+  const dust = senderValueLeft == 0 ? 500 : 0;
+
   psbt.addOutput({
     address: senderAddress,
-    value: unspent.value - amount - fee,
+    value: senderValueLeft + dust,
   });
   psbt.addOutput({
     address: receiverAddress,
-    value: amount,
+    value: actualAmount - dust,
   });
 
   psbt.signAllInputs(signer);

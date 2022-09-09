@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../../.env' });
-import { stacksNetwork } from '../constants';
+import { STACKS_NETWORK } from '../constants';
 import { hexToBytes } from '../utils';
 import {
   callReadOnlyFunction,
@@ -21,7 +21,7 @@ export async function verifyBlockHeader(headerbuff: string, expectedBlockHeight:
       uintCV(expectedBlockHeight)
     ],
     senderAddress: contractAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
   const result = cvToJSON(call).value;
@@ -37,9 +37,9 @@ export async function parseTx(tx: string): Promise<any> {
       bufferCV(Buffer.from(hexToBytes(tx))),
     ],
     senderAddress: contractAddress,
-    network: stacksNetwork,
+    network: STACKS_NETWORK,
   });
 
-  const result = cvToJSON(call).value.value.outs;
+  const result = cvToJSON(call);
   return result;
 }
