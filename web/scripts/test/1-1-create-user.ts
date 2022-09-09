@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../../.env' });
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 
 const userAddress = process.env.USER_ADDRESS as string;
 
@@ -22,7 +22,7 @@ export async function start() {
   // New user
   const responseUser = await axios({
     method: 'POST',
-    url: appApiUrl + '/session/save',
+    url: API_URL + '/session/save',
     data: {
       dehydratedState: dehydratedStateString,
     }

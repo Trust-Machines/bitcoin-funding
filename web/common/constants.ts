@@ -12,8 +12,6 @@ export let electrumPort = 50001;
 export let stacksNetwork = new StacksTestnet({ url: 'http://localhost:3999' });
 export let stacksApiUrl = 'http://localhost:3999';
 
-export let appApiUrl = 'http://localhost:3000/api'
-
 if (process.env.NETWORK === 'mainnet') {
   btcNetwork = networks.bitcoin;
 
@@ -22,4 +20,4 @@ if (process.env.NETWORK === 'mainnet') {
 } 
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-export const API_URL = BASE_URL ? `https://${BASE_URL}` : 'http://localhost:3000';
+export const API_URL = BASE_URL ? `https://${BASE_URL}/api` : 'http://localhost:3000/api';

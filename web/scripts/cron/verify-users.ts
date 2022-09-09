@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 import { User } from '@prisma/client';
 
 export async function start() {
@@ -7,7 +7,7 @@ export async function start() {
   // Get unverified
   const unverified = (await axios({
     method: 'GET',
-    url: appApiUrl + '/user/unverified',
+    url: API_URL + '/user/unverified',
   })).data as User[];
 
   console.log("[VERIFY USERS] unverified users:", unverified.length);
@@ -17,7 +17,7 @@ export async function start() {
     try {
       const response = await axios({
         method: 'POST',
-        url: appApiUrl + '/user/verify',
+        url: API_URL + '/user/verify',
         data: {
           address: user.address
         }

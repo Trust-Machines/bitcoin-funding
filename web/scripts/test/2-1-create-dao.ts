@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createWallet } from '@/common/bitcoin/bitcoin-js';
 import { getDaoCount } from "@/common/stacks/dao-registry-v1-1"
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 import FormData from 'form-data';
 import { User } from '@prisma/client';
 
@@ -24,7 +24,7 @@ export async function start() {
   // Get user
   const user = (await axios({
     method: 'GET',
-    url: appApiUrl + '/user/info?appPrivateKey=' + appPrivateKey,
+    url: API_URL + '/user/info?appPrivateKey=' + appPrivateKey,
   })).data as User;
 
   // Create dehydratedState
@@ -52,7 +52,7 @@ export async function start() {
   // Register DAO with API
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/dao/create',
+    url: API_URL + '/dao/create',
     data: formData
   });
   console.log("[DAO] Registration API response:", response.data);

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { appApiUrl } from '@/common/constants';
+import { API_URL } from '@/common/constants';
 
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
@@ -10,7 +10,7 @@ export async function start() {
 
   const response = await axios({
     method: 'POST',
-    url: appApiUrl + '/user/register',
+    url: API_URL + '/user/register',
     headers: { 'Content-Type': 'text/plain' },
     data: JSON.stringify({ appPrivateKey: appPrivateKey })
   });
