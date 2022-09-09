@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao, RegistrationStatus } from '@prisma/client';
-import { registerDao } from '@/common/stacks/dao-registry-v1-1';
+import { Fund, RegistrationStatus } from '@prisma/client';
+import { registerFund } from '@/common/stacks/fund-registry-v1-1';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   if (req.method === 'POST') {
     await postHandler(req, res);
@@ -16,37 +16,37 @@ export default async function handler(
 
 async function postHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   try {
     const { slug } = req.query;
-    let resultDao = await prisma.dao.findUniqueOrThrow({
+    let resultFund = await prisma.fund.findUniqueOrThrow({
       where: {
         slug: slug as string,
       }
     });
 
     // Check if already registered
-    if (resultDao.registrationStatus == RegistrationStatus.COMPLETED) {
-      res.status(200).json(resultDao)
+    if (resultFund.registrationStatus == RegistrationStatus.COMPLETED) {
+      res.status(200).json(resultFund)
       return;
     }
 
     // Check if registration already started
-    if (resultDao.registrationStatus == RegistrationStatus.STARTED && resultDao.registrationTxId != null) {
-      res.status(200).json(resultDao)
+    if (resultFund.registrationStatus == RegistrationStatus.STARTED && resultFund.registrationTxId != null) {
+      res.status(200).json(resultFund)
       return;
     }
 
     // Register on chain
-    const registrationResult = await registerDao(resultDao.address);
+    const registrationResult = await registerFund(resultFund.address);
     const registrationTxId = registrationResult.txid;
     
     // Update DB if transaction was broadcasted
     if (registrationTxId != undefined) {
-      const result = await prisma.dao.update({
+      const result = await prisma.fund.update({
         where: {
-          address: resultDao.address,
+          address: resultFund.address,
         },
         data: {
           registrationTxId: registrationTxId

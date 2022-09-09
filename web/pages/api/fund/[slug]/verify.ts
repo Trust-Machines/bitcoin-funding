@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao, RegistrationStatus } from '@prisma/client';
+import { Fund, RegistrationStatus } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
-import { isDaoRegistered } from '@/common/stacks/dao-registry-v1-1';
+import { isFundRegistered } from '@/common/stacks/fund-registry-v1-1';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   if (req.method === 'POST') {
     await postHandler(req, res);
@@ -17,40 +17,40 @@ export default async function handler(
 
 async function postHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   try {
     const { slug } = req.query;
-    let resultDao = await prisma.dao.findUniqueOrThrow({
+    let resultFund = await prisma.Fund.findUniqueOrThrow({
       where: {
         slug: slug as string,
       }
     });
 
     // Check if verification needs to be done
-    if (resultDao.registrationStatus != RegistrationStatus.STARTED) {
-      res.status(200).json(resultDao)
+    if (resultFund.registrationStatus != RegistrationStatus.STARTED) {
+      res.status(200).json(resultFund)
       return;
     }
 
-    // Check DAO registration in SC
-    const daoRegistered = await isDaoRegistered(resultDao.address);
+    // Check Fund registration in SC
+    const FundRegistered = await isFundRegistered(resultFund.address);
 
-    let status: RegistrationStatus = resultDao.registrationStatus;
-    if (daoRegistered) {
+    let status: RegistrationStatus = resultFund.registrationStatus;
+    if (FundRegistered) {
       status = RegistrationStatus.COMPLETED;
-    } else if (resultDao.registrationTxId != null) {
+    } else if (resultFund.registrationTxId != null) {
       // Get registration TX info
-      const tx = await getTransactionInfo(resultDao.registrationTxId);
+      const tx = await getTransactionInfo(resultFund.registrationTxId);
       if (tx.tx_status == 'aborted_by_response') {
         status = RegistrationStatus.FAILED;
       }
     }
 
     // Update registration status
-    const result = await prisma.dao.update({
+    const result = await prisma.Fund.update({
       where: {
-        address: resultDao.address,
+        address: resultFund.address,
       },
       data: {
         registrationStatus: status

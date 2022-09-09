@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { Container } from '@/components/Container'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
-import { createDao, getBtcPrice } from '@/common/fetchers'
+import { createFund, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -43,7 +43,7 @@ const New: NextPage = ({ dehydratedState }) => {
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
-  const submitCreateDao = async () => {
+  const submitCreateFund = async () => {
     if (state.name == '') {
       showErrorMessage('Please enter a name.'); return;
     } else if (state.raisingAmount == 0) {
@@ -63,10 +63,10 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
 
-    const res = await createDao(formData);
+    const res = await createFund(formData);
     const data = await res.json();
     if (res.status === 200) {
-      router.push(`/daos/${data.slug}`);
+      router.push(`/Funds/${data.slug}`);
     } else {
       showErrorMessage(data);
     }
@@ -87,7 +87,7 @@ const New: NextPage = ({ dehydratedState }) => {
         <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
           <div>
             <div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Start your Bitcoin DAO</h3>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">Start your Bitcoin Fund</h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">This information will be displayed publicly.</p>
             </div>
             
@@ -101,7 +101,7 @@ const New: NextPage = ({ dehydratedState }) => {
 
             <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your Fund called?</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
@@ -154,7 +154,7 @@ const New: NextPage = ({ dehydratedState }) => {
                     onChange={handleInputChange}
                     value={state.about}
                   ></textarea>
-                  <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the DAO and the fundraise.</p>
+                  <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the Fund and the fundraise.</p>
                 </div>
               </div>
 
@@ -180,7 +180,7 @@ const New: NextPage = ({ dehydratedState }) => {
               </div>
 
               <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin Fund address</label>
                 <div className="mt-1 sm:mt-0 sm:col-span-2">
                   <div className="max-w-lg flex rounded-md shadow-sm">
                     <input
@@ -224,7 +224,7 @@ const New: NextPage = ({ dehydratedState }) => {
 
         <div className="pt-5 pb-5">
           <div className="flex justify-end">
-            <Button onClick={() => submitCreateDao()}>
+            <Button onClick={() => submitCreateFund()}>
               Save
             </Button>
           </div>

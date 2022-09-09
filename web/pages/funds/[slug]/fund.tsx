@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
-import { Dao, FundingTransaction, RegistrationStatus, User } from '@prisma/client'
+import { Fund, FundingTransaction, RegistrationStatus, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount, useAuth } from '@micro-stacks/react';
 import { getServerSideProps } from '@/common/session/index.ts';
-import { findDao, findUser, getUserBalance, forwardUserFunds, registerUser, getTransaction } from '@/common/fetchers';
+import { findFund, findUser, getUserBalance, forwardUserFunds, registerUser, getTransaction } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -13,17 +13,17 @@ import { Alert } from '@/components/Alert';
 const steps = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'complete' },
   { id: '02', name: 'Register BTC address', status: 'complete' },
-  { id: '03', name: 'Send BTC to DAO', status: 'current' },
+  { id: '03', name: 'Send BTC to Fund', status: 'current' },
   { id: '04', name: 'Confirm', status: 'upcoming' },
 ]
 
-const FundDao: NextPage = ({ dehydratedState }) => {
+const FundFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const { slug } = router.query;
   const account = useAccount();
   const { openAuthRequest, isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [dao, setDao] = useState<Dao>({});
+  const [Fund, setFund] = useState<Fund>({});
   const [user, setUser] = useState<User>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
   const [walletBalance, setWalletBalance] = useState(0);
@@ -35,8 +35,8 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }, [slug, isSignedIn]);
 
   const fetchInfo = async () => {
-    const dao = await findDao(slug as string);
-    setDao(dao);
+    const Fund = await findFund(slug as string);
+    setFund(Fund);
     
     let currentStep = 0;
     if (isSignedIn) {
@@ -45,7 +45,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
 
       // User signed in and completed registration
       if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
-        const txId = localStorage.getItem(dao.slug);
+        const txId = localStorage.getItem(Fund.slug);
 
         // If forwarding transaction yet
         if (txId == undefined) {
@@ -113,19 +113,19 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const newFunding = async () => {
-    localStorage.removeItem(dao.slug);
+    localStorage.removeItem(Fund.slug);
     fetchInfo();
   }
 
-  const viewDao = async () => {
-    router.push(`/daos/${dao.slug}`);
+  const viewFund = async () => {
+    router.push(`/Funds/${Fund.slug}`);
   }
 
   const forwardFunds = async () => {
-    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, dao.address);
+    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, Fund.address);
     if (result.status === 200) {
       const json = await result.json();
-      localStorage.setItem(dao.slug, json.txId);
+      localStorage.setItem(Fund.slug, json.txId);
       fetchInfo();
     }
   }
@@ -152,7 +152,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
   }
 
   const pollTransaction = async (intervalId: number) => {
-    const txId = localStorage.getItem(dao.slug);
+    const txId = localStorage.getItem(Fund.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
@@ -178,14 +178,14 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                 <div className="col-span-1">
                   <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
-                      <img src={`${dao.avatar}`}/>
+                      <img src={`${Fund.avatar}`}/>
                     </div>
                   </section>
                 </div>
 
                 <div className="col-span-3">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{dao.name}</h1>
-                  <p className="text-sm text-gray-900">{dao.about}</p>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{Fund.name}</h1>
+                  <p className="text-sm text-gray-900">{Fund.about}</p>
                 </div>
 
               </div>
@@ -320,7 +320,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                   <p>Send BTC to 
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
-                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the DAO.</p>
+                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the Fund.</p>
                 </div>
                 <div>
                   {walletBalance < 1000 ? (
@@ -348,7 +348,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                  The DAO is being funded with your BTC. 
+                  The Fund is being funded with your BTC. 
                   It takes 10-20 minutes for the funding to be registered on chain. 
                   No further action is required.
                   </p>
@@ -365,7 +365,7 @@ const FundDao: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                    You have succesfully funded the DAO with {' '}
+                    You have succesfully funded the Fund with {' '}
                     {(transaction.sats / 100000000.0).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 4,
@@ -380,10 +380,10 @@ const FundDao: NextPage = ({ dehydratedState }) => {
                 </div>
                 <div>
                   <a
-                    onClick={() => { viewDao() }}
+                    onClick={() => { viewFund() }}
                     className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                   >
-                    View DAO
+                    View Fund
                   </a>
                 </div>
               </div>
@@ -396,4 +396,4 @@ const FundDao: NextPage = ({ dehydratedState }) => {
 };
 
 export { getServerSideProps };
-export default FundDao
+export default FundFund

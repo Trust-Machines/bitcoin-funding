@@ -2,19 +2,19 @@ import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Dao } from '@prisma/client'
-import { findDao, isDaoAdmin, updateDao } from '@/common/fetchers'
+import { Fund } from '@prisma/client'
+import { findFund, isFundAdmin, updateFund } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts'
 import { Button } from '@/components/Button'
 import { Alert } from '@/components/Alert'
 
-const ManageDao: NextPage = ({ dehydratedState }) => {
+const ManageFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
-  const [dao, setDao] = useState<Dao>({});
+  const [Fund, setFund] = useState<Fund>({});
   const [avatar, setAvatar] = useState();
   const [fileName, setFileName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -36,7 +36,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
       setAvatar(value);
       setFileName(`${target.files[0].name} chosen`);
     } else {
-      setDao(prevState => { return { ...prevState, [name]: value } });
+      setFund(prevState => { return { ...prevState, [name]: value } });
     }
   }
 
@@ -50,22 +50,22 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   }
 
   const update = async () => {
-    if (dao.name == '') {
+    if (Fund.name == '') {
       showErrorMessage('Please enter a name.'); return;
     }
 
     const formData = new FormData();
     formData.append("file", avatar);
     formData.append("updateAvatar", avatarRemoved);
-    formData.append("name", dao.name);
-    formData.append("about", dao.about);
-    formData.append("slug", dao.slug);
+    formData.append("name", Fund.name);
+    formData.append("about", Fund.about);
+    formData.append("slug", Fund.slug);
     formData.append("dehydratedState", dehydratedState);
 
-    const res = await updateDao(dao.slug, formData);
+    const res = await updateFund(Fund.slug, formData);
     const data = await res.json();
     if (res.status === 200) {
-      router.push(`/daos/${data.slug}`);
+      router.push(`/Funds/${data.slug}`);
     } else {
       showErrorMessage(data);
     }
@@ -74,13 +74,13 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
   useEffect(() => {
     const fetchInfo = async (slug: string) => {
       const [
-        dao,
+        Fund,
         isAdmin
       ] = await Promise.all([
-        findDao(slug),
-        isDaoAdmin(slug, dehydratedState)
+        findFund(slug),
+        isFundAdmin(slug, dehydratedState)
       ]);
-      setDao(dao);
+      setFund(Fund);
       setIsAdmin(isAdmin);
 
       setIsLoading(false);
@@ -101,8 +101,8 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
         <main className="max-w-5xl">
 
           {/* HEADER */}
-          <Link href={`/daos/${dao.slug}`}>
-            <h1 className="text-2xl font-bold text-gray-900">{dao.name}</h1>
+          <Link href={`/Funds/${Fund.slug}`}>
+            <h1 className="text-2xl font-bold text-gray-900">{Fund.name}</h1>
           </Link>
 
           {/* ERROR MESSAGES */}
@@ -116,7 +116,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
           {!isAdmin ? (
             <div className="mt-3">
               <Alert type={Alert.type.ERROR}>
-                Only admins can update DAO info
+                Only admins can update Fund info
               </Alert>
             </div>
           ): null}
@@ -124,7 +124,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
           {/* FORM */}
           <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your Fund called?</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
                 <div className="max-w-lg flex rounded-md shadow-sm">
                   <input
@@ -134,7 +134,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                     autoComplete="name"
                     className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                     onChange={handleInputChange}
-                    value={dao.name}
+                    value={Fund.name}
                   />
                 </div>
               </div>
@@ -168,7 +168,7 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                   <div className="max-w-3xl mx-auto grid max-w-7xl grid-cols-6 items-center">
                     <div className="lg:col-span-1 w-full h-full rounded-md overflow-hidden">
                       <img
-                        src={`${dao.avatar}`}
+                        src={`${Fund.avatar}`}
                         className="w-full h-full object-center object-cover lg:w-full lg:h-full"
                       />
                     </div>
@@ -191,9 +191,9 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
                   rows="3"
                   className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
                   onChange={handleInputChange}
-                  value={dao.about}
+                  value={Fund.about}
                 ></textarea>
-                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the DAO and the fundraise.</p>
+                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the Fund and the fundraise.</p>
               </div>
             </div>
           </div>
@@ -214,4 +214,4 @@ const ManageDao: NextPage = ({ dehydratedState }) => {
 };
 
 export { getServerSideProps };
-export default ManageDao
+export default ManageFund

@@ -27,7 +27,7 @@ async function getHandler(
   const { slug, page } = req.query;
   const pageSize = 15;
 
-  const resultDao = await prisma.dao.findUniqueOrThrow({
+  const resultFund = await prisma.fund.findUniqueOrThrow({
     where: {
       slug: slug as string,
     }
@@ -37,7 +37,7 @@ async function getHandler(
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
     where: {
-      daoAddress: resultDao.address,
+      fundAddress: resultFund.address,
       registrationStatus: RegistrationStatus.COMPLETED
     },
     include: {

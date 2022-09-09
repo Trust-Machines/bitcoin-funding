@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createWallet } from '@/common/bitcoin/bitcoin-js';
-import { getDaoCount } from "@/common/stacks/dao-registry-v1-1"
+import { getFundCount } from "@/common/stacks/Fund-registry-v1-1"
 import { API_URL } from '@/common/constants';
 import FormData from 'form-data';
 import { User } from '@prisma/client';
@@ -9,17 +9,17 @@ import { User } from '@prisma/client';
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
   if (appPrivateKey == undefined) {
-    console.log("[DAO] Add the creator app private key as parameter")
+    console.log("[Fund] Add the creator app private key as parameter")
     return;
   }
 
-  // Number of registered DAOs
-  const daoCount = await getDaoCount();
-  console.log("[DAO] Total number of DAOs in SC:", daoCount);
+  // Number of registered Funds
+  const FundCount = await getFundCount();
+  console.log("[Fund] Total number of Funds in SC:", FundCount);
 
-  // New DAO wallet
-  const daoWallet = createWallet();
-  console.log("[DAO] New DAO wallet:", daoWallet);
+  // New Fund wallet
+  const FundWallet = createWallet();
+  console.log("[Fund] New Fund wallet:", FundWallet);
 
   // Get user
   const user = (await axios({
@@ -42,27 +42,27 @@ export async function start() {
 
   // Form data
   const formData = new FormData();
-  formData.append("address", daoWallet.address);
-  formData.append("name", "DAO #" + daoCount);
-  formData.append("about", "A great DAO");
+  formData.append("address", FundWallet.address);
+  formData.append("name", "Fund #" + FundCount);
+  formData.append("about", "A great fund");
   formData.append("raisingAmount", (10 * 100000000).toString()); // in sats
   formData.append("raisingDeadline", "01/01/2023");
   formData.append("dehydratedState", dehydratedStateString);
 
-  // Register DAO with API
+  // Register Fund with API
   const response = await axios({
     method: 'POST',
-    url: API_URL + '/dao/create',
+    url: API_URL + '/Fund/create',
     data: formData
   });
-  console.log("[DAO] Registration API response:", response.data);
+  console.log("[Fund] Registration API response:", response.data);
 }
 
 export async function run() {
   try {
     await start();
   } catch (error) {
-    console.log("[DAO] ERROR:", error);
+    console.log("[Fund] ERROR:", error);
   }
 }
 run();

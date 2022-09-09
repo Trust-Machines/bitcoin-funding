@@ -5,13 +5,13 @@ import Parser from '@dicebear/avatars/dist/parser';
 
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
-  const daoAddress = process.argv.slice(2)[1];
+  const fundAddress = process.argv.slice(2)[1];
   if (appPrivateKey == undefined) {
     console.log("[FUNDING] Add the user app private key as first parameter")
     return;
   }
-  if (daoAddress == undefined) {
-    console.log("[FUNDING] Add the DAO address as second parameter")
+  if (fundAddress == undefined) {
+    console.log("[FUNDING] Add the Fund address as second parameter")
     return;
   }
 
@@ -25,14 +25,14 @@ export async function start() {
   });
   console.log("[FUNDING] Wallet balance:", responseBalance.data);
 
-  // Forward to DAO
+  // Forward to Fund
   const responsseForward = await axios({
     method: 'POST',
     url: API_URL + '/user/forward',
     headers: { 'Content-Type': 'text/plain' },
     data: JSON.stringify({ 
       appPrivateKey: appPrivateKey,
-      daoAddress: daoAddress,
+      fundAddress: fundAddress,
       sats: responseBalance.data
     })
   });
