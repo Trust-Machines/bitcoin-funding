@@ -4,7 +4,7 @@
 ;; Constants
 ;; 
 
-(define-constant ERR_fund_NOT_FOUND (err u20001))
+(define-constant ERR_FUND_NOT_FOUND (err u20001))
 (define-constant ERR_INVALID_TX (err u20002))
 (define-constant ERR_TX_NOT_MINED (err u20003))
 (define-constant ERR_WRONG_SENDER (err u20004))
@@ -69,7 +69,7 @@
 )
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
-    (fund-id (unwrap! (unwrap! (contract-call? fund-registry get-fund-id-by-address receiver-address) ERR_fund_NOT_FOUND) ERR_fund_NOT_FOUND))
+    (fund-id (unwrap! (unwrap! (contract-call? fund-registry get-fund-id-by-address receiver-address) ERR_FUND_NOT_FOUND) ERR_FUND_NOT_FOUND))
     (current-total (get-total-fund-funding fund-id))
     (current-user-total (get-user-fund-funding fund-id sender-address))
   )

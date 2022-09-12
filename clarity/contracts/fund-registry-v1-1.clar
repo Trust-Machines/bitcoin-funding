@@ -4,7 +4,7 @@
 ;; Constants
 ;; 
 
-(define-constant ERR_fund_EXISTS (err u10001))
+(define-constant ERR_FUND_EXISTS (err u10001))
 
 ;; 
 ;; Vars
@@ -49,7 +49,7 @@
     (fund-id (var-get fund-count))
   )
     (try! (contract-call? .main check-is-enabled))
-    (asserts! (map-insert fund-id-by-address address fund-id) ERR_fund_EXISTS)
+    (asserts! (map-insert fund-id-by-address address fund-id) ERR_FUND_EXISTS)
 
     (map-set fund-address-by-id fund-id address)
     (var-set fund-count (+ fund-id u1))
