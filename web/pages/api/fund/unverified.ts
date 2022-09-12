@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { RegistrationStatus, Dao } from '@prisma/client';
+import { RegistrationStatus, Fund } from '@prisma/client';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao[] | string>
+  res: NextApiResponse<Fund[] | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -15,9 +15,9 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao[]>
+  res: NextApiResponse<Fund[]>
 ) {
-  const result = await prisma.dao.findMany({
+  const result = await prisma.fund.findMany({
     where: { registrationStatus: RegistrationStatus.STARTED }
   });  
   res.status(200).json(result)

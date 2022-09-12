@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { Container } from '@/components/Container'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/Button'
-import { createDao, getBtcPrice } from '@/common/fetchers'
+import { createFund, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -45,7 +45,7 @@ const New: NextPage = ({ dehydratedState }) => {
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
-  const submitCreateDao = async () => {
+  const submitCreateFund = async () => {
     if (state.name == '') {
       showErrorMessage('Please enter a name.'); return;
     } else if (state.raisingAmount == 0) {
@@ -66,14 +66,14 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("dehydratedState", dehydratedState);
 
     setIsLoading(true);
-    const res = await createDao(formData);
+    const res = await createFund(formData);
     const data = await res.json();
-    setIsLoading(false);
 
     if (res.status === 200) {
-      router.push(`/daos/${data.slug}`);
+      router.push(`/funds/${data.slug}`);
     } else {
       showErrorMessage(data);
+      setIsLoading(false);
     }
   }
 
@@ -88,27 +88,27 @@ const New: NextPage = ({ dehydratedState }) => {
 
   return (
     <Container className="max-w-7xl">
-      <div className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
-        <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-          <div>
+      {isLoading ? (
+        <div className="flex flex-wrap mb-12">
+          <Loading />
+        </div>
+      ) : (
+        <div className="space-y-8 divide-y divide-gray-200 mt-12 max-w-5xl">
+          <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
             <div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Start your Bitcoin DAO</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">This information will be displayed publicly.</p>
-            </div>
-            
-            {errorMessage != "" ? (
-              <div className="mt-3">
-                <Alert type={Alert.type.ERROR}>
-                  {errorMessage}
-                </Alert>
+              <div>
+                <h3 className="text-lg leading-6 font-medium text-gray-900">Start your Bitcoin Fund</h3>
+                <p className="mt-1 max-w-2xl text-sm text-gray-500">This information will be displayed publicly.</p>
               </div>
-            ): null}
+              
+              {errorMessage != "" ? (
+                <div className="mt-3">
+                  <Alert type={Alert.type.ERROR}>
+                    {errorMessage}
+                  </Alert>
+                </div>
+              ): null}
 
-            {isLoading ? (
-              <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-                <Loading />
-              </div>
-            ) : (
               <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
@@ -229,18 +229,18 @@ const New: NextPage = ({ dehydratedState }) => {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        <div className="pt-5 pb-5">
-          <div className="flex justify-end">
-            <Button onClick={() => submitCreateDao()}>
-              Save
-            </Button>
-          </div>
+          <div className="pt-5 pb-5">
+              <div className="flex justify-end">
+                <Button onClick={() => submitCreateFund()}>
+                  Save
+                </Button>
+              </div>
+            </div>
         </div>
-      </div>
+      )}
     </Container>
   )
 }

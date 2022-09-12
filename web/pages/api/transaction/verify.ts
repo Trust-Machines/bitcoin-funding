@@ -1,5 +1,5 @@
 import { getTransactionHex } from '@/common/bitcoin/electrum-api';
-import { getTransactionParsed } from '@/common/stacks/dao-funding-v1-1';
+import { getTransactionParsed } from '@/common/stacks/fund-funding-v1-1';
 import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/common/db';
@@ -25,7 +25,7 @@ async function postHandler(
       txId: req.body.txId,
     },
     include: {
-      dao: true
+      fund: true
     }
   });
 
@@ -71,17 +71,17 @@ async function postHandler(
   
   if (status == RegistrationStatus.COMPLETED) {
     // Update totals
-    const updateDao = prisma.dao.update({
+    const updateFund = prisma.fund.update({
       where: {
-        address: result.dao.address
+        address: result.fund.address
       },
       data: {
-        totalSats: result.dao.totalSats + result.sats,
-        totalMembers: memberCount._count > 0 ? result.dao.totalMembers : result.dao.totalMembers + 1
+        totalSats: result.fund.totalSats + result.sats,
+        totalMembers: memberCount._count > 0 ? result.fund.totalMembers : result.fund.totalMembers + 1
       }
     });
 
-    const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateDao]);
+    const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateFund]);
     res.status(200).json(resultUpdateTransaction)
   } else {
     const [resultUpdateTransaction] = await prisma.$transaction([updateTransaction]);

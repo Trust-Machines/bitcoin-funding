@@ -103,8 +103,8 @@ export const Header: FC = ({ isAuthenticated }) => {
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
             {isAuthenticated ? (
-              <Button color='blue' href='/daos/new'>
-                Create a new DAO
+              <Button color='blue' href='/funds/new'>
+                Create a new Fund
               </Button>
             ) : null}
             <WalletConnectButton buttonText='Connect Stacks Wallet' />

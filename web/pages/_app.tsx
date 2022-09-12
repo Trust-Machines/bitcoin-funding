@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <Head>
         <title>BallotBox - Funding</title>
-        <meta name="description" content="Fund your Bitcoin DAO" />
+        <meta name="description" content="Fund your Bitcoin Fund" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

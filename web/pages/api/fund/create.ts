@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
+import { Fund } from '@prisma/client';
 import slugify from 'slugify';
 import prisma from '@/common/db';
 import formidable from "formidable";
@@ -16,7 +16,7 @@ export const config = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   if (req.method === 'POST') {
     await postHandler(req, res);
@@ -27,7 +27,7 @@ export default async function handler(
 
 async function postHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   const form = new formidable.IncomingForm();
   await new Promise(function (resolve, reject) {
@@ -35,12 +35,12 @@ async function postHandler(
       try {
         // Check existing
         const slug = slugify(fields.name as string, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
-        let existingDao = await prisma.dao.findUnique({ where: { slug: slug } });
+        let existingDao = await prisma.fund.findUnique({ where: { slug: slug } });
         if (existingDao) {
           res.status(422).json('DAO with that name already exists');
           return;
         }
-        existingDao = await prisma.dao.findUnique({ where: { address: fields.address as string } });
+        existingDao = await prisma.fund.findUnique({ where: { address: fields.address as string } });
         if (existingDao) {
           res.status(422).json('DAO with that address already exists');
           return;
@@ -85,7 +85,7 @@ async function postHandler(
         }
 
         // Save info
-        const result = await prisma.dao.create({
+        const result = await prisma.fund.create({
           data: {
             address: fields.address as string,
             name: fields.name as string,

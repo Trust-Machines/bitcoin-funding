@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { FundingTransaction, RegistrationStatus } from '@prisma/client';
 import prisma from '@/common/db';
 import { getTransactionData } from '@/common/bitcoin/electrum-api';
-import { addUserFunding } from '@/common/stacks/dao-funding-v1-1';
+import { addUserFunding } from '@/common/stacks/fund-funding-v1-1';
 
 export default async function handler(
   req: NextApiRequest,
@@ -42,7 +42,7 @@ async function postHandler(
     }
 
     // Register on chain
-    const txData = await getTransactionData(req.body.txId, resultTransaction.wallet.address, resultTransaction.daoAddress);
+    const txData = await getTransactionData(req.body.txId, resultTransaction.wallet.address, resultTransaction.fundAddress);
     const registrationResult = await addUserFunding(
       txData.blockHeader,
       txData.blockHeight,
@@ -54,7 +54,7 @@ async function postHandler(
       txData.senderIndex,
       txData.receiverIndex,
       resultTransaction.wallet.address,
-      resultTransaction.daoAddress
+      resultTransaction.fundAddress
     )
     const registrationTxId = registrationResult.txid;
 

@@ -43,7 +43,7 @@ async function postHandler(
       const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultWallet.index)
       const sendBtcResult = await sendBtc(
         wallet.privateKey,
-        body.daoAddress,
+        body.fundAddress,
         body.sats,
       );
 
@@ -51,7 +51,7 @@ async function postHandler(
         data: {
           txId: sendBtcResult,
           wallet: { connect: { address: resultWallet.address } },
-          dao: { connect: { address: body.daoAddress } },
+          fund: { connect: { address: body.fundAddress } },
           sats: body.sats,
         },
       });

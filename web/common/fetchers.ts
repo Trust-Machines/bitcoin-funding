@@ -26,15 +26,15 @@ export const destroySession = async () => {
   }
 };
 
-export const createDao = async (formData: FormData) => {
-  return await fetch(API_URL + '/dao/create', {
+export const createFund = async (formData: FormData) => {
+  return await fetch(API_URL + '/fund/create', {
     method: 'POST',
     body: formData,
   });
 };
 
-export const findDao = async (slug: string) => {
-  const res = await fetch(API_URL + '/dao/' + slug, {
+export const findFund = async (slug: string) => {
+  const res = await fetch(API_URL + '/fund/' + slug, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -44,11 +44,11 @@ export const findDao = async (slug: string) => {
   return json;
 };
 
-export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
+export const isFundAdmin = async (slug: string, dehydratedState: string) => {
   if (dehydratedState == null) {
     return false;
   }
-  const res = await fetch(API_URL + '/dao/' + slug + "/is-admin?dehydratedState=" + dehydratedState, {
+  const res = await fetch(API_URL + '/fund/' + slug + "/is-admin?dehydratedState=" + dehydratedState, {
     method: 'GET',
     headers: {'Content-Type': 'application/json'},
   });
@@ -56,8 +56,8 @@ export const isDaoAdmin = async (slug: string, dehydratedState: string) => {
   return json;
 };
 
-export const findDaoFundingTransactions = async (slug: string, page: number) => {
-  const res = await fetch(API_URL + '/dao/' + slug + "/transactions?page=" + page, {
+export const findFundFundingTransactions = async (slug: string, page: number) => {
+  const res = await fetch(API_URL + '/fund/' + slug + "/transactions?page=" + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -67,8 +67,8 @@ export const findDaoFundingTransactions = async (slug: string, page: number) => 
   return json;
 };
 
-export const verifyDao = async (slug: string) => {
-  const res = await fetch(API_URL + '/dao/' + slug + '/verify', {
+export const verifyFund = async (slug: string) => {
+  const res = await fetch(API_URL + '/fund/' + slug + '/verify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -79,8 +79,8 @@ export const verifyDao = async (slug: string) => {
   return json;
 };
 
-export const findAllDaos = async (page: Number) => {
-  const res = await fetch(API_URL + '/dao/all?page=' + page, {
+export const findAllFunds = async (page: Number) => {
+  const res = await fetch(API_URL + '/fund/all?page=' + page, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -90,8 +90,8 @@ export const findAllDaos = async (page: Number) => {
   return json;
 };
 
-export const updateDao = async (slug: string, formData: FormData) => {
-  return await fetch(API_URL + '/dao/' + slug + '/update', {
+export const updateFund = async (slug: string, formData: FormData) => {
+  return await fetch(API_URL + '/fund/' + slug + '/update', {
     method: 'PATCH',
     body: formData
   });
@@ -119,10 +119,10 @@ export const registerUser = async (appPrivateKey: string) => {
   });
 };
 
-export const forwardUserFunds = async (appPrivateKey: string, sats: number, daoAddress: string) => {
+export const forwardUserFunds = async (appPrivateKey: string, sats: number, fundAddress: string) => {
   return await fetch(API_URL + '/user/forward', {
     method: 'POST',
-    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, daoAddress: daoAddress })
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, fundAddress: fundAddress })
   });
 };
 

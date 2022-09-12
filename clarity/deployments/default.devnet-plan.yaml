@@ -33,20 +33,20 @@ plan:
             path: contracts/clarity-bitcoin.clar
             anchor-block-only: true
         - contract-publish:
-            contract-name: dao-registry-trait-v1-1
+            contract-name: fund-registry-trait-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 3190
-            path: contracts/dao-registry-trait-v1-1.clar
+            path: contracts/fund-registry-trait-v1-1.clar
             anchor-block-only: true
         - contract-publish:
-            contract-name: dao-registry-v1-1
+            contract-name: fund-registry-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 11400
-            path: contracts/dao-registry-v1-1.clar
+            path: contracts/fund-registry-v1-1.clar
             anchor-block-only: true
         - contract-publish:
-            contract-name: dao-funding-v1-1
+            contract-name: fund-funding-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 32260
-            path: contracts/dao-funding-v1-1.clar
+            path: contracts/fund-funding-v1-1.clar
             anchor-block-only: true
