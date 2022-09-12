@@ -9,17 +9,17 @@ import { User } from '@prisma/client';
 export async function start() {
   const appPrivateKey = process.argv.slice(2)[0];
   if (appPrivateKey == undefined) {
-    console.log("[Fund] Add the creator app private key as parameter")
+    console.log("[FUND] Add the creator app private key as parameter")
     return;
   }
 
   // Number of registered Funds
   const fundCount = await getFundCount();
-  console.log("[Fund] Total number of Funds in SC:", fundCount);
+  console.log("[FUND] Total number of funds in SC:", fundCount);
 
   // New Fund wallet
   const fundWallet = createWallet();
-  console.log("[Fund] New Fund wallet:", fundWallet);
+  console.log("[FUND] New fund wallet:", fundWallet);
 
   // Get user
   const user = (await axios({
@@ -49,20 +49,20 @@ export async function start() {
   formData.append("raisingDeadline", "01/01/2023");
   formData.append("dehydratedState", dehydratedStateString);
 
-  // Register Fund with API
+  // Register fund with API
   const response = await axios({
     method: 'POST',
     url: API_URL + '/fund/create',
     data: formData
   });
-  console.log("[Fund] Registration API response:", response.data);
+  console.log("[FUND] Registration API response:", response.data);
 }
 
 export async function run() {
   try {
     await start();
   } catch (error) {
-    console.log("[Fund] ERROR:", error);
+    console.log("[FUND] ERROR:", error);
   }
 }
 run();
