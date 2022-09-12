@@ -17,16 +17,18 @@ async function getHandler(
   req: NextApiRequest,
   res: NextApiResponse<Fund[]>
 ) {
-  const resultStarted = await prisma.fund.findMany({
+  const result = await prisma.fund.findMany({
     where: { 
-      registrationStatus: RegistrationStatus.STARTED,
-      registrationTxId: null
+      OR: [
+        { 
+          registrationStatus: RegistrationStatus.STARTED,
+          registrationTxId: null
+        },
+        { 
+          registrationStatus: RegistrationStatus.FAILED,
+        }
+      ]
     }
-  });
-  const resultFailed = await prisma.fund.findMany({
-    where: { 
-      registrationStatus: RegistrationStatus.FAILED,
-    }
-  });  
-  res.status(200).json(resultStarted.concat(resultFailed))
+  }); 
+  res.status(200).json(result)
 }
