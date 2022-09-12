@@ -90,6 +90,17 @@ export const findAllFunds = async (page: Number) => {
   return json;
 };
 
+export const findUserFunds = async (dehydratedState: string) => {
+  const res = await fetch(API_URL + "/fund/user?dehydratedState=" + dehydratedState, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const json = await res.json();
+  return json;
+};
+
 export const updateFund = async (slug: string, formData: FormData) => {
   return await fetch(API_URL + '/fund/' + slug + '/update', {
     method: 'PATCH',
