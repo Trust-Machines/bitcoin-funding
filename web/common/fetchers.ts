@@ -26,7 +26,7 @@ export const destroySession = async () => {
   }
 };
 
-export const createfund = async (formData: FormData) => {
+export const createFund = async (formData: FormData) => {
   return await fetch(API_URL + '/fund/create', {
     method: 'POST',
     body: formData,

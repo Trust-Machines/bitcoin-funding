@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '@/common/constants';
-import { fund } from '@prisma/client';
+import { Fund } from '@prisma/client';
 
 export async function start() {
 
@@ -8,7 +8,7 @@ export async function start() {
   const unregistered = (await axios({
     method: 'GET',
     url: API_URL + '/fund/unregistered',
-  })).data as fund[];
+  })).data as Fund[];
 
   console.log("[REGISTER FUNDS] unregistered funds:", unregistered.length);
 
