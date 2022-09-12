@@ -24,20 +24,8 @@ async function getHandler(
   const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
 
   const result = await prisma.fundAdmin.findMany({
-    where: {
-      userId: hashedAppPrivateKey
-    }, 
-    include: {
-      fund: true
-    }
-  });
-
-  var funds: Fund[] = [];
-  for (const userFund of result) {
-    funds.push(userFund.fund);
-  }
-  
-  console.log("RESULT:", funds)
-
-  res.status(200).json(funds);
+    select: { fund: true },
+    where: { userId: hashedAppPrivateKey }
+  })
+  res.status(200).json(result);
 }
