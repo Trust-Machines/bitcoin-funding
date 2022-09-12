@@ -64,7 +64,16 @@ async function postHandler(
           avatar = await createPlaceholderAndSaveFile(slug as string)
         }
       }
+
+      // Admins
+      if (fields.newAdmins != '') {
+        const addresses = fields.newAdmins.split(",");
+        for (const address of addresses) {
+          console.log("add admin:", address);
+        }
+      }
   
+      // Update info
       const result = await prisma.fund.update({
         where: { slug: fields.slug as string },
         data: {
