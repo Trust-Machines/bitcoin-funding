@@ -39,16 +39,14 @@ export function Main({ dehydratedState }) {
           <Loading />
         ) : (
           <>
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your Funds</h2>
             {userFunds.length > 0 ? (
               <>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your Funds</h2>
                 <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                   {userFunds.map(fund => <FundThumbnail key={"user" + fund.address} fund={fund} />)}
                 </div>
               </>
-            ) : (
-              <span>You have no funds yet</span>
-            )}
+            ): null}
 
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 mt-8">Our popular Funds</h2>
             {funds.total > 0 ? (
