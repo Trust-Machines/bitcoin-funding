@@ -32,4 +32,4 @@ The project is using Electrum servers to facilitate fetching of wallet data end 
 
 ## Run cron jobs in the ./web/scripts folder
 
-use `npx ts-node register-daos.ts`
+use `npx ts-node register-funds.ts`

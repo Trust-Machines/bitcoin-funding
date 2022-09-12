@@ -17,17 +17,17 @@ import {
 } from '@stacks/transactions';
 
 const contractAddress = process.env.APP_ADDRESS as string;
-const contractName = "dao-funding-v1-1";
+const contractName = "fund-funding-v1-1";
 const managerAddress = process.env.MANAGER_ADDRESS as string;
 const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
-export async function getUserDaoFunding(daoId: number, userAddress: string): Promise<any> {
+export async function getUserFundFunding(fundId: number, userAddress: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-user-dao-funding',
+    functionName: 'get-user-fund-funding',
     functionArgs: [
-      uintCV(daoId),
+      uintCV(fundId),
       bufferCV(decodeBtcAddressToBuffer(userAddress))
     ],
     senderAddress: managerAddress,
@@ -38,13 +38,13 @@ export async function getUserDaoFunding(daoId: number, userAddress: string): Pro
   return result;
 }
 
-export async function getTotalDaoFunding(daoId: number): Promise<any> {
+export async function getTotalFundFunding(fundId: number): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-total-dao-funding',
+    functionName: 'get-total-fund-funding',
     functionArgs: [
-      uintCV(daoId),
+      uintCV(fundId),
     ],
     senderAddress: managerAddress,
     network: STACKS_NETWORK,
@@ -89,7 +89,7 @@ export async function addUserFunding(
     contractName,
     functionName: "add-user-funding",
     functionArgs: [
-      contractPrincipalCV(contractAddress, "dao-registry-v1-1"),
+      contractPrincipalCV(contractAddress, "fund-registry-v1-1"),
       tupleCV({
         "header": bufferCV(Buffer.from(hexToBytes(blockHeader))),
         "height": uintCV(blockHeight)

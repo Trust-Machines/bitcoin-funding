@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
+import { Fund } from '@prisma/client';
 import prisma from '@/common/db';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -15,11 +15,11 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Dao | string>
+  res: NextApiResponse<Fund | string>
 ) {
   try {
     const { slug } = req.query;
-    const result = await prisma.dao.findUniqueOrThrow({
+    const result = await prisma.fund.findUniqueOrThrow({
       where: {
         slug: slug as string,
       }

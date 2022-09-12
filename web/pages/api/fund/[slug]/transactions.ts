@@ -27,17 +27,17 @@ async function getHandler(
   const { slug, page } = req.query;
   const pageSize = 15;
 
-  const resultDao = await prisma.dao.findUniqueOrThrow({
+  const resultFund = await prisma.fund.findUniqueOrThrow({
     where: {
       slug: slug as string,
     }
   });
 
-  const resultTransactions = await prisma.FundingTransaction.findMany({
+  const resultTransactions = await prisma.fundingTransaction.findMany({
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
     where: {
-      daoAddress: resultDao.address,
+      fundAddress: resultFund.address,
       registrationStatus: RegistrationStatus.COMPLETED
     },
     include: {
@@ -47,7 +47,7 @@ async function getHandler(
     },
   });  
 
-  const transactionCount = await prisma.FundingTransaction.aggregate({
+  const transactionCount = await prisma.fundingTransaction.aggregate({
     _count: true,
   });
   

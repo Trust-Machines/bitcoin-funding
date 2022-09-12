@@ -1,10 +1,10 @@
-(use-trait dao-registry-trait .dao-registry-trait-v1-1.dao-registry-trait)
+(use-trait fund-registry-trait .fund-registry-trait-v1-1.fund-registry-trait)
 
 ;; 
 ;; Constants
 ;; 
 
-(define-constant ERR_DAO_NOT_FOUND (err u20001))
+(define-constant ERR_FUND_NOT_FOUND (err u20001))
 (define-constant ERR_INVALID_TX (err u20002))
 (define-constant ERR_TX_NOT_MINED (err u20003))
 (define-constant ERR_WRONG_SENDER (err u20004))
@@ -15,15 +15,15 @@
 ;; Maps
 ;; 
 
-(define-map user-dao-funding 
+(define-map user-fund-funding 
   {
-    dao-id: uint,
+    fund-id: uint,
     user-address: (buff 33)   ;; address before encoding
-  } 
+  }
   uint
 )
 
-(define-map total-dao-funding uint uint)
+(define-map total-fund-funding uint uint)
 
 (define-map tx-parsed (buff 1024) bool)
 
@@ -31,17 +31,17 @@
 ;; Getters
 ;; 
 
-(define-read-only (get-user-dao-funding (dao-id uint) (user-address (buff 33)))
+(define-read-only (get-user-fund-funding (fund-id uint) (user-address (buff 33)))
   (default-to 
     u0
-    (map-get? user-dao-funding { dao-id: dao-id, user-address: user-address })
+    (map-get? user-fund-funding { fund-id: fund-id, user-address: user-address })
   )
 )
 
-(define-read-only (get-total-dao-funding (dao-id uint))
+(define-read-only (get-total-fund-funding (fund-id uint))
   (default-to 
     u0
-    (map-get? total-dao-funding dao-id)
+    (map-get? total-fund-funding fund-id)
   )
 )
 
@@ -57,7 +57,7 @@
 ;; 
 
 (define-public (add-user-funding
-  (dao-registry <dao-registry-trait>)
+  (fund-registry <fund-registry-trait>)
   (block { header: (buff 80), height: uint })
   (prev-blocks (list 10 (buff 80)))
   (tx (buff 1024))
@@ -69,15 +69,15 @@
 )
   (let (
     (sats (try! (parse-and-validate-tx block prev-blocks tx proof sender-index receiver-index sender-address receiver-address)))
-    (dao-id (unwrap! (unwrap! (contract-call? dao-registry get-dao-id-by-address receiver-address) ERR_DAO_NOT_FOUND) ERR_DAO_NOT_FOUND))
-    (current-total (get-total-dao-funding dao-id))
-    (current-user-total (get-user-dao-funding dao-id sender-address))
+    (fund-id (unwrap! (unwrap! (contract-call? fund-registry get-fund-id-by-address receiver-address) ERR_FUND_NOT_FOUND) ERR_FUND_NOT_FOUND))
+    (current-total (get-total-fund-funding fund-id))
+    (current-user-total (get-user-fund-funding fund-id sender-address))
   )
     (try! (contract-call? .main check-is-enabled))
     (asserts! (not (get-tx-parsed tx)) ERR_TX_ALREADY_ADDED)
 
-    (map-set total-dao-funding dao-id (+ current-total sats))
-    (map-set user-dao-funding { dao-id: dao-id, user-address: sender-address } (+ current-user-total sats))
+    (map-set total-fund-funding fund-id (+ current-total sats))
+    (map-set user-fund-funding { fund-id: fund-id, user-address: sender-address } (+ current-user-total sats))
     (map-set tx-parsed tx true)
     (ok sats)
   )

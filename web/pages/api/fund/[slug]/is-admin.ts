@@ -18,7 +18,7 @@ async function getHandler(
   res: NextApiResponse<boolean>
 ) {
   const { slug, dehydratedState } = req.query;
-  const resultDao = await prisma.dao.findUniqueOrThrow({
+  const resultFund = await prisma.fund.findUniqueOrThrow({
     where: {
       slug: slug as string,
     }
@@ -26,9 +26,9 @@ async function getHandler(
 
   const account = JSON.parse(dehydratedState as string)[1][1][0];
   const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
-  const isAdmin = await prisma.daoAdmin.findFirst({ 
+  const isAdmin = await prisma.fundAdmin.findFirst({ 
     where: { 
-      daoId: resultDao.address,
+      fundId: resultFund.address,
       userId: hashedAppPrivateKey
     } 
   });

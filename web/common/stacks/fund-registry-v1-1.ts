@@ -13,15 +13,15 @@ import {
 } from '@stacks/transactions';
 
 const contractAddress = process.env.APP_ADDRESS as string;
-const contractName = "dao-registry-v1-1";
+const contractName = "fund-registry-v1-1";
 const managerAddress = process.env.MANAGER_ADDRESS as string;
 const managerPrivateKey = process.env.MANAGER_PRIVATE_KEY as string;
 
-export async function getDaoCount(): Promise<number> {
+export async function getFundCount(): Promise<number> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-count',
+    functionName: 'get-fund-count',
     functionArgs: [],
     senderAddress: managerAddress,
     network: STACKS_NETWORK,
@@ -31,11 +31,11 @@ export async function getDaoCount(): Promise<number> {
   return result;
 }
 
-export async function getDaoById(id: number): Promise<any> {
+export async function getFundById(id: number): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-address-by-id',
+    functionName: 'get-fund-address-by-id',
     functionArgs: [
       uintCV(id)
     ],
@@ -47,11 +47,11 @@ export async function getDaoById(id: number): Promise<any> {
   return result;
 }
 
-export async function getDaoIdByAddress(address: string): Promise<any> {
+export async function getFundIdByAddress(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'get-dao-id-by-address',
+    functionName: 'get-fund-id-by-address',
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
@@ -63,11 +63,11 @@ export async function getDaoIdByAddress(address: string): Promise<any> {
   return result;
 }
 
-export async function isDaoRegistered(address: string): Promise<any> {
+export async function isFundRegistered(address: string): Promise<any> {
   const call = await callReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: 'is-dao-registered',
+    functionName: 'is-fund-registered',
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
@@ -79,13 +79,13 @@ export async function isDaoRegistered(address: string): Promise<any> {
   return result;
 }
 
-export async function registerDao(address: string): Promise<any> {
+export async function registerFund(address: string): Promise<any> {
   const nonce = await getNonce(managerAddress)
 
   const txOptions = {
     contractAddress,
     contractName,
-    functionName: "register-dao",
+    functionName: "register-fund",
     functionArgs: [
       bufferCV(decodeBtcAddressToBuffer(address))
     ],

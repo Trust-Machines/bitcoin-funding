@@ -26,13 +26,13 @@ export function Hero() {
           </svg>
           <span className="relative">any BTC address</span>
         </span>{' '}
-        into a Bitcoin DAO.
+        into a Bitcoin Fund.
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
         Native Bitcoin Funding in hours, not weeks.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <WalletConnectButton buttonText='Create a Bitcoin DAO' />
+        <WalletConnectButton buttonText='Create a Bitcoin Fund' />
         <Button
           href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
           variant="outline"
@@ -48,7 +48,7 @@ export function Hero() {
       </div>
       <div className="mt-36 lg:mt-56">
         <p className="font-display text-base text-slate-900">
-          Trusted by these six DAOs so far
+          Trusted by these six funds so far
         </p>
         <ul
           role="list"

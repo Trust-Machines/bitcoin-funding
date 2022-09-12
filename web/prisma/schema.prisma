@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Dao {
+model Fund {
   address                     String                    @id
   name                        String
   slug                        String                    @unique
@@ -23,16 +23,16 @@ model Dao {
   transactions                FundingTransaction[]
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
-  admins                      DaoAdmin[]
+  admins                      FundAdmin[]
   totalSats                   Int                       @default(0)
   totalMembers                Int                       @default(0)
 }
 
-model DaoAdmin {
+model FundAdmin {
   id                          Int                       @id @default(autoincrement())
-  dao                         Dao                       @relation(fields: [daoId], references: [address])
+  fund                        Fund                      @relation(fields: [fundId], references: [address])
   user                        User                      @relation(fields: [userId], references: [appPrivateKey])
-  daoId                       String
+  fundId                      String
   userId                      String
 }
 
@@ -45,7 +45,7 @@ model User {
   registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
-  daoAdmins                   DaoAdmin[]
+  fundAdmins                  FundAdmin[]
 }
 
 model FundingWallet {
@@ -61,8 +61,8 @@ model FundingTransaction {
   txId                        String                    @id
   wallet                      FundingWallet             @relation(fields: [walletAddress], references: [address])
   walletAddress               String
-  dao                         Dao                       @relation(fields: [daoAddress], references: [address])
-  daoAddress                  String
+  fund                        Fund                       @relation(fields: [fundAddress], references: [address])
+  fundAddress                 String
   sats                        Int
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)

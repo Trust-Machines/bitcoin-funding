@@ -19,7 +19,7 @@ async function getHandler(
 ) {
   try {
     const { txId } = req.query;
-    const result = await prisma.FundingTransaction.findUniqueOrThrow({
+    const result = await prisma.fundingTransaction.findUniqueOrThrow({
       where: {
         txId: txId as string,
       }

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Dao } from '@prisma/client';
+import { Fund } from '@prisma/client';
 import prisma from '@/common/db';
 
-export type DaosPaged = {
-  daos: Dao[]
+export type FundsPaged = {
+  funds: Fund[]
   total: number
   totalPages: number
   currentPage: number
@@ -11,7 +11,7 @@ export type DaosPaged = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<DaosPaged | string>
+  res: NextApiResponse<FundsPaged | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -22,24 +22,24 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<DaosPaged>
+  res: NextApiResponse<FundsPaged>
 ) {
   const { page } = req.query;
   const pageSize = 15;
 
-  const result = await prisma.dao.findMany({
+  const result = await prisma.fund.findMany({
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
   });
 
-  const daoCount = await prisma.dao.aggregate({
+  const fundCount = await prisma.fund.aggregate({
     _count: true,
   });
 
   res.status(200).json({
-    daos: result,
-    total: daoCount._count,
-    totalPages: Math.ceil(daoCount._count / pageSize),
+    funds: result,
+    total: fundCount._count,
+    totalPages: Math.ceil(fundCount._count / pageSize),
     currentPage: parseInt(page as string)
   })
 }

@@ -14,17 +14,17 @@ path = "contracts/test/test-utils.clar"
 [contracts.main]
 path = "contracts/main.clar"
 
-[contracts.dao-registry-trait-v1-1]
-path = "contracts/dao-registry-trait-v1-1.clar"
+[contracts.fund-registry-trait-v1-1]
+path = "contracts/fund-registry-trait-v1-1.clar"
 
-[contracts.dao-registry-v1-1]
-path = "contracts/dao-registry-v1-1.clar"
+[contracts.fund-registry-v1-1]
+path = "contracts/fund-registry-v1-1.clar"
 
 [contracts.user-registry-v1-1]
 path = "contracts/user-registry-v1-1.clar"
 
-[contracts.dao-funding-v1-1]
-path = "contracts/dao-funding-v1-1.clar"
+[contracts.fund-funding-v1-1]
+path = "contracts/fund-funding-v1-1.clar"
 
 [repl.analysis]
 passes = ["check_checker"]
