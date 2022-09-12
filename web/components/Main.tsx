@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { FundThumbnail } from '@/components/FundThumbnail'
-import { findAllFunds } from '@/common/fetchers'
+import { findAllFunds, findUserFunds } from '@/common/fetchers'
 import { Pagination } from './Pagination'
 import { FundsPaged } from 'pages/api/fund/all'
+import { Fund } from '@prisma/client'
 
-export function Main() {
+export function Main({ dehydratedState }) {
   const [isLoading, setIsLoading] = useState(true);
   const [funds, setFunds] = useState<FundsPaged>({});
+  const [userFunds, setUserFunds] = useState<Fund[]>({});
 
   const pageSelected = (page: Number) => {
     if (page >= 0 && page < funds.totalPages) {
@@ -19,6 +21,7 @@ export function Main() {
   const fetchFunds = async (page: Number) => {
     setIsLoading(true);
     setFunds(await findAllFunds(page));
+    setUserFunds(await findUserFunds(dehydratedState));
     setIsLoading(false);
   }
 
@@ -30,13 +33,22 @@ export function Main() {
 
   return (
     <Container className="min-h-screen">
-      <div className="max-w-2xl mx-auto py-16 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Our popular Funds</h2>
+      <div className="max-w-2xl mx-auto px-4 pb-8 sm:px-6 lg:max-w-7xl lg:px-8">
 
         {isLoading ? (
           <Loading />
         ) : (
           <>
+            {userFunds.length > 0 ? (
+              <>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your Funds</h2>
+                <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                  {userFunds.map(fund => <FundThumbnail key={"user" + fund.fund.address} fund={fund.fund} />)}
+                </div>
+              </>
+            ): null}
+
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 mt-8">Our popular Funds</h2>
             {funds.total > 0 ? (
               <>
                 <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">

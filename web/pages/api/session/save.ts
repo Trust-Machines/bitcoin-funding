@@ -27,6 +27,18 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
           address: account['address'],
         },
       });
+
+      // Check for admin invites
+      const adminInvites = await prisma.fundAdminInvite.findMany({ where: { userAddress: account['address'] } })
+      for (const invite of adminInvites) {
+        await prisma.fundAdmin.create({
+          data: {
+            fundId: invite.fundAddress,
+            userId: hashedAppPrivateKey
+          }
+        })
+      }
+      await prisma.fundAdminInvite.deleteMany({ where: { userAddress: account['address'] } })
     }
 
     res.json({ dehydratedState, user });

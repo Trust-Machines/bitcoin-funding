@@ -20,7 +20,7 @@ const Home: NextPage = ({ dehydratedState }) => {
     <>
       <main>
         {isAuthenticated ? (
-          <Main />
+          <Main dehydratedState={dehydratedState}/>
         ) : (
           <>
             <Hero />

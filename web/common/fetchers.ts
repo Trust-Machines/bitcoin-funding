@@ -56,6 +56,18 @@ export const isFundAdmin = async (slug: string, dehydratedState: string) => {
   return json;
 };
 
+export const getFundAdmins = async (slug: string, dehydratedState: string) => {
+  if (dehydratedState == null) {
+    return false;
+  }
+  const res = await fetch(API_URL + '/fund/' + slug + "/admins?dehydratedState=" + dehydratedState, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+  });
+  const json = await res.json();
+  return json;
+};
+
 export const findFundFundingTransactions = async (slug: string, page: number) => {
   const res = await fetch(API_URL + '/fund/' + slug + "/transactions?page=" + page, {
     method: 'GET',
@@ -81,6 +93,17 @@ export const verifyFund = async (slug: string) => {
 
 export const findAllFunds = async (page: Number) => {
   const res = await fetch(API_URL + '/fund/all?page=' + page, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const json = await res.json();
+  return json;
+};
+
+export const findUserFunds = async (dehydratedState: string) => {
+  const res = await fetch(API_URL + "/fund/user?dehydratedState=" + dehydratedState, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

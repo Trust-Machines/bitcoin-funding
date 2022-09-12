@@ -3,12 +3,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Fund } from '@prisma/client'
-import { findFund, isFundAdmin, updateFund } from '@/common/fetchers'
+import { findFund, getFundAdmins, isFundAdmin, updateFund } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts'
 import { Button } from '@/components/Button'
 import { Alert } from '@/components/Alert'
+import { AdminItem } from '@/components/AdminItem'
 
 const ManageFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -20,6 +21,9 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [admins, setAdmins] = useState([]);
+  const [newAdmins, setNewAdmins] = useState([]);
+  const [newAdmin, setNewAdmin] = useState('');
 
   const handleInputChange = (event:any) => {
     const target = event.target;
@@ -38,6 +42,36 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     } else {
       setFund(prevState => { return { ...prevState, [name]: value } });
     }
+  }
+
+  const handleAdminChange = (event:any) => {
+    setNewAdmin(event.target.value);
+  }
+
+  const addAdmin = async () => {
+    let adminItems = [];
+    let exist = false;
+    for (const item of admins) {
+      if (item.key == newAdmin) {
+        exist = true;
+      }
+    }
+    for (const item of newAdmins) {
+      adminItems.push(item)
+      if (item.key == newAdmin) {
+        exist = true;
+      }
+    }
+    if (!exist) {
+      adminItems.push(
+        AdminItem({
+          address: newAdmin, 
+          isNew: true
+        })
+      )
+    }
+    setNewAdmins(adminItems);
+    setNewAdmin("");
   }
 
   const removeAvatar = async () => {
@@ -62,6 +96,12 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     formData.append("slug", fund.slug);
     formData.append("dehydratedState", dehydratedState);
 
+    var adminList: string[] = [];
+    for (const item of newAdmins) {
+      adminList.push(item.key);
+    }
+    formData.append("newAdmins", adminList);
+
     const res = await updateFund(fund.slug, formData);
     const data = await res.json();
     if (res.status === 200) {
@@ -75,13 +115,26 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     const fetchInfo = async (slug: string) => {
       const [
         fund,
-        isAdmin
+        isAdmin,
+        admins
       ] = await Promise.all([
         findFund(slug),
-        isFundAdmin(slug, dehydratedState)
+        isFundAdmin(slug, dehydratedState),
+        getFundAdmins(slug, dehydratedState)
       ]);
       setFund(fund);
       setIsAdmin(isAdmin);
+
+      let adminItems = [];
+      for (const address of admins) {
+        adminItems.push(
+          AdminItem({
+            address: address, 
+            isNew: false
+          })
+        )
+      }
+      setAdmins(adminItems);
 
       setIsLoading(false);
     };
@@ -97,7 +150,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
         <div className="flex flex-wrap mb-12">
           <Loading />
         </div>
-      ) : (
+      ) : (        
         <main className="max-w-5xl">
 
           {/* HEADER */}
@@ -194,6 +247,33 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   value={fund.about}
                 ></textarea>
                 <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the fund and the fundraise.</p>
+              </div>
+            </div>
+
+            <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label htmlFor="admin" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Admins</label>
+              <div className="mt-1 sm:mt-0 sm:col-span-2">
+                {admins}
+                {newAdmins}
+                <div className="max-w-lg flex rounded-md shadow-sm items-center">
+                  <input
+                    type="text"
+                    name="admin"
+                    id="admin"
+                    autoComplete="admin"
+                    className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                    onChange={handleAdminChange}
+                    value={newAdmin}
+                  />
+                  <a
+                    onClick={() => { addAdmin() }}
+                    className="ml-2 font-medium text-sm text-blue-700 cursor-pointer"
+                  >
+                    Add
+                  </a>
+                </div>
+
+                <p className="mt-2 text-sm text-gray-500">Fund admins can update fund details. Enter a Stacks address to add a new fund admin.</p>
               </div>
             </div>
           </div>

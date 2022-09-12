@@ -30,7 +30,7 @@ async function postHandler(
   });
 
   // Check if verification needs to be done
-  if (result.registrationStatus != RegistrationStatus.STARTED) {
+  if (result.registrationStatus == RegistrationStatus.COMPLETED) {
     res.status(200).json(result)
     return;
   }
@@ -45,7 +45,7 @@ async function postHandler(
   } else if (result.registrationTxId != null) {
     // Get registration TX info
     const tx = await getTransactionInfo(result.registrationTxId);
-    if (tx.tx_status == 'aborted_by_response') {
+    if (tx.tx_status == 'aborted_by_response' || tx.error != undefined) {
       status = RegistrationStatus.FAILED;
     }
   }

@@ -47,8 +47,8 @@ async function postHandler(
 
       // Check existing
       const slug = slugify(fields.name as string, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
+      const existingFund = await prisma.fund.findUnique({ where: { slug: slug } });
       if (resultFund!.name != fields.name) {
-        let existingFund = await prisma.fund.findUnique({ where: { slug: slug } });
         if (existingFund) {
           res.status(422).json('Fund with that name already exists');
           return;
@@ -64,7 +64,39 @@ async function postHandler(
           avatar = await createPlaceholderAndSaveFile(slug as string)
         }
       }
+
+      // Admins
+      const newAdmins = fields.newAdmins as string;
+      if (newAdmins != '') {
+        const addresses = newAdmins.split(",");
+        for (const address of addresses) {
+
+          // Check if user exist
+          const resultUser = await prisma.user.findUnique({
+            where: {
+              address: address,
+            }
+          });
+
+          if (resultUser) {
+            await prisma.fundAdmin.create({
+              data: {
+                fundId: existingFund.address,
+                userId: resultUser.appPrivateKey
+              }
+            })
+          } else {
+            await prisma.fundAdminInvite.create({
+              data: {
+                fundAddress: existingFund.address,
+                userAddress: address,
+              },
+            });
+          }
+        }
+      }
   
+      // Update info
       const result = await prisma.fund.update({
         where: { slug: fields.slug as string },
         data: {
