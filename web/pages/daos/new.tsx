@@ -6,6 +6,7 @@ import { createDao, getBtcPrice } from '@/common/fetchers'
 import { useRouter } from 'next/router'
 import { Alert } from '@/components/Alert';
 import { getServerSideProps } from '@/common/session/index.ts';
+import { Loading } from '@/components/Loading';
 import { validate } from 'bitcoin-address-validation';
 
 const New: NextPage = ({ dehydratedState }) => {
@@ -20,6 +21,7 @@ const New: NextPage = ({ dehydratedState }) => {
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [btcPrice, setBtcPrice] = useState(0.0);
+  const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState('');
 
   const handleInputChange = (event: any) => {
@@ -63,8 +65,11 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
 
+    setIsLoading(true);
     const res = await createDao(formData);
     const data = await res.json();
+    setIsLoading(false);
+
     if (res.status === 200) {
       router.push(`/daos/${data.slug}`);
     } else {
@@ -94,131 +99,137 @@ const New: NextPage = ({ dehydratedState }) => {
             {errorMessage != "" ? (
               <div className="mt-3">
                 <Alert type={Alert.type.ERROR}>
-                    {errorMessage}
+                  {errorMessage}
                 </Alert>
               </div>
             ): null}
 
-            <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      autoComplete="name"
-                      className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                      onChange={handleInputChange}
-                      value={state.name}
-                    />
-                  </div>
-                </div>
+            {isLoading ? (
+              <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                <Loading />
               </div>
-
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <label htmlFor="image" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
-                    <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                      <div className="space-y-1 text-center">
-                        <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <div className="text-center text-sm text-gray-600">
-                          {fileName ? (
-                            <span>{fileName}</span>
-                          ) : (
-                            <span>Upload a file</span>
-                          )}
-                          <input id="image" name="image" type="file" className="sr-only" onChange={handleInputChange} />
-                        </div>
-                        {!fileName ? (
-                          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                        ) : null}
-                      </div>
+            ) : (
+              <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <div className="max-w-lg flex rounded-md shadow-sm">
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        autoComplete="name"
+                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                        onChange={handleInputChange}
+                        value={state.name}
+                      />
                     </div>
-                  </label>
-                </div>
-              </div>
-
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="about" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"> About </label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <textarea
-                    id="about"
-                    name="about"
-                    rows="3"
-                    className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
-                    onChange={handleInputChange}
-                    value={state.about}
-                  ></textarea>
-                  <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the DAO and the fundraise.</p>
-                </div>
-              </div>
-
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="raisingAmount" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">How much do you want to raise?</label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex rounded-md shadow-sm">
-                    <input
-                      type="number"
-                      name="raisingAmount"
-                      id="raisingAmount"
-                      autoComplete="raisingAmount"
-                      className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
-                      onChange={handleInputChange}
-                      value={state.raisingAmount}
-                    />
-                    <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                      $
-                    </span>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">That is {state.raisingAmount / btcPrice} BTC at current prices</p>
                 </div>
-              </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="address"
-                      id="address"
-                      autoComplete="address"
-                      className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                      onChange={handleInputChange}
-                      value={state.address}
-                    />
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <label htmlFor="image" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                      <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                        <div className="space-y-1 text-center">
+                          <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <div className="text-center text-sm text-gray-600">
+                            {fileName ? (
+                              <span>{fileName}</span>
+                            ) : (
+                              <span>Upload a file</span>
+                            )}
+                            <input id="image" name="image" type="file" className="sr-only" onChange={handleInputChange} />
+                          </div>
+                          {!fileName ? (
+                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                          ) : null}
+                        </div>
+                      </div>
+                    </label>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
-                    Your Bitcoin address is the funding address where donors will send funds. We highly recommend you use a new Electrum, Casa, Trezor or Ledger Bitcoin address. This will allow you to keep the funds you collect in one place and to distuingish them from previous transactions at this address.
-                  </p>
                 </div>
-              </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                <label htmlFor="raisingDeadline" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">When will deposits close?</label>
-                <div className="mt-1 sm:mt-0 sm:col-span-2">
-                  <div className="max-w-lg flex rounded-md shadow-sm">
-                    <input
-                      type="date"
-                      name="raisingDeadline"
-                      id="raisingDeadline"
-                      autoComplete="raisingDeadline"
-                      className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="about" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"> About </label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <textarea
+                      id="about"
+                      name="about"
+                      rows="3"
+                      className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
                       onChange={handleInputChange}
-                      value={state.raisingDeadline}
-                    />
+                      value={state.about}
+                    ></textarea>
+                    <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the DAO and the fundraise.</p>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
-                    Deposits will close end of day (23:59 PST).
-                  </p>
+                </div>
+
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="raisingAmount" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">How much do you want to raise?</label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <div className="max-w-lg flex rounded-md shadow-sm">
+                      <input
+                        type="number"
+                        name="raisingAmount"
+                        id="raisingAmount"
+                        autoComplete="raisingAmount"
+                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
+                        onChange={handleInputChange}
+                        value={state.raisingAmount}
+                      />
+                      <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                        $
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">That is {state.raisingAmount / btcPrice} BTC at current prices</p>
+                  </div>
+                </div>
+
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <div className="max-w-lg flex rounded-md shadow-sm">
+                      <input
+                        type="text"
+                        name="address"
+                        id="address"
+                        autoComplete="address"
+                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                        onChange={handleInputChange}
+                        value={state.address}
+                      />
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">
+                      Your Bitcoin address is the funding address where donors will send funds. We highly recommend you use a new Electrum, Casa, Trezor or Ledger Bitcoin address. This will allow you to keep the funds you collect in one place and to distuingish them from previous transactions at this address.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label htmlFor="raisingDeadline" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">When will deposits close?</label>
+                  <div className="mt-1 sm:mt-0 sm:col-span-2">
+                    <div className="max-w-lg flex rounded-md shadow-sm">
+                      <input
+                        type="date"
+                        name="raisingDeadline"
+                        id="raisingDeadline"
+                        autoComplete="raisingDeadline"
+                        className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                        onChange={handleInputChange}
+                        value={state.raisingDeadline}
+                      />
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">
+                      Deposits will close end of day (23:59 PST).
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
