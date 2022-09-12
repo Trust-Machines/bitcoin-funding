@@ -373,7 +373,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   </p>
                   <a
                     onClick={() => { newFunding() }}
-                    className="text-blue-700"
+                    className="text-blue-700 cursor-pointer"
                   >
                     Fund again
                   </a>
