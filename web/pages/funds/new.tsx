@@ -66,7 +66,7 @@ const New: NextPage = ({ dehydratedState }) => {
     const res = await createFund(formData);
     const data = await res.json();
     if (res.status === 200) {
-      router.push(`/Funds/${data.slug}`);
+      router.push(`/funds/${data.slug}`);
     } else {
       showErrorMessage(data);
     }

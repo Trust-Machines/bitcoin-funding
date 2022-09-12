@@ -21,7 +21,7 @@ async function postHandler(
 ) {
   try {
     const { slug } = req.query;
-    let resultFund = await prisma.Fund.findUniqueOrThrow({
+    let resultFund = await prisma.fund.findUniqueOrThrow({
       where: {
         slug: slug as string,
       }
@@ -34,10 +34,10 @@ async function postHandler(
     }
 
     // Check Fund registration in SC
-    const FundRegistered = await isFundRegistered(resultFund.address);
+    const fundRegistered = await isFundRegistered(resultFund.address);
 
     let status: RegistrationStatus = resultFund.registrationStatus;
-    if (FundRegistered) {
+    if (fundRegistered) {
       status = RegistrationStatus.COMPLETED;
     } else if (resultFund.registrationTxId != null) {
       // Get registration TX info
@@ -48,7 +48,7 @@ async function postHandler(
     }
 
     // Update registration status
-    const result = await prisma.Fund.update({
+    const result = await prisma.fund.update({
       where: {
         address: resultFund.address,
       },

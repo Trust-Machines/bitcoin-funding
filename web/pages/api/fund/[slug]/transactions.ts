@@ -33,7 +33,7 @@ async function getHandler(
     }
   });
 
-  const resultTransactions = await prisma.FundingTransaction.findMany({
+  const resultTransactions = await prisma.fundingTransaction.findMany({
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
     where: {
@@ -47,7 +47,7 @@ async function getHandler(
     },
   });  
 
-  const transactionCount = await prisma.FundingTransaction.aggregate({
+  const transactionCount = await prisma.fundingTransaction.aggregate({
     _count: true,
   });
   

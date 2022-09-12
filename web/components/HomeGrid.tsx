@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
-import { fundThumbnail } from '@/components/fundThumbnail'
-import { findAllfunds } from '@/common/fetchers'
-import { fundsPaged } from 'pages/api/fund/all'
+import { FundThumbnail } from '@/components/FundThumbnail'
+import { findAllFunds } from '@/common/fetchers'
+import { FundsPaged } from 'pages/api/fund/all'
 import { Pagination } from './Pagination'
 
 export function HomeGrid() {
 
   const [isLoading, setIsLoading] = useState(true);
-  const [funds, setfunds] = useState<fundsPaged>({});
+  const [funds, setfunds] = useState<FundsPaged>({});
 
   const pageSelected = (page: Number) => {
     if (page >= 0 && page < funds.totalPages) {
@@ -19,7 +19,7 @@ export function HomeGrid() {
 
   const fetchfunds = async (page: Number) => {
     setIsLoading(true);
-    setfunds(await findAllfunds(page));
+    setfunds(await findAllFunds(page));
     setIsLoading(false);
   }
   
@@ -50,7 +50,7 @@ export function HomeGrid() {
               {funds.total > 0 ? (
                 <>
                   <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                    {funds.funds.map(fund => <fundThumbnail key={fund.address} fund={fund} />)}
+                    {funds.funds.map(fund => <FundThumbnail key={fund.address} fund={fund} />)}
                   </div>
                   {funds.totalPages > 1 ? (
                     <div className='mt-8 text-center'>

@@ -13,7 +13,7 @@ import { Alert } from '@/components/Alert';
 const steps = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'complete' },
   { id: '02', name: 'Register BTC address', status: 'complete' },
-  { id: '03', name: 'Send BTC to Fund', status: 'current' },
+  { id: '03', name: 'Send BTC to the fund', status: 'current' },
   { id: '04', name: 'Confirm', status: 'upcoming' },
 ]
 
@@ -23,7 +23,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const account = useAccount();
   const { openAuthRequest, isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [Fund, setFund] = useState<Fund>({});
+  const [fund, setFund] = useState<Fund>({});
   const [user, setUser] = useState<User>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
   const [walletBalance, setWalletBalance] = useState(0);
@@ -35,8 +35,8 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }, [slug, isSignedIn]);
 
   const fetchInfo = async () => {
-    const Fund = await findFund(slug as string);
-    setFund(Fund);
+    const fund = await findFund(slug as string);
+    setFund(fund);
     
     let currentStep = 0;
     if (isSignedIn) {
@@ -45,7 +45,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
 
       // User signed in and completed registration
       if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
-        const txId = localStorage.getItem(Fund.slug);
+        const txId = localStorage.getItem(fund.slug);
 
         // If forwarding transaction yet
         if (txId == undefined) {
@@ -113,19 +113,19 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const newFunding = async () => {
-    localStorage.removeItem(Fund.slug);
+    localStorage.removeItem(fund.slug);
     fetchInfo();
   }
 
   const viewFund = async () => {
-    router.push(`/Funds/${Fund.slug}`);
+    router.push(`/funds/${fund.slug}`);
   }
 
   const forwardFunds = async () => {
-    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, Fund.address);
+    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, fund.address);
     if (result.status === 200) {
       const json = await result.json();
-      localStorage.setItem(Fund.slug, json.txId);
+      localStorage.setItem(fund.slug, json.txId);
       fetchInfo();
     }
   }
@@ -152,7 +152,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const pollTransaction = async (intervalId: number) => {
-    const txId = localStorage.getItem(Fund.slug);
+    const txId = localStorage.getItem(fund.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
@@ -178,14 +178,14 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div className="col-span-1">
                   <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
-                      <img src={`${Fund.avatar}`}/>
+                      <img src={`${fund.avatar}`}/>
                     </div>
                   </section>
                 </div>
 
                 <div className="col-span-3">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{Fund.name}</h1>
-                  <p className="text-sm text-gray-900">{Fund.about}</p>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{fund.name}</h1>
+                  <p className="text-sm text-gray-900">{fund.about}</p>
                 </div>
 
               </div>
@@ -320,7 +320,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   <p>Send BTC to 
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
-                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund the Fund.</p>
+                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
                 </div>
                 <div>
                   {walletBalance < 1000 ? (
@@ -348,7 +348,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                  The Fund is being funded with your BTC. 
+                  The fund is being funded with your BTC. 
                   It takes 10-20 minutes for the funding to be registered on chain. 
                   No further action is required.
                   </p>
@@ -365,7 +365,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                    You have succesfully funded the Fund with {' '}
+                    You have succesfully funded {' '}
                     {(transaction.sats / 100000000.0).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 4,
@@ -383,7 +383,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     onClick={() => { viewFund() }}
                     className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
                   >
-                    View Fund
+                    View fund
                   </a>
                 </div>
               </div>

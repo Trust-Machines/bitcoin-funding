@@ -37,7 +37,7 @@ async function getHandler(
   });
 
   res.status(200).json({
-    Funds: result,
+    funds: result,
     total: fundCount._count,
     totalPages: Math.ceil(fundCount._count / pageSize),
     currentPage: parseInt(page as string)

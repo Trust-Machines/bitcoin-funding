@@ -32,12 +32,12 @@ async function postHandler(
     try {
       // Check existing
       const slug = slugify(fields.name as string, { lower: true, strict: true, remove: /[*+~.()'"!:@]/g });
-      let existingFund = await prisma.Fund.findUnique({ where: { slug: slug } });
+      let existingFund = await prisma.fund.findUnique({ where: { slug: slug } });
       if (existingFund) {
         res.status(422).json('Fund with that name already exists');
         return;
       }
-      existingFund = await prisma.Fund.findUnique({ where: { address: fields.address as string } });
+      existingFund = await prisma.fund.findUnique({ where: { address: fields.address as string } });
       if (existingFund) {
         res.status(422).json('Fund with that address already exists');
         return;
@@ -59,7 +59,7 @@ async function postHandler(
       }
 
       // Save info
-      const result = await prisma.Fund.create({
+      const result = await prisma.fund.create({
         data: {
           address: fields.address as string,
           name: fields.name as string,

@@ -33,7 +33,7 @@ export const createfund = async (formData: FormData) => {
   });
 };
 
-export const findfund = async (slug: string) => {
+export const findFund = async (slug: string) => {
   const res = await fetch(API_URL + '/fund/' + slug, {
     method: 'GET',
     headers: {
@@ -44,7 +44,7 @@ export const findfund = async (slug: string) => {
   return json;
 };
 
-export const isfundAdmin = async (slug: string, dehydratedState: string) => {
+export const isFundAdmin = async (slug: string, dehydratedState: string) => {
   if (dehydratedState == null) {
     return false;
   }
@@ -56,7 +56,7 @@ export const isfundAdmin = async (slug: string, dehydratedState: string) => {
   return json;
 };
 
-export const findfundFundingTransactions = async (slug: string, page: number) => {
+export const findFundFundingTransactions = async (slug: string, page: number) => {
   const res = await fetch(API_URL + '/fund/' + slug + "/transactions?page=" + page, {
     method: 'GET',
     headers: {
@@ -67,7 +67,7 @@ export const findfundFundingTransactions = async (slug: string, page: number) =>
   return json;
 };
 
-export const verifyfund = async (slug: string) => {
+export const verifyFund = async (slug: string) => {
   const res = await fetch(API_URL + '/fund/' + slug + '/verify', {
     method: 'POST',
     headers: {
@@ -79,7 +79,7 @@ export const verifyfund = async (slug: string) => {
   return json;
 };
 
-export const findAllfunds = async (page: Number) => {
+export const findAllFunds = async (page: Number) => {
   const res = await fetch(API_URL + '/fund/all?page=' + page, {
     method: 'GET',
     headers: {
@@ -90,7 +90,7 @@ export const findAllfunds = async (page: Number) => {
   return json;
 };
 
-export const updatefund = async (slug: string, formData: FormData) => {
+export const updateFund = async (slug: string, formData: FormData) => {
   return await fetch(API_URL + '/fund/' + slug + '/update', {
     method: 'PATCH',
     body: formData

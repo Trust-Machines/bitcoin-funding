@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { FundThumbnail } from '@/components/FundThumbnail'
-import { findAllfunds } from '@/common/fetchers'
+import { findAllFunds } from '@/common/fetchers'
 import { Pagination } from './Pagination'
 import { FundsPaged } from 'pages/api/fund/all'
 
@@ -18,7 +18,7 @@ export function Main() {
 
   const fetchFunds = async (page: Number) => {
     setIsLoading(true);
-    setFunds(await findAllfunds(page));
+    setFunds(await findAllFunds(page));
     setIsLoading(false);
   }
 

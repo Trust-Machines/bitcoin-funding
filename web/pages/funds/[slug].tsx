@@ -12,13 +12,13 @@ import { dollarAmountToString, shortAddress } from '@/common/utils'
 import { dateToString, daysToDate } from '@/common/utils'
 import { Alert } from '@/components/Alert'
 import { Pagination } from '@/components/Pagination'
-import { TransactionsPaged } from 'pages/api/Fund/[slug]/transactions'
+import { TransactionsPaged } from 'pages/api/fund/[slug]/transactions'
 
 const FundDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
-  const [Fund, setFund] = useState<Fund>({});
+  const [fund, setFund] = useState<Fund>({});
   const [transactions, setTransactions] = useState<TransactionsPaged>({});
   const [isAdmin, setIsAdmin] = useState(false);
   const [activityFeedItems, setActivityFeedItems] = useState([]);
@@ -27,11 +27,11 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const pageSelected = async (page: number) => {
     if (page >= 0 && page < transactions.totalPages) {
       const result = await findFundFundingTransactions(slug as string, page);
-      setupActivityItems(Fund, result, btcPrice);
+      setupActivityItems(fund, result, btcPrice);
     }
   }
 
-  const setupActivityItems = (FundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
+  const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
 
     let feedItems = [];
     if (txData.currentPage == 0) {
@@ -40,7 +40,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
           icon: "CheckCircleIcon", 
           title: "Fund created", 
           subtitle: "",
-          details: dateToString(FundData.createdAt)
+          details: dateToString(fundData.createdAt)
         })
       )
     }
@@ -64,7 +64,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   useEffect(() => {
     const fetchInfo = async (slug: string) => {
       const [
-        FundData,
+        fundData,
         transactionsData,
         btcPriceData,
         isAdmin
@@ -74,15 +74,15 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
         getBtcPrice(),
         isFundAdmin(slug, dehydratedState)
       ]);
-      setFund(FundData);
+      setFund(fundData);
       setIsAdmin(isAdmin);
       setBtcPrice(btcPriceData);
 
       // Setup activity items
-      setupActivityItems(FundData, transactionsData, btcPriceData);
+      setupActivityItems(fundData, transactionsData, btcPriceData);
 
       // Start polling if registration not completed yet
-      if (Fund.registrationStatus == RegistrationStatus.STARTED) {
+      if (fundData.registrationStatus == RegistrationStatus.STARTED) {
         var intervalId = window.setInterval(function(){
           fetchVerifyFund(intervalId);
         }, 15000);
@@ -92,10 +92,10 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
     }
 
     const fetchVerifyFund = async (intervalId: number) => {
-      const Fund = await findFund(slug as string);
+      const fund = await findFund(slug as string);
       // Stop polling if registration completed
-      if (Fund.registrationStatus != RegistrationStatus.STARTED) {
-        setFund(Fund);
+      if (fund.registrationStatus != RegistrationStatus.STARTED) {
+        setFund(fund);
         clearInterval(intervalId);
       }
     }
@@ -123,28 +123,28 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                 <div className="col-span-1">
                   <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
-                      <img src={`${Fund.avatar}`}/>
+                      <img src={`${fund.avatar}`}/>
                     </div>
                   </section>
                 </div>
 
                 {/* COL - NAME */}
                 <div className="col-span-3">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{Fund.name}</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{fund.name}</h1>
                   {isAdmin ? (
                     <Link
-                      href={`/Funds/${Fund.slug}/manage`}
+                      href={`/funds/${fund.slug}/manage`}
                       className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
                     >
                       Manage Fund
                     </Link>
                   ):null}
-                  {Fund.registrationStatus == RegistrationStatus.COMPLETED ? (
+                  {fund.registrationStatus == RegistrationStatus.COMPLETED ? (
                     <Link
-                      href={`/Funds/${Fund.slug}/fund`}
+                      href={`/funds/${fund.slug}/fund`}
                       className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
                     >
-                      Fund Fund
+                      Fund fund
                     </Link>
                   ):null}
                 </div>
@@ -152,7 +152,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
               {/* INFO */}
               <section className='mt-6'>
-                {Fund.registrationStatus != RegistrationStatus.COMPLETED ? (
+                {fund.registrationStatus != RegistrationStatus.COMPLETED ? (
                   <div className='mb-4'>
                     <Alert type={Alert.type.WARNING}>
                       The Fund is being registered on chain. Funding will be available once the registration is done.
@@ -163,7 +163,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                 <div className="bg-white shadow sm:rounded-lg">
                   <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
                     <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
-                      About {Fund.name}
+                      About {fund.name}
                     </h2>
                   </div>
                   <div className="px-4 py-5 sm:px-6">
@@ -171,20 +171,20 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {dollarAmountToString((Fund.totalSats / 100000000.00) * btcPrice)}
+                          {dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)}
                       </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{Fund.totalMembers}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{fund.totalMembers}</dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(Fund.raisingDeadline)}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(fund.raisingDeadline)}</dd>
                       </div>
                       <div className="sm:col-span-3">
                         <dt className="text-sm font-medium text-gray-500">About</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{Fund.about}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">{fund.about}</dd>
                       </div>
                     </dl>
                   </div>

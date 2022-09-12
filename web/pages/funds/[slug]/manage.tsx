@@ -14,7 +14,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
-  const [Fund, setFund] = useState<Fund>({});
+  const [fund, setFund] = useState<Fund>({});
   const [avatar, setAvatar] = useState();
   const [fileName, setFileName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -50,22 +50,22 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   }
 
   const update = async () => {
-    if (Fund.name == '') {
+    if (fund.name == '') {
       showErrorMessage('Please enter a name.'); return;
     }
 
     const formData = new FormData();
     formData.append("file", avatar);
     formData.append("updateAvatar", avatarRemoved);
-    formData.append("name", Fund.name);
-    formData.append("about", Fund.about);
-    formData.append("slug", Fund.slug);
+    formData.append("name", fund.name);
+    formData.append("about", fund.about);
+    formData.append("slug", fund.slug);
     formData.append("dehydratedState", dehydratedState);
 
-    const res = await updateFund(Fund.slug, formData);
+    const res = await updateFund(fund.slug, formData);
     const data = await res.json();
     if (res.status === 200) {
-      router.push(`/Funds/${data.slug}`);
+      router.push(`/funds/${data.slug}`);
     } else {
       showErrorMessage(data);
     }
@@ -74,13 +74,13 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   useEffect(() => {
     const fetchInfo = async (slug: string) => {
       const [
-        Fund,
+        fund,
         isAdmin
       ] = await Promise.all([
         findFund(slug),
         isFundAdmin(slug, dehydratedState)
       ]);
-      setFund(Fund);
+      setFund(fund);
       setIsAdmin(isAdmin);
 
       setIsLoading(false);
@@ -101,8 +101,8 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
         <main className="max-w-5xl">
 
           {/* HEADER */}
-          <Link href={`/Funds/${Fund.slug}`}>
-            <h1 className="text-2xl font-bold text-gray-900">{Fund.name}</h1>
+          <Link href={`/funds/${fund.slug}`}>
+            <h1 className="text-2xl font-bold text-gray-900">{fund.name}</h1>
           </Link>
 
           {/* ERROR MESSAGES */}
@@ -116,7 +116,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
           {!isAdmin ? (
             <div className="mt-3">
               <Alert type={Alert.type.ERROR}>
-                Only admins can update Fund info
+                Only admins can update fund info
               </Alert>
             </div>
           ): null}
@@ -124,7 +124,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
           {/* FORM */}
           <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your Fund called?</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your fund called?</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
                 <div className="max-w-lg flex rounded-md shadow-sm">
                   <input
@@ -134,7 +134,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                     autoComplete="name"
                     className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                     onChange={handleInputChange}
-                    value={Fund.name}
+                    value={fund.name}
                   />
                 </div>
               </div>
@@ -168,7 +168,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   <div className="max-w-3xl mx-auto grid max-w-7xl grid-cols-6 items-center">
                     <div className="lg:col-span-1 w-full h-full rounded-md overflow-hidden">
                       <img
-                        src={`${Fund.avatar}`}
+                        src={`${fund.avatar}`}
                         className="w-full h-full object-center object-cover lg:w-full lg:h-full"
                       />
                     </div>
@@ -191,9 +191,9 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   rows="3"
                   className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
                   onChange={handleInputChange}
-                  value={Fund.about}
+                  value={fund.about}
                 ></textarea>
-                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the Fund and the fundraise.</p>
+                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the fund and the fundraise.</p>
               </div>
             </div>
           </div>

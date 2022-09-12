@@ -11,7 +11,7 @@ export async function start() {
     return;
   }
   if (fundAddress == undefined) {
-    console.log("[FUNDING] Add the Fund address as second parameter")
+    console.log("[FUNDING] Add the fund address as second parameter")
     return;
   }
 
