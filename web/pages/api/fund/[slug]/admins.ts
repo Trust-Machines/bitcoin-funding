@@ -39,18 +39,20 @@ async function getHandler(
       return;
     }
     
-    const result = await prisma.fundAdmin.findMany({
-      where: {
-        fundId: resultFund.address
-      }, 
-      include: {
-        user: true
-      }
+    const resultAdmin = await prisma.fundAdmin.findMany({
+      where: { fundId: resultFund.address }, 
+      include: { user: true }
+    })
+    const resultInvite = await prisma.fundAdminInvite.findMany({
+      where: { fundAddress: resultFund.address }
     })
 
     var resultList: string[] = [];
-    for (const admin of result) {
+    for (const admin of resultAdmin) {
       resultList.push(admin.user.address);
+    }
+    for (const admin of resultInvite) {
+      resultList.push(admin.userAddress);
     }
     res.status(200).json(resultList)
   } catch (error) {
