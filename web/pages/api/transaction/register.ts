@@ -65,6 +65,7 @@ async function postHandler(
           txId: req.body.txId,
         },
         data: {
+          registrationStatus: RegistrationStatus.STARTED,
           registrationTxId: registrationTxId
         },
       });
