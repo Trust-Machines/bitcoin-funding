@@ -28,8 +28,8 @@ if (process.env.NETWORK === 'mainnet') {
   BTC_NETWORK = networks.testnet;
   BTC_EXPLORER_URL = 'https://mempool.space/testnet';
 
-  ELECTRUM_HOST = 'https://tbch.loping.net:60002';
-  ELECTRUM_PORT = 60001;
+  ELECTRUM_HOST = 'blackie.c3-soft.com';
+  ELECTRUM_PORT = 57005;
 
   STACKS_NETWORK = new StacksTestnet({ url: 'https://stacks-node-api.testnet.stacks.co' });
   STACKS_API_URL = 'https://stacks-node-api.testnet.stacks.co';

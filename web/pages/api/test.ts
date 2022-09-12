@@ -66,8 +66,8 @@ export default async function handler(
   // const resultEncode = bech32Encode("bc", "751e76e8199196d454941c45d1b3a323f1433bd6");
   // console.log("resultEncode:", resultEncode);  
 
-  const test = await getEstimatedFee();
-  console.log("TEST:", test);
+  // const resultEstimatedFee = await getEstimatedFee();
+  // console.log("resultEstimatedFee:", resultEstimatedFee);
 
   res.status(200).json({ name: 'John Doe' })
 }
