@@ -15,7 +15,6 @@ export async function deployContractBatch(contracts: ContractDeploy[], sender: s
   var txId;
   for (const contract of contracts) {
     txId = await deployContractHelper(contract.name, contract.file, privateKey, nonce);
-    await waitForTransactionCompletion(txId as string);
     nonce += 1;
   }
 
