@@ -19,8 +19,16 @@ async function getHandler(
 ) {
   const result = await prisma.fundingTransaction.findMany({
     where: { 
-      registrationStatus: RegistrationStatus.STARTED,
-      registrationTxId: null
+      OR: [
+        {
+          registrationStatus: RegistrationStatus.STARTED,
+          registrationTxId: null
+        },
+        {
+          registrationStatus: RegistrationStatus.FAILED,
+        }
+      ]
+
     }
   });  
   res.status(200).json(result)

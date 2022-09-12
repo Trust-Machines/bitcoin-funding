@@ -49,6 +49,7 @@ async function postHandler(
           address: resultFund.address,
         },
         data: {
+          registrationStatus: RegistrationStatus.STARTED,
           registrationTxId: registrationTxId
         },
       });
