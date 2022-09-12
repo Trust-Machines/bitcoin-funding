@@ -48,7 +48,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
         const txId = localStorage.getItem(fund.slug);
 
         // If forwarding transaction yet
-        if (txId == undefined) {
+        if (txId == undefined || txId == null) {
           currentStep = 2;
           const balanceResult = await getUserBalance(account.appPrivateKey as string);
           if (balanceResult.status === 200) {
