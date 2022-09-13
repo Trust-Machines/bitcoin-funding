@@ -1,5 +1,4 @@
 import * as Iron from 'iron-session';
-import { cleanDehydratedState } from '@micro-stacks/client';
 import { sessionOptions } from './index';
  
 import type { NextPageContext } from 'next';

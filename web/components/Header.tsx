@@ -2,10 +2,8 @@ import { FC, Fragment } from 'react'
 import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
-
 import { Container } from '@/components/Container'
 import { Logo } from '@/components/Logo'
-import { NavLink } from '@/components/NavLink'
 import { Button } from '@/components/Button'
 
 import { WalletConnectButton } from '@/components/WalletConnectButton'
