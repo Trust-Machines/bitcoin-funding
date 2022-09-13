@@ -45,7 +45,8 @@ async function postHandler(
   } else if (result.registrationTxId != null) {
     // Get registration TX info
     const tx = await getTransactionInfo(result.registrationTxId);
-    if (tx.tx_status == 'aborted_by_response' || tx.error != undefined) {
+    console.log("tx:", tx.tx_status);
+    if (tx.tx_status == 'abort_by_response' || tx.error != undefined) {
       status = RegistrationStatus.FAILED;
     }
   }
@@ -58,6 +59,8 @@ async function postHandler(
     },
     _count: true,
   });
+
+  console.log("new status", status);
 
   // Update status
   const updateTransaction = prisma.fundingTransaction.update({
