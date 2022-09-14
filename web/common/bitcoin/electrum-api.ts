@@ -35,7 +35,7 @@ async function newElectrumClient(): Promise<ElectrumClient> {
 export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
-  const user = payments.p2wpkh({
+  const user = payments.p2pkh({
     address: address,
     network: BTC_NETWORK,
   });
@@ -76,7 +76,7 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const client = await newElectrumClient();
 
   const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: BTC_NETWORK });
-  const sender = payments.p2wpkh({
+  const sender = payments.p2pkh({
     pubkey: signer.publicKey,
     network: BTC_NETWORK,
   });
