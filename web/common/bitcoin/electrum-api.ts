@@ -57,7 +57,7 @@ export async function getEstimatedFee(): Promise<number> {
 
   // Get relay fee
   const relayFee = await client.blockchain_relayfee();
-  const relayFeeSats = Math.ceil(parseFloat(estimatedFee as string) * 100000000); 
+  const relayFeeSats = Math.ceil(parseFloat(relayFee as string) * 100000000); 
   
   // Min relay fee
   const minimumFeeSats = 1000;
