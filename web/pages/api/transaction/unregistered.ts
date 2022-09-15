@@ -28,7 +28,6 @@ async function getHandler(
           registrationStatus: RegistrationStatus.FAILED,
         }
       ]
-
     }
   });  
   res.status(200).json(result)
