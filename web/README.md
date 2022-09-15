@@ -30,6 +30,18 @@ The project is using Electrum servers to facilitate fetching of wallet data end 
  1. Copy `.env.example` to `.env`
  2. Run `npm run dev`
 
-## Run cron jobs in the ./web/scripts folder
+## Run cron jobs in the ./web/scripts/cron folder
 
+use `npx ts-node verify.ts`
 use `npx ts-node register-funds.ts`
+use `npx ts-node verify-funds.ts`
+use `npx ts-node register-transactions.ts`
+use `npx ts-node verify-transactions.ts`
+
+## Deploy to vercel
+
+ 1. Install vercel `npm i -g vercel`
+ 2. Login with email `vercel login`
+ 3. Build `vercel build`
+ 4. Deploy `vercel deploy --prebuilt`
+ 5. Deploy to production `vercel --prod`

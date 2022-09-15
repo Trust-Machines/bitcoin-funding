@@ -37,4 +37,5 @@ clarity/settings/Testnet.toml
 clarity/.requirements/
 clarity/history.txt
 
+# vercel
 .vercel
