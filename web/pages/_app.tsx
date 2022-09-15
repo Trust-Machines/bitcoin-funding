@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       setAuthenticated(pageProps?.dehydratedState);
       setIsLoading(false);
     }
-  }, [pageProps?.dehydratedState]);
+  }, [pageProps?.dehydratedState, isLoading]);
 
   return (
     <ClientProvider
@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         setAuthenticated(false);
         await destroySession();
         router.push('/');
-      }, [])}
+      }, [router])}
     >
       <Head>
         <title>BallotBox - Funding</title>

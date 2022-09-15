@@ -5,8 +5,8 @@ import aws from 'aws-sdk';
 
 const saveToS3 = async (blob: any, name: string) => {
   const s3 = new aws.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET
+    accessKeyId: process.env.BF_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.BF_AWS_ACCESS_KEY_SECRET
   });
   const params = {
     ACL: 'public-read',
@@ -23,7 +23,7 @@ export async function saveFile(file: any, name: string) {
   const extension = file.originalFilename.split(".").pop();
   const data = fs.readFileSync(file.filepath);
 
-  if (process.env.AWS_ACCESS_KEY_ID == undefined) {
+  if (process.env.BF_AWS_ACCESS_KEY_ID == undefined) {
     // Development: save locally
     const directory = `/avatars/${name}.${extension}`
     fs.writeFileSync(`./public/${directory}`, data);
@@ -46,7 +46,7 @@ export async function saveFile(file: any, name: string) {
 export async function createPlaceholderAndSaveFile(seed: string) {
   const data = createAvatar(style, { seed: seed, bold: true, fontSize: 30 });
 
-  if (process.env.AWS_ACCESS_KEY_ID == undefined) {
+  if (process.env.BF_AWS_ACCESS_KEY_ID == undefined) {
     // Development: save locally
     const directory = `/avatars/${seed}.svg`;
     fs.writeFileSync(`./public/${directory}`, data);

@@ -264,6 +264,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     <a 
                       className="ml-1 text-blue-700"
                       target="_blank"
+                      rel="noreferrer"
                       href="https://wallet.hiro.so/"
                     > 
                       here
@@ -285,7 +286,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   <p>
                     It seems like this is your first time funding on BallotBox. 
                     We will create an internal BTC account for you and register this on-chain. 
-                    Don't worry, gas is on us!
+                    Do not worry, gas is on us!
                   </p>
                   {user.registrationStatus == RegistrationStatus.FAILED ? (
                     <div className="mt-3">
@@ -320,7 +321,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   <p>Send BTC to 
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
-                  <p>Once you've sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
+                  <p>Once you have sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
                 </div>
                 <div>
                   {walletBalance < 1000 ? (
