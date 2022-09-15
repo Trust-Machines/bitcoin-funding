@@ -41,3 +41,9 @@ export function base58CheckDecode(address: string): string {
   var decoded = bs58check.decode(address)
   return decoded.toString('hex');
 }
+
+export function base58CheckEncode(hash: string): string {
+  const buffer = Buffer.from(hash, "hex");
+  const encoded = bs58check.encode(buffer);
+  return encoded;
+}
