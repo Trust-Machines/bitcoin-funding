@@ -60,8 +60,6 @@ async function postHandler(
     _count: true,
   });
 
-  console.log("new status", status);
-
   // Update status
   const updateTransaction = prisma.fundingTransaction.update({
     where: {
