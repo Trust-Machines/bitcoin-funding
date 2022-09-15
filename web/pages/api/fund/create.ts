@@ -63,6 +63,7 @@ async function postHandler(
             return;
           }
 
+          // TODO: does not work on Vercel - fix or use other method to check mime type
           // const magic = new Magic(MAGIC_MIME_TYPE);
           // const promise = new Promise(function (fulfill, reject) {
           //   magic.detectFile(files.file.filepath, function (err, res) {
