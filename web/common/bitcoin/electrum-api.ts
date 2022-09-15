@@ -5,11 +5,6 @@ import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { BTC_NETWORK, ELECTRUM_HOST, ELECTRUM_PORT } from '../constants';
 import { getBlockByBurnHeight, getBlockByHeight, getInfo } from "../stacks/utils";
 
-interface BtcBalance {
-  unconfirmed: number,
-  confirmed: number
-}
-
 interface UnspentObject {
   tx_hash: string,
   tx_pos: number,
