@@ -29,6 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       appName="BallotBox Funding"
       appIconUrl="APP_ICON.png"
       dehydratedState={pageProps?.dehydratedState}
+      network={process.env.NEXT_PUBLIC_NETWORK}
       onPersistState={useCallback(async (dehydratedState: string) => {
         setAuthenticated(true);
         await saveSession(dehydratedState);
