@@ -6,7 +6,7 @@ import formidable from "formidable";
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
 import fs from "fs";
-import { Magic, MAGIC_MIME_TYPE } from 'mmmagic';
+// import { Magic, MAGIC_MIME_TYPE } from 'mmmagic';
 
 export const config = {
   api: {
@@ -63,21 +63,22 @@ async function postHandler(
             return;
           }
 
-          const magic = new Magic(MAGIC_MIME_TYPE);
-          const promise = new Promise(function (fulfill, reject) {
-            magic.detectFile(files.file.filepath, function (err, res) {
-              if (err) {
-                reject(err);
-              } else {
-                fulfill(res);
-              }
-            });
-          });
-          const mimeType = await promise;
-          if (!mimeType.includes('image/')) {
-            res.status(422).json('Invalid file type found, please use png or jpeg');
-            return;
-          }
+          // TODO: does not work on Vercel - fix or use other method to check mime type
+          // const magic = new Magic(MAGIC_MIME_TYPE);
+          // const promise = new Promise(function (fulfill, reject) {
+          //   magic.detectFile(files.file.filepath, function (err, res) {
+          //     if (err) {
+          //       reject(err);
+          //     } else {
+          //       fulfill(res);
+          //     }
+          //   });
+          // });
+          // const mimeType = await promise;
+          // if (!mimeType.includes('image/')) {
+          //   res.status(422).json('Invalid file type found, please use png or jpeg');
+          //   return;
+          // }
 
           avatar = await saveFile(files.file, slug);
         } else {
