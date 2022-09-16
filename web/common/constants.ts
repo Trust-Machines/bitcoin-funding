@@ -12,7 +12,9 @@ export let ELECTRUM_PORT = 50001;
 export let STACKS_NETWORK = new StacksTestnet({ url: 'http://localhost:3999' });
 export let STACKS_API_URL = 'http://localhost:3999';
 
-if (process.env.NETWORK === 'mainnet') {
+export let API_URL = 'http://localhost:3000/api';
+
+if (process.env.NEXT_PUBLIC_NETWORK === 'mainnet') {
   BTC_NETWORK = networks.bitcoin;
   BTC_EXPLORER_URL = 'https://mempool.space';
 
@@ -23,7 +25,9 @@ if (process.env.NETWORK === 'mainnet') {
   STACKS_NETWORK = new StacksMainnet();
   STACKS_API_URL = 'https://stacks-node-api.mainnet.stacks.co';
 
-} else if (process.env.NETWORK === 'testnet') {
+  API_URL = process.env.NEXT_PUBLIC_BASE_URL + '/api';
+
+} else if (process.env.NEXT_PUBLIC_NETWORK === 'testnet') {
 
   BTC_NETWORK = networks.testnet;
   BTC_EXPLORER_URL = 'https://mempool.space/testnet';
@@ -33,7 +37,6 @@ if (process.env.NETWORK === 'mainnet') {
 
   STACKS_NETWORK = new StacksTestnet({ url: 'https://stacks-node-api.testnet.stacks.co' });
   STACKS_API_URL = 'https://stacks-node-api.testnet.stacks.co';
-}
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-export const API_URL = BASE_URL ? `https://${BASE_URL}/api` : 'http://localhost:3000/api';
+  API_URL = process.env.NEXT_PUBLIC_BASE_URL + '/api';
+}
