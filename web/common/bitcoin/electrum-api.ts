@@ -1,15 +1,9 @@
 import { ElectrumClient } from "@samouraiwallet/electrum-client";
-import { address as btcAddress } from 'bitcoinjs-lib';
 import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { BTC_NETWORK, ELECTRUM_HOST, ELECTRUM_PORT } from '../constants';
-import { getBlockByBurnHeight, getInfo } from "../stacks/utils";
-
-interface BtcBalance {
-  unconfirmed: number,
-  confirmed: number
-}
+import { getBlockByBurnHeight, getBlockByHeight, getInfo } from "../stacks/utils";
 
 interface UnspentObject {
   tx_hash: string,
@@ -36,7 +30,7 @@ async function newElectrumClient(): Promise<ElectrumClient> {
 export async function getBalance(address: string): Promise<number> {
   const client = await newElectrumClient();
 
-  const user = payments.p2wpkh({
+  const user = payments.p2pkh({
     address: address,
     network: BTC_NETWORK,
   });
@@ -58,7 +52,7 @@ export async function getEstimatedFee(): Promise<number> {
 
   // Get relay fee
   const relayFee = await client.blockchain_relayfee();
-  const relayFeeSats = Math.ceil(parseFloat(estimatedFee as string) * 100000000); 
+  const relayFeeSats = Math.ceil(parseFloat(relayFee as string) * 100000000); 
   
   // Min relay fee
   const minimumFeeSats = 1000;
@@ -77,7 +71,7 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   const client = await newElectrumClient();
 
   const signer = ECPair.fromPrivateKey(Buffer.from(senderPrivateKey, 'hex'), { network: BTC_NETWORK });
-  const sender = payments.p2wpkh({
+  const sender = payments.p2pkh({
     pubkey: signer.publicKey,
     network: BTC_NETWORK,
   });
@@ -134,7 +128,7 @@ export async function getTransactionData(txId: string, senderAddress: string, re
   // Block info
   const stacksInfo = await getInfo();
   const burnHeight = stacksInfo.burn_block_height - tx.confirmations + 1;
-  const { header, stacksHeight, prevBlocks } = await stacksBlockAtBurnHeight(burnHeight, []);
+  const { header, stacksHeight, prevBlocks } = await stacksBlockAtBurnHeight(burnHeight);
 
   // Proof info
   const merkle = await client.blockchainTransaction_getMerkle(txId, burnHeight) as any;
@@ -169,20 +163,33 @@ export async function getTransactionData(txId: string, senderAddress: string, re
   }
 }
 
-async function stacksBlockAtBurnHeight(burnHeight: number, prevBlocks: string[]): Promise<any> {
+async function stacksBlockAtBurnHeight(burnHeight: number): Promise<any> {
   const client = await newElectrumClient();
-  const headerInfo = await client.blockchainBlock_headers(burnHeight, 1) as any;
-  const header = headerInfo.hex as string;
+
+  // Get stacks block height, given burn block height
+  // This stacks block height might not be linked to the given burn height
   const stacksBlock = await getBlockByBurnHeight(burnHeight); 
   const stacksHeight = stacksBlock.height;
 
-  if (stacksHeight !== 'undefined') {
-    return {
-      header,
-      prevBlocks,
-      stacksHeight,
-    };
+  // Now find the actual burn block height, for the stacks block height
+  const stacksBurnHeight = await getBlockByHeight(stacksHeight);
+  const actualBurnHeight = stacksBurnHeight.burn_block_height;
+
+  // Header info for burn block height for the stacks block
+  const headerInfo = await client.blockchainBlock_headers(actualBurnHeight, 1) as any;
+  const header = headerInfo.hex as string;
+
+  // BTC transaction might be included in a previous block, 
+  // which did not have a stacks block
+  var prevBlocks: string[] = [];
+  for (let height = burnHeight; height < parseInt(actualBurnHeight); height++) {
+    const prevHeaderInfo = await client.blockchainBlock_headers(height, 1) as any;
+    prevBlocks.unshift(prevHeaderInfo.hex as string)
   }
-  prevBlocks.unshift(header);
-  return stacksBlockAtBurnHeight(burnHeight + 1, prevBlocks);
+
+  return {
+    header,
+    stacksHeight,
+    prevBlocks
+  };
 }

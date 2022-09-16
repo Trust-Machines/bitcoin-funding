@@ -34,3 +34,10 @@ export async function getBlockByBurnHeight(burnHeight: number) {
   const data = await response.json();
   return data;
 }
+
+export async function getBlockByHeight(height: number) {
+  const url = `${STACKS_API_URL}/extended/v1/block/by_height/${height}`;
+  const response = await fetch(url, { credentials: 'omit' });
+  const data = await response.json();
+  return data;
+}

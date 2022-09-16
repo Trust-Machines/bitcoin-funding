@@ -42,7 +42,7 @@ async function postHandler(
     } else if (resultFund.registrationTxId != null) {
       // Get registration TX info
       const tx = await getTransactionInfo(resultFund.registrationTxId);
-      if (tx.tx_status == 'aborted_by_response' || tx.error != undefined) {
+      if (tx.tx_status == 'abort_by_response' || tx.error != undefined) {
         status = RegistrationStatus.FAILED;
       }
     }

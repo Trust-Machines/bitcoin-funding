@@ -74,6 +74,10 @@ async function postHandler(
       res.status(400).json(registrationResult);
     }
   } catch (error) {
-    res.status(400).json((error as Error).message);
+    if ((error as Error).message.includes("Invalid height")) {
+      res.status(400).json("BTC transaction not mined yet");
+    } else {
+      res.status(400).json((error as Error).message);
+    }
   }
 }
