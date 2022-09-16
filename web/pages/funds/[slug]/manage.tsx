@@ -62,16 +62,26 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
         exist = true;
       }
     }
+
     if (!exist) {
       adminItems.push(
         AdminItem({
           address: newAdmin, 
-          isNew: true
+          isNew: true,
+          isOwn: false,
+          remove: removeAdmin
         })
       )
     }
     setNewAdmins(adminItems);
     setNewAdmin("");
+  }
+
+  const removeAdmin = async (address: string) => {
+    console.log("remove admin:", address)
+
+    console.log("admins:", admins);
+    console.log("newadmins:", newAdmins);
   }
 
   const removeAvatar = async () => {
@@ -125,12 +135,16 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
       setFund(fund);
       setIsAdmin(isAdmin);
 
+      const account = JSON.parse(dehydratedState)[1][1][0];
+
       let adminItems = [];
       for (const address of admins) {
         adminItems.push(
           AdminItem({
             address: address, 
-            isNew: false
+            isNew: false,
+            isOwn: address == account.address,
+            remove: removeAdmin
           })
         )
       }
