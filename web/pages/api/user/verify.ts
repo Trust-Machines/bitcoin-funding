@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { User, RegistrationStatus } from '@prisma/client';
 import { getTransactionInfo } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
-import { base58CheckEncode } from '@/common/bitcoin/encoding';
+import { encodeBtcAddress } from '@/common/bitcoin/encoding';
 import prisma from '@/common/db';
 
 export default async function handler(
@@ -51,7 +51,7 @@ async function postHandler(
     if (userRegistered != null) {
       // Update status and funding wallet
       const registeredAddress = userRegistered.value;
-      const fundingAddress = base58CheckEncode(registeredAddress.replace("0x0014", ""));
+      const fundingAddress = encodeBtcAddress(registeredAddress);
 
       const result = await prisma.user.update({
         where: {
