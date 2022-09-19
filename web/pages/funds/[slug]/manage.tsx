@@ -21,8 +21,9 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [initAdmins, setInitAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
-  const [newAdmins, setNewAdmins] = useState([]);
+  const [adminItems, setAdminItems] = useState([]);
   const [newAdmin, setNewAdmin] = useState('');
 
   const handleInputChange = (event:any) => {
@@ -44,44 +45,45 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     }
   }
 
+  const setupAdminItems = async (admins: string[]) => {
+    const account = JSON.parse(dehydratedState)[1][1][0];
+
+    let adminItems = [];
+    for (const address of admins) {
+      adminItems.push(
+        AdminItem({
+          address: address, 
+          isNew: false,
+          isOwn: address == account.address,
+          remove: removeAdmin
+        })
+      )
+    }
+    setAdminItems(adminItems);
+  }
+
   const handleAdminChange = (event:any) => {
     setNewAdmin(event.target.value);
   }
 
   const addAdmin = async () => {
-    let adminItems = [];
-    let exist = false;
-    for (const item of admins) {
-      if (item.key == newAdmin) {
-        exist = true;
-      }
-    }
-    for (const item of newAdmins) {
-      adminItems.push(item)
-      if (item.key == newAdmin) {
-        exist = true;
-      }
-    }
-
-    if (!exist) {
-      adminItems.push(
-        AdminItem({
-          address: newAdmin, 
-          isNew: true,
-          isOwn: false,
-          remove: removeAdmin
-        })
-      )
-    }
-    setNewAdmins(adminItems);
+    const existingAdmins = admins;
+    existingAdmins.push(newAdmin);
+    setAdmins(existingAdmins);
+    setupAdminItems(admins);
     setNewAdmin("");
   }
 
-  const removeAdmin = async (address: string) => {
-    console.log("remove admin:", address)
-
+  const removeAdmin = async (address: string) => {        
+    console.log("remove:", address);
     console.log("admins:", admins);
-    console.log("newadmins:", newAdmins);
+    console.log("admins:", initAdmins);
+    console.log("fund:", fund);
+
+    const existingAdmins = admins;
+    existingAdmins.splice(existingAdmins.indexOf(address), 1)
+    setAdmins(existingAdmins);
+    setupAdminItems(admins);
   }
 
   const removeAvatar = async () => {
@@ -106,11 +108,10 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     formData.append("slug", fund.slug);
     formData.append("dehydratedState", dehydratedState);
 
-    var adminList: string[] = [];
-    for (const item of newAdmins) {
-      adminList.push(item.key);
-    }
-    formData.append("newAdmins", adminList);
+    let newAdmins = admins.filter(x => !initAdmins.includes(x));
+    let removedAdmins = initAdmins.filter(x => !admins.includes(x));
+    formData.append("newAdmins", newAdmins);
+    formData.append("removedAdmins", removedAdmins);
 
     const res = await updateFund(fund.slug, formData);
     const data = await res.json();
@@ -134,21 +135,9 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
       ]);
       setFund(fund);
       setIsAdmin(isAdmin);
-
-      const account = JSON.parse(dehydratedState)[1][1][0];
-
-      let adminItems = [];
-      for (const address of admins) {
-        adminItems.push(
-          AdminItem({
-            address: address, 
-            isNew: false,
-            isOwn: address == account.address,
-            remove: removeAdmin
-          })
-        )
-      }
-      setAdmins(adminItems);
+      setInitAdmins(admins);
+      setAdmins(admins);
+      setupAdminItems(admins);
 
       setIsLoading(false);
     };
@@ -267,8 +256,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
               <label htmlFor="admin" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Admins</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
-                {admins}
-                {newAdmins}
+                {adminItems}
                 <div className="max-w-lg flex rounded-md shadow-sm items-center">
                   <input
                     type="text"

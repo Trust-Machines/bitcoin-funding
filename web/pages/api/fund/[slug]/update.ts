@@ -65,7 +65,7 @@ async function postHandler(
         }
       }
 
-      // Admins
+      // New admins
       const newAdmins = fields.newAdmins as string;
       if (newAdmins != '') {
         const addresses = newAdmins.split(",");
@@ -95,6 +95,10 @@ async function postHandler(
           }
         }
       }
+
+      // Removed admins
+      const removedAdmins = fields.removedAdmins as string;
+      console.log("removedAdmins:", removedAdmins);
   
       // Update info
       const result = await prisma.fund.update({
