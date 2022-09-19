@@ -11,6 +11,9 @@ import { useCallback } from 'react';
 import { destroySession, saveSession } from '@/common/fetchers';
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { StacksSessionState } from 'micro-stacks/connect';
+
+const stxNetwork = process.env.NEXT_PUBLIC_NETWORK;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -29,11 +32,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       appName="BallotBox Funding"
       appIconUrl="APP_ICON.png"
       dehydratedState={pageProps?.dehydratedState}
-      network={process.env.NEXT_PUBLIC_NETWORK}
+      network={stxNetwork}
       onPersistState={useCallback(async (dehydratedState: string) => {
-        pageProps.dehydratedState = dehydratedState;
+
+        // Replace address by testnet address if needed
+        const stateJson = JSON.parse(dehydratedState);
+        stateJson[1][1][0]['address'] = pageProps.address;
+        const newDehydratedState = JSON.stringify(stateJson);
+        
+        pageProps.dehydratedState = newDehydratedState;
         setAuthenticated(true);
-        await saveSession(dehydratedState);
+        await saveSession(newDehydratedState);
+      }, [])}
+      onAuthentication={useCallback(async (payload: StacksSessionState) => {
+        const address = stxNetwork == "mainnet" ? payload.addresses.mainnet : payload.addresses.testnet;
+        pageProps.address = address;
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
