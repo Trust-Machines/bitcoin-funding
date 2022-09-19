@@ -1,0 +1,22 @@
+name: CRON Jobs
+
+on:
+  schedule:
+    # Runs every 5 minutes, the max of Github actions
+    - cron: '* * * * *'
+
+jobs:
+  build:
+    name: Jobs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Users
+        run: curl -X POST -d {} https://ballotboxfund.vercel.app/api/cron/verify-users
+      - name: Register Funds
+        run: curl -X POST -d {} https://ballotboxfund.vercel.app/api/cron/register-funds
+      - name: Verify Funds
+        run: curl -X POST -d {} https://ballotboxfund.vercel.app/api/cron/verify-funds
+      - name: Register Transactions
+        run: curl -X POST -d {} https://ballotboxfund.vercel.app/api/cron/register-transactions
+      - name: Verify Transactions
+        run: curl -X POST -d {} https://ballotboxfund.vercel.app/api/cron/verify-transactions
