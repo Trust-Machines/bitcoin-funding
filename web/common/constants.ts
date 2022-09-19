@@ -39,5 +39,4 @@ if (process.env.NEXT_PUBLIC_NETWORK === 'mainnet') {
   STACKS_API_URL = 'https://stacks-node-api.testnet.stacks.co';
 
   API_URL = process.env.NEXT_PUBLIC_BASE_URL + '/api';
-
 }

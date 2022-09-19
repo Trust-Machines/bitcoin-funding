@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { User, RegistrationStatus, PrismaClient } from '@prisma/client';
-import { getTransactionInfo, hashAppPrivateKey } from '@/common/stacks/utils';
+import { User, RegistrationStatus } from '@prisma/client';
+import { getTransactionInfo } from '@/common/stacks/utils';
 import { getStxToBtc } from '@/common/stacks/user-registry-v1-1';
-import { BTC_NETWORK } from '@/common/constants';
-import { bech32Encode } from '@/common/bitcoin/encoding';
+import { encodeBtcAddress } from '@/common/bitcoin/encoding';
 import prisma from '@/common/db';
 
 export default async function handler(
@@ -51,7 +50,7 @@ export async function verifyUser(address: string) {
   } else if (resultUser.registrationTxId != null) {
     // Get registration TX info
     const tx = await getTransactionInfo(resultUser.registrationTxId);
-    if (tx.tx_status == 'aborted_by_response' || tx.error != undefined) {
+    if (tx.tx_status == 'abort_by_response' || tx.error != undefined) {
       status = RegistrationStatus.FAILED;
     }
   }
@@ -59,7 +58,7 @@ export async function verifyUser(address: string) {
   if (userRegistered != null) {
     // Update status and funding wallet
     const registeredAddress = userRegistered.value;
-    const address = bech32Encode(BTC_NETWORK.bech32, registeredAddress.replace("0x0014", ""))
+    const fundingAddress = encodeBtcAddress(registeredAddress);
 
     const result = await prisma.user.update({
       where: {
@@ -67,7 +66,7 @@ export async function verifyUser(address: string) {
       },
       data: {
         registrationStatus: status,
-        fundingWallet: { connect: { address: address } },
+        fundingWallet: { connect: { address: fundingAddress } },
       },
     });
     return result;

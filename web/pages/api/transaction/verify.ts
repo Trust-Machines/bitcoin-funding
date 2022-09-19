@@ -53,7 +53,8 @@ export async function verifyTransaction(txId: string) {
   } else if (result.registrationTxId != null) {
     // Get registration TX info
     const tx = await getTransactionInfo(result.registrationTxId);
-    if (tx.tx_status == 'aborted_by_response' || tx.error != undefined) {
+    console.log("tx:", tx.tx_status);
+    if (tx.tx_status == 'abort_by_response' || tx.error != undefined) {
       status = RegistrationStatus.FAILED;
     }
   }

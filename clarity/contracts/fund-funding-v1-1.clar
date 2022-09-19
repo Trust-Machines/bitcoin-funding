@@ -94,9 +94,8 @@
   (receiver-address (buff 33))
 )
   (let (
-    ;; TODO - Update mainnet address
-    (was-mined (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-bitcoin was-tx-mined-prev? block prev-blocks tx proof)))
-    (parsed-tx (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.clarity-bitcoin parse-tx tx)))
+    (was-mined (try! (contract-call? .clarity-bitcoin was-tx-mined-prev? block prev-blocks tx proof)))
+    (parsed-tx (try! (contract-call? .clarity-bitcoin parse-tx tx)))
 
     (sender (unwrap! (element-at (get outs parsed-tx) sender-index) ERR_INVALID_TX))
     (receiver (unwrap! (element-at (get outs parsed-tx) receiver-index) ERR_INVALID_TX))

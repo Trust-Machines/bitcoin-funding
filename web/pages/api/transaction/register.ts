@@ -23,7 +23,11 @@ async function postHandler(
     const result = await registerTransaction(req.body.txId)
     res.status(200).json(result)
   } catch (error) {
-    res.status(400).json((error as Error).message);
+    if ((error as Error).message.includes("Invalid height")) {
+      res.status(400).json("BTC transaction not mined yet");
+    } else {
+      res.status(400).json((error as Error).message);
+    }
   }
 }
 

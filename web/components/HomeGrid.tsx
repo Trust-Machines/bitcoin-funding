@@ -38,7 +38,7 @@ export function HomeGrid() {
             Fund one of our funds
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700">
-            Because you’d probably be a little confused if we didn't ask you to fund any, right?
+            Because you would probably be a little confused if we did not ask you to fund any, right?
           </p>
         </div>
 

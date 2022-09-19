@@ -34,17 +34,6 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
 
     let feedItems = [];
-    if (txData.currentPage == 0) {
-      feedItems.push(
-        ActivityFeedItem({
-          icon: "CheckCircleIcon", 
-          title: "Fund created", 
-          subtitle: "",
-          details: dateToString(fundData.createdAt)
-        })
-      )
-    }
-
     for (const tx of txData.transactions) {
       const dollarRaised = (tx.sats / 100000000.00) * btcPriceData;
       feedItems.push(
@@ -53,6 +42,17 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
           title: dollarAmountToString(dollarRaised) + " funded", 
           subtitle: "By " + shortAddress(tx.wallet.user.address),
           details: dateToString(tx.createdAt)
+        })
+      )
+    }
+
+    if (txData.currentPage == txData.totalPages - 1) {
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "CheckCircleIcon", 
+          title: "Fund created", 
+          subtitle: "",
+          details: dateToString(fundData.createdAt)
         })
       )
     }

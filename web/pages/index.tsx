@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSidePropsContext } from 'next'
+import type { NextPage } from 'next'
 import { useAuth } from '@micro-stacks/react';
 import { useEffect, useState } from 'react'
 
