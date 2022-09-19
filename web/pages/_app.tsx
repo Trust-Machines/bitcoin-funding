@@ -31,14 +31,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       dehydratedState={pageProps?.dehydratedState}
       network={process.env.NEXT_PUBLIC_NETWORK}
       onPersistState={useCallback(async (dehydratedState: string) => {
+        pageProps.dehydratedState = dehydratedState;
         setAuthenticated(true);
         await saveSession(dehydratedState);
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
-        router.push('/');
-      }, [router])}
+      }, [])}
     >
       <Head>
         <title>BallotBox - Funding</title>

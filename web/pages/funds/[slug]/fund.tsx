@@ -10,10 +10,10 @@ import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
 import { Alert } from '@/components/Alert';
 
-const steps = [
-  { id: '01', name: 'Connect Hiro Wallet', status: 'complete' },
-  { id: '02', name: 'Register BTC address', status: 'complete' },
-  { id: '03', name: 'Send BTC to the fund', status: 'current' },
+const stepsInit = [
+  { id: '01', name: 'Connect Hiro Wallet', status: 'current' },
+  { id: '02', name: 'Register BTC address', status: 'upcoming' },
+  { id: '03', name: 'Send BTC to the fund', status: 'upcoming' },
   { id: '04', name: 'Confirm', status: 'upcoming' },
 ]
 
@@ -27,6 +27,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const [user, setUser] = useState<User>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
   const [walletBalance, setWalletBalance] = useState(0);
+  const [steps, setSteps] = useState(stepsInit);
 
   useEffect(() => {
     if (slug) {
@@ -93,9 +94,11 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     }
 
     // Update steps data
+    var newSteps = [...stepsInit];
     for (let step = 0; step < 4; step++) {
-      steps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
+      newSteps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
     }
+    setSteps(newSteps);
 
     setIsLoading(false);
   }

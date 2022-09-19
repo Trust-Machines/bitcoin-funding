@@ -6,6 +6,8 @@
 import { hexToBytes } from '../utils';
 import { decode, encode, convertbits } from './bech32';
 import bs58check from 'bs58check'
+import { BTC_NETWORK } from '../constants';
+import { networks } from 'bitcoinjs-lib';
 
 export function decodeBtcAddressToBuffer(address: string): Buffer {
   const decoded = decodeBtcAddress(address);
@@ -17,6 +19,20 @@ export function decodeBtcAddress(address: string): string {
     return "0x0014" + bech32Decode(address);
   }
   return "0x76a914" + base58CheckDecode(address).slice(2) + "88ac";
+}
+
+export function encodeBtcAddress(decodedAddress: string): string {
+
+  if (decodedAddress.startsWith("0x0014")) {
+    const stripped = decodedAddress.replace("0x0014", "");
+    const address = bech32Encode(BTC_NETWORK.bech32, stripped);
+    return address;
+  }
+
+  const stripped = decodedAddress.replace("0x76a914", "").replace("88ac", "");
+  const version = BTC_NETWORK == networks.bitcoin ? "00" : "6f";
+  const address = base58CheckEncode(version + stripped);
+  return address;
 }
 
 export function bech32Encode(prefix: string, hash: string): string {
@@ -40,4 +56,10 @@ export function bech32Decode(address: string): string {
 export function base58CheckDecode(address: string): string {
   var decoded = bs58check.decode(address)
   return decoded.toString('hex');
+}
+
+export function base58CheckEncode(hash: string): string {
+  const buffer = Buffer.from(hash, "hex");
+  const encoded = bs58check.encode(buffer);
+  return encoded;
 }

@@ -10,7 +10,7 @@ export interface NewWallet {
 
 export function createWallet(): NewWallet {
   const keyPair = ECPair.makeRandom();
-  const payment = payments.p2wpkh({ pubkey: keyPair.publicKey, network: BTC_NETWORK });
+  const payment = payments.p2pkh({ pubkey: keyPair.publicKey, network: BTC_NETWORK });
 
   const result: NewWallet = {
     'address': payment.address!,
@@ -26,7 +26,7 @@ export function createWalletXpub(mnemonic: string, index: number): NewWallet {
   const xpub = bip32.fromSeed(seed, BTC_NETWORK).toBase58();
   const wallet = bip32.fromBase58(xpub, BTC_NETWORK).derive(0).derive(index);
 
-  const payment = payments.p2wpkh({ 
+  const payment = payments.p2pkh({ 
     pubkey: wallet.publicKey,
     network: BTC_NETWORK 
   });
@@ -41,6 +41,6 @@ export function createWalletXpub(mnemonic: string, index: number): NewWallet {
 
 export function publicKeyToAddress(publicKey: string): string {
   const pubkey = Buffer.from( publicKey, 'hex' );
-  const { address } = payments.p2wpkh({ pubkey: pubkey, network: BTC_NETWORK });
+  const { address } = payments.p2pkh({ pubkey: pubkey, network: BTC_NETWORK });
   return address as string;
 }

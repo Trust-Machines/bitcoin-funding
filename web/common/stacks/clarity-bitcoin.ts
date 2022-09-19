@@ -6,6 +6,8 @@ import {
   cvToJSON,
   uintCV,
   bufferCV,
+  tupleCV,
+  listCV,
 } from '@stacks/transactions';
 
 const contractAddress = process.env.APP_ADDRESS as string;
@@ -41,5 +43,56 @@ export async function parseTx(tx: string): Promise<any> {
   });
 
   const result = cvToJSON(call);
+  return result;
+}
+
+export async function getTxId(tx: string): Promise<any> {
+  const call = await callReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: 'get-txid',
+    functionArgs: [
+      bufferCV(Buffer.from(hexToBytes(tx))),
+    ],
+    senderAddress: contractAddress,
+    network: STACKS_NETWORK,
+  });
+
+  const result = cvToJSON(call);
+  return result;
+}
+
+export async function wasTxMinedPrev(
+  blockHeader: string,
+  blockHeight: number,
+  prevBlocks: string[],
+  txHex: string,
+  proofTxIndex: number,
+  proofHashes: string[],
+  proofTreeDepth: number,
+): Promise<any> {
+
+  const call = await callReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: 'was-tx-mined-prev?',
+    functionArgs: [
+      tupleCV({
+        "header": bufferCV(Buffer.from(hexToBytes(blockHeader))),
+        "height": uintCV(blockHeight)
+      }),
+      listCV(prevBlocks.map(hash => bufferCV(Buffer.from(hexToBytes(hash))))),
+      bufferCV(Buffer.from(hexToBytes(txHex))),
+      tupleCV({
+        "tx-index": uintCV(proofTxIndex),
+        "hashes": listCV(proofHashes.map(hash => bufferCV(Buffer.from(hexToBytes(hash))))),
+        "tree-depth": uintCV(proofTreeDepth)
+      }),
+    ],
+    senderAddress: contractAddress,
+    network: STACKS_NETWORK,
+  });
+
+  const result = cvToJSON(call).value.value;
   return result;
 }
