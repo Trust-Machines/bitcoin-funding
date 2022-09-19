@@ -40,6 +40,8 @@ export async function getBalance(address: string): Promise<number> {
     return 0;
   }
   const unspent = unspents.sort((a, b) => (a.value < b.value ? 1 : -1))[0];
+  
+  client.close();
   return unspent.value;
 }
 
@@ -59,6 +61,7 @@ export async function getEstimatedFee(): Promise<number> {
 
   // In production the estimation should always return a correct number
   // In dev the estimations only start working after some txs have been made
+  client.close();
   if (estimatedFeeSats < minimumFeeSats && relayFeeSats < minimumFeeSats) {
     return minimumFeeSats;
   } else if (estimatedFeeSats < relayFeeSats) {
@@ -112,12 +115,15 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   psbt.finalizeAllInputs();
   const finalTx = psbt.extractTransaction(true);
   const txid = await client.blockchainTransaction_broadcast(finalTx.toHex()) as string;
+
+  client.close();
   return txid;
 }
 
 export async function getTransactionHex(txId: string): Promise<any> {
   const client = await newElectrumClient();
   const tx = await client.blockchainTransaction_get(txId, true) as any;
+  client.close();
   return tx.hex;
 }
 
@@ -150,6 +156,7 @@ export async function getTransactionData(txId: string, senderAddress: string, re
   });
 
   // Return all info
+  client.close();
   return {
     blockHeader: header,
     blockHeight: stacksHeight,
@@ -187,6 +194,7 @@ async function stacksBlockAtBurnHeight(burnHeight: number): Promise<any> {
     prevBlocks.unshift(prevHeaderInfo.hex as string)
   }
 
+  client.close();
   return {
     header,
     stacksHeight,

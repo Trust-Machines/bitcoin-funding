@@ -34,6 +34,9 @@ async function getHandler(
   });
 
   const resultTransactions = await prisma.fundingTransaction.findMany({
+    orderBy : {
+      createdAt: "desc"
+    },
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
     where: {

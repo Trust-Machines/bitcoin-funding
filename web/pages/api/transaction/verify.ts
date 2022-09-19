@@ -20,9 +20,18 @@ async function postHandler(
   req: NextApiRequest,
   res: NextApiResponse<FundingTransaction | string>
 ) {
+  try {
+    const result = await verifyTransaction(req.body.txId);
+    res.status(200).json(result)
+  } catch (error) {
+    res.status(400).json((error as Error).message);
+  }
+}
+
+export async function verifyTransaction(txId: string) {
   const result = await prisma.fundingTransaction.findUniqueOrThrow({
     where: {
-      txId: req.body.txId,
+      txId: txId,
     },
     include: {
       fund: true
@@ -31,11 +40,10 @@ async function postHandler(
 
   // Check if verification needs to be done
   if (result.registrationStatus == RegistrationStatus.COMPLETED) {
-    res.status(200).json(result)
-    return;
+    return result;
   }
 
-  const txHex = await getTransactionHex(req.body.txId);
+  const txHex = await getTransactionHex(txId);
   const parsed = await getTransactionParsed(txHex);
 
   // Update registration status
@@ -63,7 +71,7 @@ async function postHandler(
   // Update status
   const updateTransaction = prisma.fundingTransaction.update({
     where: {
-      txId: req.body.txId,
+      txId: txId,
     },
     data: {
       registrationStatus: status
@@ -83,9 +91,9 @@ async function postHandler(
     });
 
     const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateFund]);
-    res.status(200).json(resultUpdateTransaction)
+    return resultUpdateTransaction;
   } else {
     const [resultUpdateTransaction] = await prisma.$transaction([updateTransaction]);
-    res.status(200).json(resultUpdateTransaction)
+    return resultUpdateTransaction;
   }
 }

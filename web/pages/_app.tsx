@@ -30,14 +30,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       appIconUrl="APP_ICON.png"
       dehydratedState={pageProps?.dehydratedState}
       onPersistState={useCallback(async (dehydratedState: string) => {
+        pageProps.dehydratedState = dehydratedState;
         setAuthenticated(true);
         await saveSession(dehydratedState);
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
-        router.push('/');
-      }, [router])}
+      }, [])}
     >
       <Head>
         <title>BallotBox - Funding</title>
