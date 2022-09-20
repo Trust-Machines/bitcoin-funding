@@ -3,7 +3,7 @@ import { createAvatar } from '@dicebear/avatars';
 import * as style from '@dicebear/avatars-initials-sprites';
 import aws from 'aws-sdk';
 
-const saveToS3 = async (blob: any, name: string) => {
+const saveToS3 = async (blob: any, contentType: string, name: string) => {
   const s3 = new aws.S3({
     accessKeyId: process.env.BF_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.BF_AWS_ACCESS_KEY_SECRET
@@ -11,6 +11,7 @@ const saveToS3 = async (blob: any, name: string) => {
   const params = {
     ACL: 'public-read',
     Bucket: process.env.AWS_S3_BUCKET_NAME,
+    ContentType: contentType,
     Key: name,
     Body: blob
   };
@@ -34,7 +35,7 @@ export async function saveFile(file: any, name: string) {
     // Production: save to S3
     try {
       fs.unlinkSync(file.filepath);
-      const result = await saveToS3(data, `${name}.${extension}`);
+      const result = await saveToS3(data, file.mimetype, `${name}.${extension}`);
       return result.Location;
     } catch (e) {
       console.log(e);
@@ -55,7 +56,7 @@ export async function createPlaceholderAndSaveFile(seed: string) {
   } else {
     // Production: save to S3
     try {
-      const result = await saveToS3(data, `${seed}.svg`);
+      const result = await saveToS3(data, 'image/svg+xml', `${seed}.svg`);
       return result.Location;
     } catch (e) {
       console.log(e);
