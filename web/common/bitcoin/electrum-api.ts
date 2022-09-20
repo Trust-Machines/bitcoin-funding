@@ -1,5 +1,5 @@
 import { ElectrumClient } from "@samouraiwallet/electrum-client";
-import { ECPair, payments, Psbt } from 'bitcoinjs-lib';
+import { ECPair, payments, Psbt, networks } from 'bitcoinjs-lib';
 import { bytesToHex } from 'micro-stacks/common';
 import { getScriptHash, reverseBuffer } from './electrum-utils'
 import { BTC_NETWORK, ELECTRUM_HOST, ELECTRUM_PORT } from '../constants';
@@ -100,7 +100,8 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   // If we forward all funds, the sender can not be added as output. So we need to keep some dust.
   const actualAmount = amount - fee;
   const senderValueLeft = unspent.value - amount;
-  const dust = senderValueLeft == 0 ? 500 : 0;
+  const dustToKeep = BTC_NETWORK == networks.regtest ? 1000 : 500;
+  const dust = senderValueLeft == 0 ? dustToKeep : 0;
 
   psbt.addOutput({
     address: senderAddress,
