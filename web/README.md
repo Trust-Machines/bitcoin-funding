@@ -45,3 +45,8 @@ use `npx ts-node verify-transactions.ts`
  3. Build `vercel build`
  4. Deploy `vercel deploy --prebuilt`
  5. Deploy to production `vercel --prod`
+
+## Bitcoin Testnet Faucets
+
+https://testnet-faucet.com/btc-testnet/
+https://bitcoinfaucet.uo1.net/send.php

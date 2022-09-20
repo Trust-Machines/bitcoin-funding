@@ -8,11 +8,11 @@ import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
 import { ActivityFeedItem } from '@/components/ActivityFeedItem'
-import { dollarAmountToString, shortAddress } from '@/common/utils'
+import { dollarAmountToString, shortAddress, stacksExplorerLinkTx } from '@/common/utils'
 import { dateToString, daysToDate } from '@/common/utils'
-import { Alert } from '@/components/Alert'
 import { Pagination } from '@/components/Pagination'
 import { TransactionsPaged } from 'pages/api/fund/[slug]/transactions'
+import { AlertWait } from '@/components/AlertWait'
 
 const FundDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -67,15 +67,12 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
         fundData,
         transactionsData,
         btcPriceData,
-        isAdmin
       ] = await Promise.all([
         findFund(slug),
         findFundFundingTransactions(slug, 0),
         getBtcPrice(),
-        isFundAdmin(slug, dehydratedState)
       ]);
       setFund(fundData);
-      setIsAdmin(isAdmin);
       setBtcPrice(btcPriceData);
 
       // Setup activity items
@@ -89,6 +86,9 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
       }
 
       setIsLoading(false);
+
+      const isAdmin = await isFundAdmin(slug, dehydratedState);
+      setIsAdmin(isAdmin);
     }
 
     const fetchVerifyFund = async (intervalId: number) => {
@@ -154,9 +154,12 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
               <section className='mt-6'>
                 {fund.registrationStatus != RegistrationStatus.COMPLETED ? (
                   <div className='mb-4'>
-                    <Alert type={Alert.type.WARNING}>
-                      The Fund is being registered on chain. Funding will be available once the registration is done.
-                    </Alert>
+                    <AlertWait 
+                      title="The Fund is being registered on chain. Funding will be available once the registration is done."
+                      subTitle="Stacks transactions can take 10-30 minutes to complete."
+                      linkText="Open transaction in explorer"
+                      link={stacksExplorerLinkTx(fund.registrationTxId)}
+                    />
                   </div>
                 ):null}
 

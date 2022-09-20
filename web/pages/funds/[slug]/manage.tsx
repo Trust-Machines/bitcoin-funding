@@ -15,6 +15,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [fund, setFund] = useState<Fund>({});
   const [avatar, setAvatar] = useState();
   const [fileName, setFileName] = useState('');
@@ -91,6 +92,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     if (fund.name == '') {
       showErrorMessage('Please enter a name.'); return;
     }
+    setIsSaving(true);
 
     const formData = new FormData();
     formData.append("file", avatar);
@@ -111,6 +113,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
       router.push(`/funds/${data.slug}`);
     } else {
       showErrorMessage(data);
+      setIsSaving(false);
     }
   }
 
@@ -224,7 +227,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                           ) : (
                             <span>Upload a file</span>
                           )}
-                          <input id="avatar" name="avatar" type="file" className="sr-only" onChange={handleInputChange} />
+                          <input id="avatar" name="avatar" type="file" accept="image/*" className="sr-only" onChange={handleInputChange} />
                         </div>
                         {!fileName ? (
                           <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
@@ -295,7 +298,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
           {isAdmin ? (
             <div className="pt-5 pb-5">
               <div className="flex justify-end">
-                <Button onClick={() => update()}>
+                <Button onClick={() => update()} saving={isSaving}>
                   Save
                 </Button>
               </div>

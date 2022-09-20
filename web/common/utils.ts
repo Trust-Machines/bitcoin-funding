@@ -1,3 +1,5 @@
+import { BTC_EXPLORER_URL } from "./constants";
+
 export function hexToBytes(hex: string): Uint8Array {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
 }
@@ -42,3 +44,20 @@ export function daysToDate(date: Date): number {
 export function shortAddress(address: string): string {
   return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
 }
+
+export function stacksExplorerLinkTx(txId: string) {
+  const chain = process.env.NEXT_PUBLIC_NETWORK;
+  if (chain == "mocknet") {
+    return `http://localhost:3999/extended/v1/tx/${txId}`
+  }
+  return `https://explorer.stacks.co/txid/${txId}?chain=${chain}`
+}
+
+export function bitcoinExplorerLinkTx(txId: string) {
+  return `${BTC_EXPLORER_URL}/tx/${txId}`
+}
+
+export function bitcoinExplorerLinkAddress(address: string) {
+  return `${BTC_EXPLORER_URL}/address/${address}`
+}
+

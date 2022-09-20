@@ -26,6 +26,10 @@ model Fund {
   admins                      FundAdmin[]
   totalSats                   Int                       @default(0)
   totalMembers                Int                       @default(0)
+  @@index([address], type: Hash)
+  @@index([slug], type: Hash)
+  @@index([registrationStatus], type: Hash)
+  @@index([registrationTxId], type: Hash)
 }
 
 model FundAdmin {
@@ -34,12 +38,16 @@ model FundAdmin {
   user                        User                      @relation(fields: [userId], references: [appPrivateKey])
   fundId                      String
   userId                      String
+  @@index([fundId], type: Hash)
+  @@index([userId], type: Hash)
 }
 
 model FundAdminInvite {
   id                          Int                       @id @default(autoincrement())
   fundAddress                 String
   userAddress                 String
+  @@index([fundAddress], type: Hash)
+  @@index([userAddress], type: Hash)
 }
 
 model User {
@@ -52,6 +60,10 @@ model User {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   fundAdmins                  FundAdmin[]
+  @@index([appPrivateKey], type: Hash)
+  @@index([address], type: Hash)
+  @@index([registrationStatus], type: Hash)
+  @@index([registrationTxId], type: Hash)
 }
 
 model FundingWallet {
@@ -61,19 +73,25 @@ model FundingWallet {
   user                        User?
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
+  @@index([address], type: Hash)
 }
 
 model FundingTransaction {
   txId                        String                    @id
   wallet                      FundingWallet             @relation(fields: [walletAddress], references: [address])
   walletAddress               String
-  fund                        Fund                       @relation(fields: [fundAddress], references: [address])
+  fund                        Fund                      @relation(fields: [fundAddress], references: [address])
   fundAddress                 String
   sats                        Int
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
+  @@index([txId], type: Hash)
+  @@index([fundAddress], type: Hash)
+  @@index([walletAddress], type: Hash)
+  @@index([registrationStatus], type: Hash)
+  @@index([registrationTxId], type: Hash)
 }
 
 enum RegistrationStatus {

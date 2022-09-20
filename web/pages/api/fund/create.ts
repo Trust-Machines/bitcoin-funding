@@ -6,7 +6,7 @@ import formidable from "formidable";
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
 import fs from "fs";
-// import { Magic, MAGIC_MIME_TYPE } from 'mmmagic';
+import { registerFund } from './[slug]/register';
 
 export const config = {
   api: {
@@ -62,31 +62,13 @@ async function postHandler(
             res.status(422).json('The chosen avatar is too big (max 5mb)');
             return;
           }
-
-          // TODO: does not work on Vercel - fix or use other method to check mime type
-          // const magic = new Magic(MAGIC_MIME_TYPE);
-          // const promise = new Promise(function (fulfill, reject) {
-          //   magic.detectFile(files.file.filepath, function (err, res) {
-          //     if (err) {
-          //       reject(err);
-          //     } else {
-          //       fulfill(res);
-          //     }
-          //   });
-          // });
-          // const mimeType = await promise;
-          // if (!mimeType.includes('image/')) {
-          //   res.status(422).json('Invalid file type found, please use png or jpeg');
-          //   return;
-          // }
-
           avatar = await saveFile(files.file, slug);
         } else {
           avatar = await createPlaceholderAndSaveFile(slug);
         }
 
         // Save info
-        const result = await prisma.fund.create({
+        await prisma.fund.create({
           data: {
             address: fields.address as string,
             name: fields.name as string,
@@ -98,8 +80,9 @@ async function postHandler(
             admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
           },
         });
-        res.status(200).json(result);
 
+        let result = await registerFund(slug);
+        res.status(200).json(result);
       } catch (error) {
         res.status(400).json((error as Error).message);
       }

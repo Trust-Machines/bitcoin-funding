@@ -23,6 +23,7 @@ const New: NextPage = ({ dehydratedState }) => {
   const [btcPrice, setBtcPrice] = useState(0.0);
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleInputChange = (event: any) => {
     const target = event.target;
@@ -55,6 +56,7 @@ const New: NextPage = ({ dehydratedState }) => {
     } else if (state.raisingDeadline == '') {
       showErrorMessage('Please enter a raising deadline.'); return;
     }
+    setIsSaving(true);
 
     const formData = new FormData();
     formData.append("file", state.image);
@@ -65,7 +67,6 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
 
-    setIsLoading(true);
     const res = await createFund(formData);
     const data = await res.json();
 
@@ -73,7 +74,7 @@ const New: NextPage = ({ dehydratedState }) => {
       router.push(`/funds/${data.slug}`);
     } else {
       showErrorMessage(data);
-      setIsLoading(false);
+      setIsSaving(false);
     }
   }
 
@@ -142,7 +143,7 @@ const New: NextPage = ({ dehydratedState }) => {
                             ) : (
                               <span>Upload a file</span>
                             )}
-                            <input id="image" name="image" type="file" className="sr-only" onChange={handleInputChange} />
+                            <input id="image" name="image" type="file" accept="image/*" className="sr-only" onChange={handleInputChange} />
                           </div>
                           {!fileName ? (
                             <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
@@ -234,7 +235,7 @@ const New: NextPage = ({ dehydratedState }) => {
 
           <div className="pt-5 pb-5">
               <div className="flex justify-end">
-                <Button onClick={() => submitCreateFund()}>
+                <Button onClick={() => submitCreateFund()} saving={isSaving}>
                   Save
                 </Button>
               </div>
