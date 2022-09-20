@@ -36,7 +36,7 @@ model FundAdmin {
   id                          Int                       @id @default(autoincrement())
   fund                        Fund                      @relation(fields: [fundId], references: [address])
   user                        User                      @relation(fields: [userId], references: [appPrivateKey])
-  fundId                      String                    
+  fundId                      String
   userId                      String
   @@index([fundId], type: Hash)
   @@index([userId], type: Hash)
