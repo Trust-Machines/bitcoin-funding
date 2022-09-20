@@ -6,6 +6,7 @@ import formidable from "formidable";
 import { hashAppPrivateKey } from '@/common/stacks/utils';
 import { createPlaceholderAndSaveFile, saveFile } from '@/common/files';
 import fs from "fs";
+import { registerFund } from './[slug]/register';
 
 export const config = {
   api: {
@@ -67,7 +68,7 @@ async function postHandler(
         }
 
         // Save info
-        const result = await prisma.fund.create({
+        await prisma.fund.create({
           data: {
             address: fields.address as string,
             name: fields.name as string,
@@ -79,8 +80,9 @@ async function postHandler(
             admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },
           },
         });
-        res.status(200).json(result);
 
+        let result = await registerFund(slug);
+        res.status(200).json(result);
       } catch (error) {
         res.status(400).json((error as Error).message);
       }

@@ -9,6 +9,9 @@ import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
 import { Alert } from '@/components/Alert';
+import { AlertWait } from '@/components/AlertWait';
+import { bitcoinExplorerLinkAddress, bitcoinExplorerLinkTx, stacksExplorerLinkTx } from '@/common/utils';
+import { ButtonFundFlow } from '@/components/ButtonFundFlow';
 
 const stepsInit = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'current' },
@@ -23,6 +26,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const account = useAccount();
   const { openAuthRequest, isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [fund, setFund] = useState<Fund>({});
   const [user, setUser] = useState<User>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
@@ -36,6 +40,8 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }, [slug, isSignedIn]);
 
   const fetchInfo = async () => {
+    setIsSaving(false);
+
     const fund = await findFund(slug as string);
     setFund(fund);
     
@@ -104,14 +110,18 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const connectWallet = async () => {
+    setIsSaving(true);
     await openAuthRequest();
     fetchInfo();
   }
 
   const registerUserAddress = async () => {
+    setIsSaving(true);
     const result = await registerUser(account.appPrivateKey as string);
     if (result.status === 200) {
       fetchInfo();
+    } else {
+      setIsSaving(false);
     }
   }
 
@@ -125,11 +135,14 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const forwardFunds = async () => {
+    setIsSaving(true);
     const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, fund.address);
     if (result.status === 200) {
       const json = await result.json();
       localStorage.setItem(fund.slug, json.txId);
       fetchInfo();
+    } else {
+      setIsSaving(false);
     }
   }
 
@@ -158,6 +171,10 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     const txId = localStorage.getItem(fund.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
+      clearInterval(intervalId);
+      fetchInfo();
+    }
+    if (transaction.registrationTxId == null && tx.registrationTxId != null) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -274,14 +291,9 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     </a>.
                   </p>
                 </div>
-                <div>
-                  <a
-                    onClick={async () => { connectWallet() }}
-                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                  >
-                    Connect Stacks wallet
-                  </a>
-                </div>
+                <ButtonFundFlow onClick={async () => { connectWallet() }} saving={isSaving}>
+                  Connect Stacks wallet
+                </ButtonFundFlow>
               </div>
             ) : steps[1].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
@@ -291,6 +303,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     We will create an internal BTC account for you and register this on-chain. 
                     Do not worry, gas is on us!
                   </p>
+
                   {user.registrationStatus == RegistrationStatus.FAILED ? (
                     <div className="mt-3">
                       <Alert type={Alert.type.ERROR}>
@@ -298,23 +311,25 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                       </Alert>
                     </div>
                   ):null}
+
+                  {user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null ? (
+                    <div className="mt-3">
+                      <AlertWait 
+                        title="Your BTC account is being created and registered on chain."
+                        subTitle="Stacks transactions can take 10-30 minutes to complete."
+                        linkText="Open transaction in explorer"
+                        link={stacksExplorerLinkTx(user.registrationTxId)}
+                      />
+                    </div>
+                  ):null}
+
                 </div>
                 <div>
-                  {user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null ? (
-                    <div
-                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
-                    >
-                      Your BTC account is being created. This can take up to 30 minutes.
-                    </div>
-                  ):(
-                    <a
-                      onClick={() => { registerUserAddress() }}
-                      href="#"
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
+                  {!(user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null) ? (
+                    <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
                       Create BTC account
-                    </a>
-                  )}
+                    </ButtonFundFlow>
+                  ): null}
                 </div>
               </div>
 
@@ -325,26 +340,27 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
                   <p>Once you have sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
+                  {walletBalance < 1000 ? (
+                    <div className="mt-3">
+                      <AlertWait 
+                        title="Waiting for your BTC to arrive..."
+                        subTitle="Bitcoin transactions can take 10-30 minutes to complete."
+                        linkText="Show wallet in explorer"
+                        link={bitcoinExplorerLinkAddress(user.fundingWalletAddress)}
+                      />
+                    </div>
+                  ): null}
                 </div>
                 <div>
-                  {walletBalance < 1000 ? (
-                    <div
-                      className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
-                    >
-                      Waiting for your BTC to arrive...
-                    </div>
-                  ):(
-                    <a
-                      onClick={() => { forwardFunds() }}
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
+                  {walletBalance >= 1000 ? (
+                    <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
                       Fund {' '}
                       {(walletBalance / 100000000.0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 4,
                       })} BTC
-                    </a>
-                  )}
+                    </ButtonFundFlow>
+                  ): null}
                 </div>
               </div>
 
@@ -353,16 +369,25 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
                   The fund is being funded with your BTC. 
-                  It takes 10-20 minutes for the funding to be registered on chain. 
                   No further action is required.
                   </p>
                 </div>
-                <div>
-                <div
-                  className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 sm:rounded-b-lg"
-                >
-                  Waiting for your transaction registration..
-                </div>
+                <div className="mt-3">
+                  {transaction.registrationTxId ? (
+                    <AlertWait 
+                      title="Your BTC has arrived at the fund's wallet. It's now being registered on chain."
+                      subTitle="Stacks transactions can take 10-30 minutes to complete."
+                      linkText="Show transaction in explorer"
+                      link={stacksExplorerLinkTx(transaction.registrationTxId)}
+                    />
+                  ): (
+                    <AlertWait 
+                      title="Waiting for your BTC to arrive at the fund's wallet"
+                      subTitle="Bitcoin transactions can take 10-30 minutes to complete."
+                      linkText="Show transaction in explorer"
+                      link={bitcoinExplorerLinkTx(transaction.txId)}
+                    />
+                  )}
                 </div>
               </div>
             ): (
@@ -385,7 +410,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div>
                   <a
                     onClick={() => { viewFund() }}
-                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg cursor-pointer"
                   >
                     View fund
                   </a>
