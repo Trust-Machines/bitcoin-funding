@@ -11,6 +11,7 @@ import { StyledIcon } from '@/components/StyledIcon'
 import { Alert } from '@/components/Alert';
 import { AlertWait } from '@/components/AlertWait';
 import { bitcoinExplorerLinkAddress, bitcoinExplorerLinkTx, stacksExplorerLinkTx } from '@/common/utils';
+import { ButtonFundFlow } from '@/components/ButtonFundFlow';
 
 const stepsInit = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'current' },
@@ -25,6 +26,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const account = useAccount();
   const { openAuthRequest, isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [fund, setFund] = useState<Fund>({});
   const [user, setUser] = useState<User>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
@@ -38,6 +40,8 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }, [slug, isSignedIn]);
 
   const fetchInfo = async () => {
+    setIsSaving(false);
+
     const fund = await findFund(slug as string);
     setFund(fund);
     
@@ -106,14 +110,18 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const connectWallet = async () => {
+    setIsSaving(true);
     await openAuthRequest();
     fetchInfo();
   }
 
   const registerUserAddress = async () => {
+    setIsSaving(true);
     const result = await registerUser(account.appPrivateKey as string);
     if (result.status === 200) {
       fetchInfo();
+    } else {
+      setIsSaving(false);
     }
   }
 
@@ -127,11 +135,14 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   }
 
   const forwardFunds = async () => {
+    setIsSaving(true);
     const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, fund.address);
     if (result.status === 200) {
       const json = await result.json();
       localStorage.setItem(fund.slug, json.txId);
       fetchInfo();
+    } else {
+      setIsSaving(false);
     }
   }
 
@@ -160,6 +171,10 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     const txId = localStorage.getItem(fund.slug);
     const tx = await getTransaction(txId as string);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
+      clearInterval(intervalId);
+      fetchInfo();
+    }
+    if (transaction.registrationTxId == null && tx.registrationTxId != null) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -276,14 +291,9 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     </a>.
                   </p>
                 </div>
-                <div>
-                  <a
-                    onClick={async () => { connectWallet() }}
-                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                  >
-                    Connect Stacks wallet
-                  </a>
-                </div>
+                <ButtonFundFlow onClick={async () => { connectWallet() }} saving={isSaving}>
+                  Connect Stacks wallet
+                </ButtonFundFlow>
               </div>
             ) : steps[1].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
@@ -316,13 +326,9 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 </div>
                 <div>
                   {!(user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null) ? (
-                    <a
-                      onClick={() => { registerUserAddress() }}
-                      href="#"
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
+                    <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
                       Create BTC account
-                    </a>
+                    </ButtonFundFlow>
                   ): null}
                 </div>
               </div>
@@ -347,16 +353,13 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 </div>
                 <div>
                   {walletBalance >= 1000 ? (
-                    <a
-                      onClick={() => { forwardFunds() }}
-                      className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
-                    >
+                    <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
                       Fund {' '}
                       {(walletBalance / 100000000.0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 4,
                       })} BTC
-                    </a>
+                    </ButtonFundFlow>
                   ): null}
                 </div>
               </div>
@@ -372,7 +375,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div className="mt-3">
                   {transaction.registrationTxId ? (
                     <AlertWait 
-                      title="Waiting for your BTC transaction to be registered"
+                      title="Your BTC has arrived at the fund's wallet. It's now being registered on chain."
                       subTitle="Stacks transactions can take 10-30 minutes to complete."
                       linkText="Show transaction in explorer"
                       link={stacksExplorerLinkTx(transaction.registrationTxId)}
@@ -407,7 +410,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div>
                   <a
                     onClick={() => { viewFund() }}
-                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg"
+                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg cursor-pointer"
                   >
                     View fund
                   </a>
