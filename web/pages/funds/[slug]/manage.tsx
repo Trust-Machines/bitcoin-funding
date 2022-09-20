@@ -212,7 +212,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                           ) : (
                             <span>Upload a file</span>
                           )}
-                          <input id="avatar" name="avatar" type="file" className="sr-only" onChange={handleInputChange} />
+                          <input id="avatar" name="avatar" type="file" accept="image/*" className="sr-only" onChange={handleInputChange} />
                         </div>
                         {!fileName ? (
                           <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
