@@ -22,9 +22,17 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [initAdmins, setInitAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
-  const [newAdmins, setNewAdmins] = useState([]);
+  const [adminItems, setAdminItems] = useState([]);
+
   const [newAdmin, setNewAdmin] = useState('');
+
+  const [addedAdmin, setAddedAdmin] = useState('');
+  const [addedAdmins, setAddedAdmins] = useState([]);
+  const [deleteAdmin, setDeleteAdmin] = useState('');
+  const [deletedAdmins, setDeletedAdmins] = useState([]);
 
   const handleInputChange = (event:any) => {
     const target = event.target;
@@ -45,34 +53,30 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     }
   }
 
+  const setupAdminItems = async (admins: string[]) => {
+    const account = JSON.parse(dehydratedState)[1][1][0];
+
+    let adminItems = [];
+    for (const address of admins) {
+      adminItems.push(
+        AdminItem({
+          address: address, 
+          isNew: false,
+          isOwn: address == account.address,
+          remove: (address => { setDeleteAdmin(address) })
+        })
+      )
+    }
+    setAdminItems(adminItems);
+  }
+
   const handleAdminChange = (event:any) => {
     setNewAdmin(event.target.value);
   }
 
   const addAdmin = async () => {
-    let adminItems = [];
-    let exist = false;
-    for (const item of admins) {
-      if (item.key == newAdmin) {
-        exist = true;
-      }
-    }
-    for (const item of newAdmins) {
-      adminItems.push(item)
-      if (item.key == newAdmin) {
-        exist = true;
-      }
-    }
-    if (!exist) {
-      adminItems.push(
-        AdminItem({
-          address: newAdmin, 
-          isNew: true
-        })
-      )
-    }
-    setNewAdmins(adminItems);
     setNewAdmin("");
+    setAddedAdmin(newAdmin);
   }
 
   const removeAvatar = async () => {
@@ -98,11 +102,10 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     formData.append("slug", fund.slug);
     formData.append("dehydratedState", dehydratedState);
 
-    var adminList: string[] = [];
-    for (const item of newAdmins) {
-      adminList.push(item.key);
-    }
-    formData.append("newAdmins", adminList);
+    let newAdmins = admins.filter(x => !initAdmins.includes(x));
+    let removedAdmins = initAdmins.filter(x => !admins.includes(x));
+    formData.append("newAdmins", newAdmins);
+    formData.append("removedAdmins", removedAdmins);
 
     const res = await updateFund(fund.slug, formData);
     const data = await res.json();
@@ -125,19 +128,31 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
         isFundAdmin(slug, dehydratedState),
         getFundAdmins(slug, dehydratedState)
       ]);
+
       setFund(fund);
       setIsAdmin(isAdmin);
+      setInitAdmins(admins);
 
-      let adminItems = [];
-      for (const address of admins) {
-        adminItems.push(
-          AdminItem({
-            address: address, 
-            isNew: false
-          })
-        )
+      const adminsCopy = [...admins];
+
+      // Update added/deleted arrays
+      if (addedAdmin != "" && !addedAdmins.includes(addedAdmin)) {
+        addedAdmins.push(addedAdmin);
       }
-      setAdmins(adminItems);
+      if (deleteAdmin != "" && !deletedAdmins.includes(deleteAdmin)) {
+        deletedAdmins.push(deleteAdmin);
+      }
+
+      // Update admins 
+      for (const addedAdmin of addedAdmins) {
+        adminsCopy.push(addedAdmin);
+      }
+      for (const deletedAdmin of deletedAdmins) {
+        adminsCopy.splice(adminsCopy.indexOf(deletedAdmin), 1);
+      }
+      
+      setAdmins(adminsCopy);
+      setupAdminItems(adminsCopy);
 
       setIsLoading(false);
     };
@@ -145,7 +160,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     if (slug) {
       fetchInfo(slug as string);
     }
-  }, [slug]);
+  }, [slug, deleteAdmin, addedAdmin]);
 
   return (
     <Container className="min-h-screen">
@@ -256,8 +271,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
               <label htmlFor="admin" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Admins</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
-                {admins}
-                {newAdmins}
+                {adminItems}
                 <div className="max-w-lg flex rounded-md shadow-sm items-center">
                   <input
                     type="text"
