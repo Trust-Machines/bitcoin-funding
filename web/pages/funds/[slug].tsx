@@ -67,15 +67,12 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
         fundData,
         transactionsData,
         btcPriceData,
-        isAdmin
       ] = await Promise.all([
         findFund(slug),
         findFundFundingTransactions(slug, 0),
         getBtcPrice(),
-        isFundAdmin(slug, dehydratedState)
       ]);
       setFund(fundData);
-      setIsAdmin(isAdmin);
       setBtcPrice(btcPriceData);
 
       // Setup activity items
@@ -89,6 +86,9 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
       }
 
       setIsLoading(false);
+
+      const isAdmin = await isFundAdmin(slug, dehydratedState);
+      setIsAdmin(isAdmin);
     }
 
     const fetchVerifyFund = async (intervalId: number) => {
