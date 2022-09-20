@@ -98,7 +98,24 @@ async function postHandler(
 
       // Removed admins
       const removedAdmins = fields.removedAdmins as string;
-      console.log("removedAdmins:", removedAdmins);
+      if (removedAdmins != '') {
+        const addresses = removedAdmins.split(",");
+        for (const address of addresses) {
+        
+          // Delete fundAdmin
+          const user = await prisma.user.findUnique({
+            where: {
+              address: address,
+            }
+          });
+          if (user && user.appPrivateKey != hashedAppPrivateKey) {
+            await prisma.fundAdmin.deleteMany({ where: { userId: user.appPrivateKey } })
+          }
+
+          // Delete fundAdminInvite
+          await prisma.fundAdminInvite.deleteMany({ where: { userAddress: address } })
+        }
+      }
   
       // Update info
       const result = await prisma.fund.update({

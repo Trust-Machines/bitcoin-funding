@@ -21,10 +21,17 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
   const [initAdmins, setInitAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [adminItems, setAdminItems] = useState([]);
+
   const [newAdmin, setNewAdmin] = useState('');
+
+  const [addedAdmin, setAddedAdmin] = useState('');
+  const [addedAdmins, setAddedAdmins] = useState([]);
+  const [deleteAdmin, setDeleteAdmin] = useState('');
+  const [deletedAdmins, setDeletedAdmins] = useState([]);
 
   const handleInputChange = (event:any) => {
     const target = event.target;
@@ -55,7 +62,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
           address: address, 
           isNew: false,
           isOwn: address == account.address,
-          remove: removeAdmin
+          remove: (address => { setDeleteAdmin(address) })
         })
       )
     }
@@ -67,23 +74,8 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   }
 
   const addAdmin = async () => {
-    const existingAdmins = admins;
-    existingAdmins.push(newAdmin);
-    setAdmins(existingAdmins);
-    setupAdminItems(admins);
     setNewAdmin("");
-  }
-
-  const removeAdmin = async (address: string) => {        
-    console.log("remove:", address);
-    console.log("admins:", admins);
-    console.log("admins:", initAdmins);
-    console.log("fund:", fund);
-
-    const existingAdmins = admins;
-    existingAdmins.splice(existingAdmins.indexOf(address), 1)
-    setAdmins(existingAdmins);
-    setupAdminItems(admins);
+    setAddedAdmin(newAdmin);
   }
 
   const removeAvatar = async () => {
@@ -133,11 +125,31 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
         isFundAdmin(slug, dehydratedState),
         getFundAdmins(slug, dehydratedState)
       ]);
+
       setFund(fund);
       setIsAdmin(isAdmin);
       setInitAdmins(admins);
-      setAdmins(admins);
-      setupAdminItems(admins);
+
+      const adminsCopy = [...admins];
+
+      // Update added/deleted arrays
+      if (addedAdmin != "" && !addedAdmins.includes(addedAdmin)) {
+        addedAdmins.push(addedAdmin);
+      }
+      if (deleteAdmin != "" && !deletedAdmins.includes(deleteAdmin)) {
+        deletedAdmins.push(deleteAdmin);
+      }
+
+      // Update admins 
+      for (const addedAdmin of addedAdmins) {
+        adminsCopy.push(addedAdmin);
+      }
+      for (const deletedAdmin of deletedAdmins) {
+        adminsCopy.splice(adminsCopy.indexOf(deletedAdmin), 1);
+      }
+      
+      setAdmins(adminsCopy);
+      setupAdminItems(adminsCopy);
 
       setIsLoading(false);
     };
@@ -145,7 +157,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     if (slug) {
       fetchInfo(slug as string);
     }
-  }, [slug]);
+  }, [slug, deleteAdmin, addedAdmin]);
 
   return (
     <Container className="min-h-screen">
