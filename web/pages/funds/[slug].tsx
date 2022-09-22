@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Fund, RegistrationStatus } from '@prisma/client'
-import { findFund, findFundFundingTransactions, getBtcPrice, isFundAdmin } from '@/common/fetchers'
+import { findFund, findFundFundingTransactions, findFundMembers, getBtcPrice, isFundAdmin } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -13,27 +13,36 @@ import { dateToString, daysToDate } from '@/common/utils'
 import { Pagination } from '@/components/Pagination'
 import { TransactionsPaged } from 'pages/api/fund/[slug]/transactions'
 import { AlertWait } from '@/components/AlertWait'
+import { MembersPaged } from 'pages/api/fund/[slug]/members'
 
 const FundDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [fund, setFund] = useState<Fund>({});
-  const [transactions, setTransactions] = useState<TransactionsPaged>({});
   const [isAdmin, setIsAdmin] = useState(false);
+  const [transactions, setTransactions] = useState<TransactionsPaged>({});
   const [activityFeedItems, setActivityFeedItems] = useState([]);
+  const [members, setMembers] = useState<MembersPaged>({});
+  const [memberItems, setMemberItems] = useState([]);
   const [btcPrice, setBtcPrice] = useState(0);
   const [showMembers, setShowMembers] = useState(false);
 
-  const pageSelected = async (page: number) => {
+  const pageSelectedTransactions = async (page: number) => {
     if (page >= 0 && page < transactions.totalPages) {
       const result = await findFundFundingTransactions(slug as string, page);
       setupActivityItems(fund, result, btcPrice);
     }
   }
 
-  const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
+  const pageSelectedMembers = async (page: number) => {
+    if (page >= 0 && page < members.totalPages) {
+      const result = await findFundMembers(slug as string, page);
+      setupMemberItems(fund, result, btcPrice);
+    }
+  }
 
+  const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
     let feedItems = [];
     for (const tx of txData.transactions) {
       const dollarRaised = (tx.sats / 100000000.00) * btcPriceData;
@@ -62,15 +71,46 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
     setTransactions(txData);
   }
 
+  const setupMemberItems = (fundData: Fund, membersData: MembersPaged, btcPriceData: number) => {
+    let feedItems = [];
+    for (const member of membersData.members) {
+      const dollarRaised = (member.sats / 100000000.00) * btcPriceData;
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "UserCircleIcon", 
+          title: shortAddress(member.userAddress), 
+          subtitle: dateToString(member.updatedAt),
+          details: dollarAmountToString(dollarRaised)
+        })
+      )
+    }
+
+    if (membersData.total == 0) {
+      feedItems.push(
+        ActivityFeedItem({
+          icon: "XCircleIcon", 
+          title: "No members yet..", 
+          subtitle: "",
+          details: "..."
+        })
+      )
+    }
+
+    setMemberItems(feedItems);
+    setMembers(membersData);
+  }
+
   useEffect(() => {
     const fetchInfo = async (slug: string) => {
       const [
         fundData,
         transactionsData,
+        members,
         btcPriceData,
       ] = await Promise.all([
         findFund(slug),
         findFundFundingTransactions(slug, 0),
+        findFundMembers(slug, 0),
         getBtcPrice(),
       ]);
       setFund(fundData);
@@ -78,6 +118,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
       // Setup activity items
       setupActivityItems(fundData, transactionsData, btcPriceData);
+      setupMemberItems(fundData, members, btcPriceData);
 
       // Start polling if registration not completed yet
       if (fundData.registrationStatus == RegistrationStatus.STARTED) {
@@ -233,7 +274,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <li className="mr-2">
                           <button onClick={() => setShowMembers(false)} className="inline-flex p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group">
-                            Activity feed
+                            Activity
                           </button>
                         </li>
                         <li className="mr-2">
@@ -245,16 +286,16 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                     </div>
                     <div className="px-4 sm:px-6 pt-4">
                       <ul role="list" className="">
-                        {activityFeedItems}
+                        {memberItems}
                       </ul>
                     </div>
-                    {transactions.totalPages > 1 ? (
+                    {members.totalPages > 1 ? (
                       <div className='mt-3 pb-3 text-center'>
                         <Pagination 
-                          key={transactions.currentPage} 
-                          totalPages={transactions.totalPages} 
-                          currentPage={transactions.currentPage} 
-                          pageSelected={pageSelected}
+                          key={members.currentPage} 
+                          totalPages={members.totalPages} 
+                          currentPage={members.currentPage} 
+                          pageSelected={pageSelectedMembers}
                         />
                       </div>
                     ):null}
@@ -286,7 +327,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                           key={transactions.currentPage} 
                           totalPages={transactions.totalPages} 
                           currentPage={transactions.currentPage} 
-                          pageSelected={pageSelected}
+                          pageSelected={pageSelectedTransactions}
                         />
                       </div>
                     ):null}

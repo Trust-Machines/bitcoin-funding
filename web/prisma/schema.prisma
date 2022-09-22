@@ -10,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// These are the main models for the app
+// Saving all info and relations
+
 model Fund {
   address                     String                    @id
   name                        String
@@ -93,6 +96,22 @@ model FundingTransaction {
   @@index([registrationStatus], type: Hash)
   @@index([registrationTxId], type: Hash)
 }
+
+// These are specific read models
+// Used to speed up loading of certain info
+
+model FundMember {
+  id                          Int                       @id @default(autoincrement())
+  fundAddress                 String                    
+  userAddress                 String                    
+  sats                        Int
+  createdAt                   DateTime                  @default(now())
+  updatedAt                   DateTime                  @updatedAt
+  @@index([fundAddress], type: Hash)
+  @@index([userAddress], type: Hash)
+}
+
+// Enums
 
 enum RegistrationStatus {
   STARTED
