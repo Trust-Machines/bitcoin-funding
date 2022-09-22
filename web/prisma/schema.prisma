@@ -82,6 +82,7 @@ model FundingTransaction {
   walletAddress               String
   fund                        Fund                      @relation(fields: [fundAddress], references: [address])
   fundAddress                 String
+  userAddress                 String
   sats                        Int
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)

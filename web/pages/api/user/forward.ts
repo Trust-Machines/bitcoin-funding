@@ -50,6 +50,7 @@ async function postHandler(
       const resultTransaction = await prisma.fundingTransaction.create({
         data: {
           txId: sendBtcResult,
+          userAddress: resultUser.address,
           wallet: { connect: { address: resultWallet.address } },
           fund: { connect: { address: body.fundAddress } },
           sats: body.sats,

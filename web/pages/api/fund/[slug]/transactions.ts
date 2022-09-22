@@ -42,12 +42,7 @@ async function getHandler(
     where: {
       fundAddress: resultFund.address,
       registrationStatus: RegistrationStatus.COMPLETED
-    },
-    include: {
-      wallet: { select: { user: { select: {
-        address: true
-      } } } },
-    },
+    }
   });  
 
   const transactionCount = await prisma.fundingTransaction.aggregate({
