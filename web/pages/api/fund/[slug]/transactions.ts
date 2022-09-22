@@ -51,6 +51,10 @@ async function getHandler(
   });  
 
   const transactionCount = await prisma.fundingTransaction.aggregate({
+    where: {
+      fundAddress: resultFund.address,
+      registrationStatus: RegistrationStatus.COMPLETED
+    },
     _count: true,
   });
   
