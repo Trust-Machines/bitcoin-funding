@@ -186,7 +186,13 @@ const New: NextPage = ({ dehydratedState }) => {
                         $
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-gray-500">That is {state.raisingAmount / btcPrice} BTC at current prices</p>
+                    <p className="mt-2 text-sm text-gray-500">
+                      That is {' '}
+                      {(state.raisingAmount / btcPrice).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 4,
+                      })} BTC at current prices
+                    </p>
                   </div>
                 </div>
 

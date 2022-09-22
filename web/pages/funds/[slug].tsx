@@ -219,7 +219,10 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                           {dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)}
                           {' '}
                           <span className="text-xs text-gray-600">
-                            ({fund.totalSats / 100000000.00} BTC)
+                            ({(fund.totalSats / 100000000.00).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 4,
+                            })} BTC)
                           </span>
                         </dd>
                       </div>
@@ -229,7 +232,10 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                           {dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)}
                           {' '}
                           <span className="text-xs text-gray-600">
-                            ({fund.raisingAmount / 100000000.00} BTC)
+                            ({(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 4,
+                            })} BTC)
                           </span>
                         </dd>
                       </div>

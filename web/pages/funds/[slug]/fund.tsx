@@ -357,7 +357,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                       Fund {' '}
                       {(walletBalance / 100000000.0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 4,
+                        maximumFractionDigits: 6,
                       })} BTC
                     </ButtonFundFlow>
                   ): null}
