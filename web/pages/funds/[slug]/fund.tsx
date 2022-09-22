@@ -371,23 +371,23 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   The fund is being funded with your BTC. 
                   No further action is required.
                   </p>
-                </div>
-                <div className="mt-3">
-                  {transaction.registrationTxId ? (
-                    <AlertWait 
-                      title="Your BTC has arrived at the fund's wallet. It's now being registered on chain."
-                      subTitle="Stacks transactions can take 10-30 minutes to complete."
-                      linkText="Show transaction in explorer"
-                      link={stacksExplorerLinkTx(transaction.registrationTxId)}
-                    />
-                  ): (
-                    <AlertWait 
-                      title="Waiting for your BTC to arrive at the fund's wallet"
-                      subTitle="Bitcoin transactions can take 10-30 minutes to complete."
-                      linkText="Show transaction in explorer"
-                      link={bitcoinExplorerLinkTx(transaction.txId)}
-                    />
-                  )}
+                  <div className="mt-3">
+                    {transaction.registrationTxId ? (
+                      <AlertWait 
+                        title="Your BTC has arrived at the fund's wallet. It's now being registered on chain."
+                        subTitle="Stacks transactions can take 10-30 minutes to complete."
+                        linkText="Show transaction in explorer"
+                        link={stacksExplorerLinkTx(transaction.registrationTxId)}
+                      />
+                    ): (
+                      <AlertWait 
+                        title="Waiting for your BTC to arrive at the fund's wallet"
+                        subTitle="Bitcoin transactions can take 10-30 minutes to complete."
+                        linkText="Show transaction in explorer"
+                        link={bitcoinExplorerLinkTx(transaction.txId)}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ): (
