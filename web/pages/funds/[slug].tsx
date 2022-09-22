@@ -170,20 +170,48 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                     </h2>
                   </div>
                   <div className="px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-3 mt-5">
+                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
                           {dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)}
-                      </dd>
+                          {' '}
+                          <span className="text-xs text-gray-600">
+                            ({fund.totalSats / 100000000.00} BTC)
+                          </span>
+                        </dd>
                       </div>
                       <div className="sm:col-span-1">
+                        <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)}
+                          {' '}
+                          <span className="text-xs text-gray-600">
+                            ({fund.raisingAmount / 100000000.00} BTC)
+                          </span>
+                        </dd>
+                      </div>
+                    </dl>
+                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
+                      <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{fund.totalMembers}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {fund.totalMembers}
+                          {' '}
+                          <span className="text-xs text-gray-600">
+                            ({transactions.total} transactions)
+                          </span>
+                        </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{daysToDate(fund.raisingDeadline)}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {daysToDate(fund.raisingDeadline)}
+                          {' '}
+                          <span className="text-xs text-gray-600">
+                            ({dateToString(fund.raisingDeadline, false)})
+                          </span>
+                        </dd>
                       </div>
                       <div className="sm:col-span-3">
                         <dt className="text-sm font-medium text-gray-500">About</dt>
