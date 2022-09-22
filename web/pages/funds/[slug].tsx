@@ -23,6 +23,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [activityFeedItems, setActivityFeedItems] = useState([]);
   const [btcPrice, setBtcPrice] = useState(0);
+  const [showMembers, setShowMembers] = useState(false);
 
   const pageSelected = async (page: number) => {
     if (page >= 0 && page < transactions.totalPages) {
@@ -223,33 +224,77 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
               </section>
             </div>
 
-            {/* COL - Activity feed */}
+            {/* COL - Activity feed & members */}
             <div className="col-span-2">
               <section>
-                <div className="bg-white shadow sm:rounded-lg">
-                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                    <h2 id="activity" className="text-lg leading-6 font-medium text-gray-900">
-                      Activity feed
-                    </h2>
-                  </div>
-                  <div className="px-4 sm:px-6 pt-4">
-                    <ul role="list" className="">
-                      {activityFeedItems}
-                    </ul>
-                  </div>
-                  {transactions.totalPages > 1 ? (
-                    <div className='mt-3 pb-3 text-center'>
-                      <Pagination 
-                        key={transactions.currentPage} 
-                        totalPages={transactions.totalPages} 
-                        currentPage={transactions.currentPage} 
-                        pageSelected={pageSelected}
-                      />
+                {showMembers ? (
+                  <div className="bg-white shadow sm:rounded-lg">
+                    <div className="border-b border-gray-200 dark:border-gray-700">
+                      <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                        <li className="mr-2">
+                          <button onClick={() => setShowMembers(false)} className="inline-flex p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group">
+                            Activity feed
+                          </button>
+                        </li>
+                        <li className="mr-2">
+                          <button onClick={() => setShowMembers(true)}  className="inline-flex p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500 group" aria-current="page">
+                            Members
+                          </button>
+                        </li>
+                      </ul>
                     </div>
-                  ):null}
-                </div>
+                    <div className="px-4 sm:px-6 pt-4">
+                      <ul role="list" className="">
+                        {activityFeedItems}
+                      </ul>
+                    </div>
+                    {transactions.totalPages > 1 ? (
+                      <div className='mt-3 pb-3 text-center'>
+                        <Pagination 
+                          key={transactions.currentPage} 
+                          totalPages={transactions.totalPages} 
+                          currentPage={transactions.currentPage} 
+                          pageSelected={pageSelected}
+                        />
+                      </div>
+                    ):null}
+                  </div>
+                ):(
+                  <div className="bg-white shadow sm:rounded-lg">
+                    <div className="border-b border-gray-200 dark:border-gray-700">
+                      <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                        <li className="mr-2">
+                          <button onClick={() => setShowMembers(false)}  className="inline-flex p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500 group" aria-current="page">
+                            Activity feed
+                          </button>
+                        </li>
+                        <li className="mr-2">
+                          <button onClick={() => setShowMembers(true)} className="inline-flex p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group">
+                            Members
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="px-4 sm:px-6 pt-4">
+                      <ul role="list" className="">
+                        {activityFeedItems}
+                      </ul>
+                    </div>
+                    {transactions.totalPages > 1 ? (
+                      <div className='mt-3 pb-3 text-center'>
+                        <Pagination 
+                          key={transactions.currentPage} 
+                          totalPages={transactions.totalPages} 
+                          currentPage={transactions.currentPage} 
+                          pageSelected={pageSelected}
+                        />
+                      </div>
+                    ):null}
+                  </div>
+                )}
               </section>
             </div>
+            
           </div>
         </main>
       )}
