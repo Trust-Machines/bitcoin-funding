@@ -46,7 +46,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
       )
     }
 
-    if (txData.currentPage == txData.totalPages - 1) {
+    if (txData.total == 0 || txData.currentPage == txData.totalPages - 1) {
       feedItems.push(
         ActivityFeedItem({
           icon: "CheckCircleIcon", 
