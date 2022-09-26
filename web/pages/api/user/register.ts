@@ -58,7 +58,7 @@ async function postHandler(
     const registrationTxId = registrationResult.txid;
     
     // Update DB if transaction was broadcasted
-    if (registrationTxId != undefined) {
+    if (registrationTxId != undefined && registrationResult.error == undefined) {
       const result = await prisma.user.update({
         where: {
           appPrivateKey: hashedAppPrivateKey,
