@@ -312,7 +312,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <li className="mr-2">
                           <button onClick={() => setShowMembers(false)}  className="inline-flex p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500 group" aria-current="page">
-                            Activity feed
+                            Activity
                           </button>
                         </li>
                         <li className="mr-2">
