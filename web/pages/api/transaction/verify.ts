@@ -34,7 +34,10 @@ export async function verifyTransaction(txId: string) {
       txId: txId,
     },
     include: {
-      fund: true
+      fund: true,
+      wallet: { select: { user: { select: {
+        address: true
+      } } } },
     }
   });
 
@@ -90,7 +93,34 @@ export async function verifyTransaction(txId: string) {
       }
     });
 
-    const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateFund]);
+    // Check if member exist
+    const resultMember = await prisma.fundMember.findFirst({
+      where: {
+        fundAddress: result.fund.address,
+        userAddress: result.wallet.user.address,
+      }
+    });
+
+    // Create or update member sats
+    let updateMember = prisma.fundMember.create({
+      data: {
+        fundAddress: result.fund.address,
+        userAddress: result.wallet.user.address,
+        sats: result.sats
+      }
+    });
+    if (resultMember) {
+      updateMember = prisma.fundMember.update({
+        where: {
+          id: resultMember.id
+        },
+        data: {
+          sats: resultMember.sats + result.sats
+        }
+      });
+    }
+
+    const [resultUpdateTransaction, _] = await prisma.$transaction([updateTransaction, updateFund, updateMember]);
     return resultUpdateTransaction;
   } else {
     const [resultUpdateTransaction] = await prisma.$transaction([updateTransaction]);

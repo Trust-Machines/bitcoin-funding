@@ -62,9 +62,9 @@ const FundFund: NextPage = ({ dehydratedState }) => {
             // If status is not 200, something went wrong. Most likely app is down or Electrum server is not reachable
             const userBalance = await balanceResult.json();
             setWalletBalance(userBalance);
-            
+
             // Start polling for balance
-            if (userBalance < 1000) {
+            if (userBalance <= 1000) {
               var intervalId = window.setInterval(function(){
                 pollUserBalance(intervalId);
               }, 15000);
@@ -153,7 +153,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     }
 
     const balance = await balanceResult.json();
-    if (balance > 0) {
+    if (balance > 1000) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -340,7 +340,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
                   <p>Once you have sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
-                  {walletBalance < 1000 ? (
+                  {walletBalance <= 1000 ? (
                     <div className="mt-3">
                       <AlertWait 
                         title="Waiting for your BTC to arrive..."
@@ -352,12 +352,12 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   ): null}
                 </div>
                 <div>
-                  {walletBalance >= 1000 ? (
+                  {walletBalance > 1000 ? (
                     <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
                       Fund {' '}
                       {(walletBalance / 100000000.0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 4,
+                        maximumFractionDigits: 6,
                       })} BTC
                     </ButtonFundFlow>
                   ): null}

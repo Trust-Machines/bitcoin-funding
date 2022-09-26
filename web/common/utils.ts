@@ -24,12 +24,15 @@ export function dollarAmountToString(amount: number): string {
   })
 }
 
-export function dateToString(date: Date): string {
+export function dateToString(date: Date, showTime: boolean = true): string {
   const yearPart = date.toString().split("T")[0].split("-")[0];
   const monthPart = date.toString().split("T")[0].split("-")[1];
   const dayPart = date.toString().split("T")[0].split("-")[2];
   const hoursPart = date.toString().split("T")[1].split(":")[0];
   const minutesPart = date.toString().split("T")[1].split(":")[1];
+  if (!showTime) {
+    return dayPart + "-" + monthPart  + "-" + yearPart;
+  }
   return hoursPart + ":" + minutesPart + " " + dayPart + "-" + monthPart  + "-" + yearPart;
 }
 

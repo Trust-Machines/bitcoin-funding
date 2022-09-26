@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FundingTransaction, RegistrationStatus } from '@prisma/client';
+import { FundMember } from '@prisma/client';
 import prisma from '@/common/db';
 
-export type TransactionsPaged = {
-  transactions: FundingTransaction[]
+export type MembersPaged = {
+  members: FundMember[]
   total: number
   totalPages: number
   currentPage: number
@@ -11,7 +11,7 @@ export type TransactionsPaged = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<TransactionsPaged | string>
+  res: NextApiResponse<MembersPaged | string>
 ) {
   if (req.method === 'GET') {
     await getHandler(req, res);
@@ -22,7 +22,7 @@ export default async function handler(
 
 async function getHandler(
   req: NextApiRequest,
-  res: NextApiResponse<TransactionsPaged>
+  res: NextApiResponse<MembersPaged>
 ) {
   const { slug, page } = req.query;
   const pageSize = 15;
@@ -33,35 +33,28 @@ async function getHandler(
     }
   });
 
-  const resultTransactions = await prisma.fundingTransaction.findMany({
+  const resultMembers = await prisma.fundMember.findMany({
     orderBy : {
-      createdAt: "desc"
+      updatedAt: "desc"
     },
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
     where: {
       fundAddress: resultFund.address,
-      registrationStatus: RegistrationStatus.COMPLETED
-    },
-    include: {
-      wallet: { select: { user: { select: {
-        address: true
-      } } } },
     },
   });  
 
-  const transactionCount = await prisma.fundingTransaction.aggregate({
+  const memberCount = await prisma.fundMember.aggregate({
     where: {
       fundAddress: resultFund.address,
-      registrationStatus: RegistrationStatus.COMPLETED
     },
     _count: true,
   });
   
   res.status(200).json({
-    transactions: resultTransactions,
-    total: transactionCount._count,
-    totalPages: Math.ceil(transactionCount._count / pageSize),
+    members: resultMembers,
+    total: memberCount._count,
+    totalPages: Math.ceil(memberCount._count / pageSize),
     currentPage: parseInt(page as string)
   })
 }

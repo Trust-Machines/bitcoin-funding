@@ -79,6 +79,17 @@ export const findFundFundingTransactions = async (slug: string, page: number) =>
   return json;
 };
 
+export const findFundMembers = async (slug: string, page: number) => {
+  const res = await fetch(API_URL + '/fund/' + slug + "/members?page=" + page, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const json = await res.json();
+  return json;
+};
+
 export const verifyFund = async (slug: string) => {
   const res = await fetch(API_URL + '/fund/' + slug + '/verify', {
     method: 'POST',
