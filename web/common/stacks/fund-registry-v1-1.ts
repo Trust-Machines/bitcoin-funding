@@ -79,8 +79,11 @@ export async function isFundRegistered(address: string): Promise<any> {
   return result;
 }
 
-export async function registerFund(address: string): Promise<any> {
-  const nonce = await getNonce(managerAddress)
+export async function registerFund(address: string, nonce: number | null = null): Promise<any> {
+  let txNonce = nonce;
+  if (txNonce == null) {
+    txNonce = await getNonce(managerAddress)
+  }
 
   const txOptions = {
     contractAddress,
@@ -90,7 +93,7 @@ export async function registerFund(address: string): Promise<any> {
       bufferCV(decodeBtcAddressToBuffer(address))
     ],
     senderKey: managerPrivateKey,
-    nonce: nonce,
+    nonce: txNonce,
     postConditionMode: 1,
     fee: (0.001 * 1000000),
     network: STACKS_NETWORK,
@@ -99,5 +102,9 @@ export async function registerFund(address: string): Promise<any> {
 
   const transaction = await makeContractCall(txOptions);
   const result = await broadcastTransaction(transaction, STACKS_NETWORK);
+
+  if ((result.reason as string) == "ConflictingNonceInMempool") {
+    return await registerFund(address, (txNonce as number) + 1);
+  }
   return result;
 }

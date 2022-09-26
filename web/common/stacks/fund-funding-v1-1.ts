@@ -81,9 +81,14 @@ export async function addUserFunding(
   senderIndex: number,
   receiverIndex: number,
   senderAddress: string,
-  receiverAddress: string
+  receiverAddress: string,
+  nonce: number | null = null
 ): Promise<any> {
-  const nonce = await getNonce(managerAddress)
+  let txNonce = nonce;
+  if (txNonce == null) {
+    txNonce = await getNonce(managerAddress)
+  }
+
   const txOptions = {
     contractAddress,
     contractName,
@@ -107,7 +112,7 @@ export async function addUserFunding(
       bufferCV(decodeBtcAddressToBuffer(receiverAddress))
     ],
     senderKey: managerPrivateKey,
-    nonce: nonce,
+    nonce: txNonce,
     postConditionMode: 1,
     fee: (0.01 * 1000000),
     network: STACKS_NETWORK,
@@ -116,5 +121,22 @@ export async function addUserFunding(
 
   const transaction = await makeContractCall(txOptions);
   const result = await broadcastTransaction(transaction, STACKS_NETWORK);
+
+  if ((result.reason as string) == "ConflictingNonceInMempool") {
+    return await addUserFunding( 
+      blockHeader,
+      blockHeight,
+      prevBlocks,
+      txHex,
+      proofTxIndex,
+      proofHashes,
+      proofTreeDepth,
+      senderIndex,
+      receiverIndex,
+      senderAddress,
+      receiverAddress,
+      (txNonce as number) + 1
+    );
+  }
   return result;
 }

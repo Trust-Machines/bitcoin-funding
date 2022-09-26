@@ -49,7 +49,7 @@ export async function registerFund(slug: string) {
   const registrationTxId = registrationResult.txid;
   
   // Update DB if transaction was broadcasted
-  if (registrationTxId != undefined) {
+  if (registrationTxId != undefined && registrationResult.error == undefined) {
     const result = await prisma.fund.update({
       where: {
         address: resultFund.address,
