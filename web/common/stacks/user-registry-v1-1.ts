@@ -39,8 +39,6 @@ export async function registerUser(stxAddress: string, btcAddress: string, nonce
     txNonce = await getNonce(managerAddress)
   }
 
-  console.log("NONCE:", nonce);
-
   const txOptions = {
     contractAddress,
     contractName,
