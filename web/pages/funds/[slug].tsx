@@ -50,7 +50,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
         ActivityFeedItem({
           icon: "PlusCircleIcon", 
           title: dollarAmountToString(dollarRaised) + " funded", 
-          subtitle: "By " + shortAddress(tx.wallet.user.address),
+          subtitle: "By " + shortAddress(tx.userAddress),
           details: dateToString(tx.createdAt)
         })
       )
