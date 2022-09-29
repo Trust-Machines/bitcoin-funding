@@ -24,6 +24,7 @@ async function postHandler(
     const result = await verifyTransaction(req.body.txId);
     res.status(200).json(result)
   } catch (error) {
+    console.log("[API] ERROR:", { directory: __dirname, error: error });
     res.status(400).json((error as Error).message);
   }
 }
@@ -56,7 +57,6 @@ export async function verifyTransaction(txId: string) {
   } else if (result.registrationTxId != null) {
     // Get registration TX info
     const tx = await getTransactionInfo(result.registrationTxId);
-    console.log("tx:", tx.tx_status);
     if (tx.tx_status == 'abort_by_response' || tx.error != undefined) {
       status = RegistrationStatus.FAILED;
     }
