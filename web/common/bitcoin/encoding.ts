@@ -8,6 +8,7 @@ import { decode, encode, convertbits } from './bech32';
 import bs58check from 'bs58check'
 import { BTC_NETWORK } from '../constants';
 import { networks } from 'bitcoinjs-lib';
+import { getAddressInfo } from 'bitcoin-address-validation';
 
 export function decodeBtcAddressToBuffer(address: string): Buffer {
   const decoded = decodeBtcAddress(address);
@@ -15,8 +16,12 @@ export function decodeBtcAddressToBuffer(address: string): Buffer {
 }
 
 export function decodeBtcAddress(address: string): string {
-  if (address.startsWith('bc1') || address.startsWith('tb1') || address.startsWith('bcrt1')) {
+  const info = getAddressInfo(address);
+
+  if (info.bech32) {
     return "0x0014" + bech32Decode(address);
+  } else if (info.type == "p2sh") {
+    return "0xa914" + base58CheckDecode(address).slice(2) + "87";
   }
   return "0x76a914" + base58CheckDecode(address).slice(2) + "88ac";
 }
