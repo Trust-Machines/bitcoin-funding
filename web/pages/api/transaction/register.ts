@@ -26,6 +26,7 @@ async function postHandler(
     if ((error as Error).message.includes("Invalid height")) {
       res.status(400).json("BTC transaction not mined yet");
     } else {
+      console.log("[API] ERROR:", { directory: __dirname, error: error });
       res.status(400).json((error as Error).message);
     }
   }

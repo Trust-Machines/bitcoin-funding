@@ -43,6 +43,7 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
 
     res.json({ dehydratedState, user });
   } catch (error) {
+    console.log("[API] ERROR:", { directory: __dirname, error: error });
     res.status(500).json({ message: (error as Error).message });
   }
 }

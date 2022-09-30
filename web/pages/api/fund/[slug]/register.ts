@@ -23,6 +23,7 @@ async function postHandler(
     const result = await registerFund(slug as string);
     res.status(200).json(result)
   } catch (error) {
+    console.log("[API] ERROR:", { directory: __dirname, error: error });
     res.status(400).json((error as Error).message);
   }
 }

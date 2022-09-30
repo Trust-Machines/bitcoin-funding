@@ -390,7 +390,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   </div>
                 </div>
               </div>
-            ): (
+            ):(
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
