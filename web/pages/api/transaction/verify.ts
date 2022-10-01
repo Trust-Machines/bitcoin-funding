@@ -65,6 +65,7 @@ export async function verifyTransaction(txId: string) {
   // Check if member had already funded
   const memberCount = await prisma.fundingTransaction.aggregate({
     where: {
+      fundAddress: result.fundAddress,
       walletAddress: result.walletAddress,
       registrationStatus: RegistrationStatus.COMPLETED
     },
