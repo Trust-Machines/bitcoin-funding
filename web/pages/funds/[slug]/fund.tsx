@@ -219,7 +219,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   {step.status === 'complete' ? (
                     <a href={step.href} className="group flex items-center w-full">
                       <span className="px-6 py-4 flex items-center text-sm font-medium">
-                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-600 rounded-full group-hover:bg-blue-800">
+                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-orange-600 rounded-full group-hover:bg-orange-800">
                           <StyledIcon
                             as="CheckIcon"
                             size={6}
@@ -232,10 +232,10 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     </a>
                   ) : step.status === 'current' ? (
                     <a href={step.href} className="px-6 py-4 flex items-center text-sm font-medium" aria-current="step">
-                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-blue-600 rounded-full">
-                        <span className="text-blue-600">{step.id}</span>
+                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-orange-600 rounded-full">
+                        <span className="text-orange-600">{step.id}</span>
                       </span>
-                      <span className="ml-4 text-sm font-medium text-blue-600">{step.name}</span>
+                      <span className="ml-4 text-sm font-medium text-orange-600">{step.name}</span>
                     </a>
                   ) : (
                     <a href={step.href} className="group flex items-center">
@@ -282,7 +282,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   <p>
                     No wallet installed yet? Download the Hiro wallet 
                     <a 
-                      className="ml-1 text-blue-700"
+                      className="ml-1 text-orange-700"
                       target="_blank"
                       rel="noreferrer"
                       href="https://wallet.hiro.so/"
@@ -402,7 +402,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   </p>
                   <a
                     onClick={() => { newFunding() }}
-                    className="text-blue-700 cursor-pointer"
+                    className="text-orange-700 cursor-pointer"
                   >
                     Fund again
                   </a>
@@ -410,7 +410,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div>
                   <a
                     onClick={() => { viewFund() }}
-                    className="block bg-blue-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-blue-700 sm:rounded-b-lg cursor-pointer"
+                    className="block bg-orange-600 text-sm font-medium text-white text-center px-4 py-4 hover:bg-orange-700 sm:rounded-b-lg cursor-pointer"
                   >
                     View fund
                   </a>

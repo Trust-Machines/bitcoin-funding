@@ -284,7 +284,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   />
                   <a
                     onClick={() => { addAdmin() }}
-                    className="ml-2 font-medium text-sm text-blue-700 cursor-pointer"
+                    className="ml-2 font-medium text-sm text-orange-700 cursor-pointer"
                   >
                     Add
                   </a>
