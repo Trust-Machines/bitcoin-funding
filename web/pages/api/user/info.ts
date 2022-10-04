@@ -22,9 +22,8 @@ async function getHandler(
     const { appPrivateKey } = req.query;
     const hashedAppPrivateKey = await hashAppPrivateKey(appPrivateKey as string);
     const result = await prisma.user.findUniqueOrThrow({
-      where: {
-        appPrivateKey: hashedAppPrivateKey,
-      }
+      where: { appPrivateKey: hashedAppPrivateKey },
+      include: { forwardConfirmation: true }
     });
     res.status(200).json(result)
   } catch (error) {

@@ -1,13 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FundingTransaction } from '@prisma/client';
-import { getBalance, sendBtc } from '@/common/bitcoin/electrum-api';
 import prisma from '@/common/db';
 import { hashAppPrivateKey } from '@/common/stacks/utils';
-import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
+import { ForwardConfirmation } from '@prisma/client';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FundingTransaction | string>
+  res: NextApiResponse<ForwardConfirmation | string>
 ) {
   if (req.method === 'POST') {
     await postHandler(req, res);
@@ -18,46 +16,24 @@ export default async function handler(
 
 async function postHandler(
   req: NextApiRequest,
-  res: NextApiResponse<FundingTransaction | string>
+  res: NextApiResponse<ForwardConfirmation | string>
 ) {
   try {
     const body = JSON.parse(req.body);
     const hashedAppPrivateKey = await hashAppPrivateKey(body.appPrivateKey);
-    const resultUser = await prisma.user.findUniqueOrThrow({
-      where: {
-        appPrivateKey: hashedAppPrivateKey,
-      }
-    });
-    const resultWallet = await prisma.fundingWallet.findUniqueOrThrow({
-      where: {
-        address: resultUser.fundingWalletAddress as string,
-      }
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { appPrivateKey: hashedAppPrivateKey },
+      include: { forwardConfirmation: true }
     });
 
-    // Check if enough balance
-    const resultBalance = await getBalance(resultWallet.address);    
-    if (body.sats == 0 || resultBalance < body.sats) {
-      res.status(400).json("Insufficient balance: " + resultBalance + "/" + body.sats);
-    } else {
-      // Send BTC
-      const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, resultWallet.index)
-      const sendBtcResult = await sendBtc(
-        wallet.privateKey,
-        body.fundAddress,
-        body.sats,
-      );
-
-      const resultTransaction = await prisma.fundingTransaction.create({
-        data: {
-          txId: sendBtcResult,
-          userAddress: resultUser.address,
-          wallet: { connect: { address: resultWallet.address } },
-          fund: { connect: { address: body.fundAddress } },
-          sats: body.sats,
-        },
-      });
-      res.status(200).json(resultTransaction)
-    }
+    const confirmation = await prisma.forwardConfirmation.update({
+      where: { address: user.address },
+      data: {
+        fundAddress: body.fundAddress,
+        fundTransactionId: null
+      }
+    })
+    res.status(200).json(confirmation)
   } catch (error) {
     console.log("[API] ERROR:", { directory: __dirname, error: error });
     res.status(400).json((error as Error).message);
