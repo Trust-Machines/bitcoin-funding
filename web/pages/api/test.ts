@@ -16,7 +16,8 @@ import {
 import { 
   base58CheckDecode,
   bech32Encode,
-  bech32Decode
+  bech32Decode,
+  decodeBtcAddress
 } from '@/common/bitcoin/encoding';
 
 import { 
@@ -26,6 +27,7 @@ import {
 } from '@/common/bitcoin/electrum-api';
 
 import { 
+  parseTx,
   verifyBlockHeader,
   wasTxMinedPrev 
 } from '@/common/stacks/clarity-bitcoin';
@@ -58,9 +60,17 @@ export default async function handler(
   // );
   // console.log("sendBtcResult: ", sendBtcResult);
 
-  // const txHex = "02000000014b16ab3a45cc1028f262031673dca674d088984c4b06232a76034448ec44e1b10000000000ffffffff0253f1420000000000160014982c47483e6b5f9045434660e87f54a5193149a339300000000000001976a914eabc65f3e890fb8bf20d153e95119c72d85765a988ac00000000";
+  // const txHex = "0x0200000001c4d7f3e304c23bfebc3b53164addf0e30ddb7a8b90c3d2535e879cf74756d08f010000006b4830450221009a058265bcdf9616efb9f5ca12e94a03df936a81eacf604d6900953e0856c5a6022055b3aad621154c52100990b33514edbab5ba03b8232b6e3fc8f6a4a2d9766534012103c6b2167aa855776433909c7eb0a78b68d2ea99ecb0b00a8b834458247a2b1941ffffffff02f4010000000000001976a914a8be632819661bd9dc437fae247acd24e10c9d9688acdb0500000000000017a914db260d3842f5ea2a179ac8736bc51e2f74165a718700000000";
   // const parseResult = await parseTx(txHex);
   // console.log("parseResult: ", parseResult);
+  // console.log("parseResult out 0: ", parseResult.value.value.outs.value[0]);
+  // console.log("parseResult out 1: ", parseResult.value.value.outs.value[1]);
+
+  // const decoded = decodeBtcAddress("tb1q94t2jwpsqj5waxxmdpe8kg075g4mct4ukglw4a"); // bech32
+  // const decoded = decodeBtcAddress("2NDDyZAm5kiYCNLfXYe28ktjjCnovrsH788"); // p2sh
+  // const decoded = decodeBtcAddress("mqeXMwhyiFpQ4UKj2CkowU9tR7mAQuyriY"); // p2pkh
+  // const decoded = decodeBtcAddress("tb1qc7psdze9j0r38rv8gj2kl8gysqevtqyqs20upw"); // p2wpkh
+  // console.log("decoded: ", decoded);
 
   // const resultDecode = base58CheckDecode("1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs");
   // console.log("resultDecode:", resultDecode);  
