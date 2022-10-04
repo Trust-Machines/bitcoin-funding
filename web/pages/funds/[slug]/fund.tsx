@@ -299,7 +299,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                    It seems like this is your first time funding on BallotBox. 
+                    It seems like this is your first time funding. 
                     We will create an internal BTC account for you and register this on-chain. 
                     Do not worry, gas is on us!
                   </p>

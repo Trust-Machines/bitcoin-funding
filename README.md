@@ -1,4 +1,4 @@
-# BallotBox: Bitcoin Funding
+# Orangefund.us: Bitcoin Funding
 
 ## Introduction
 
@@ -31,7 +31,7 @@ Generally speaking, there are two personas: the user and the Fund admin.
 
 ## Functional Requirements
 
-1. As a user, I can read the value proposition of BallotBox (above the fold)
+1. As a user, I can read the value proposition of Orangefund.us (above the fold)
 
 #### Acceptance Criteria
 After visiting the homepage, I can read about Bitcoin Funds.
