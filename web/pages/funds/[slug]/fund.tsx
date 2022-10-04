@@ -345,17 +345,16 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     Once you have sent the funds, confirm below. We will track your funding and register it on chain.
                   </p>
 
-                  {/* TODO: show if another funding in progress */}
-                  {/* {walletBalance <= 1000 ? (
+                  {forwardConfirmation.fundAddress != null && forwardConfirmation.fundAddress != fund.address && forwardConfirmation.fundTransactionId == null ? (
                     <div className="mt-3">
-                      <AlertWait 
-                        title="Waiting for your BTC to arrive..."
-                        subTitle="Bitcoin transactions can take 10-30 minutes to complete."
-                        linkText="Show wallet in explorer"
-                        link={bitcoinExplorerLinkAddress(user.fundingWalletAddress)}
-                      />
+                      <Alert type={Alert.type.ERROR} title="Attention required">
+                        You have previously confirmed to forward BTC to another fund but no BTC was received yet after your confirmation.
+                        If you still want to fund the other fund, please wait for your first transaction to complete.
+                        If you do not want to fund the other fund, you can continue.
+                      </Alert>
                     </div>
-                  ): null} */}
+                  ): null}
+
                 </div>
                 <div>
                 <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>

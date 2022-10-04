@@ -160,6 +160,13 @@ export const forwardUserFunds = async (appPrivateKey: string, fundAddress: strin
   });
 };
 
+export const resetForwardUserFunds = async (appPrivateKey: string) => {
+  return await fetch(API_URL + '/user/forward', {
+    method: 'POST',
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, fundAddress: null })
+  });
+};
+
 export const getTransaction = async (txId: string) => {
   const res = await fetch(API_URL + '/transaction/' + txId, {
     method: 'GET',
