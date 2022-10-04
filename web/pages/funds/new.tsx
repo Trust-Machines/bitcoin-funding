@@ -8,13 +8,14 @@ import { Alert } from '@/components/Alert';
 import { getServerSideProps } from '@/common/session/index.ts';
 import { Loading } from '@/components/Loading';
 import { validate } from 'bitcoin-address-validation';
+import { dollarAmountToString } from '@/common/utils'
 
 const New: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const [state, setState] = useState({
     name: 'Racing with Children',
     about: 'We organise races for children who come from underprivileged areas in the United States',
-    raisingAmount: 25000,
+    raisingAmount: 2,
     address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     raisingDeadline: '2023-01-01',
     image: null
@@ -62,7 +63,7 @@ const New: NextPage = ({ dehydratedState }) => {
     formData.append("file", state.image);
     formData.append("name", state.name);
     formData.append("about", state.about);
-    formData.append("raisingAmount", ((state.raisingAmount / btcPrice) * 100000000.0).toString());
+    formData.append("raisingAmount", (state.raisingAmount * 100000000.0).toString());
     formData.append("address", state.address);
     formData.append("raisingDeadline", state.raisingDeadline);
     formData.append("dehydratedState", dehydratedState);
@@ -183,15 +184,13 @@ const New: NextPage = ({ dehydratedState }) => {
                         value={state.raisingAmount}
                       />
                       <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                        $
+                        BTC
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-gray-500">
                       That is {' '}
-                      {(state.raisingAmount / btcPrice).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 4,
-                      })} BTC at current prices
+                      {dollarAmountToString(state.raisingAmount * btcPrice)}
+                      {' '} at current prices
                     </p>
                   </div>
                 </div>

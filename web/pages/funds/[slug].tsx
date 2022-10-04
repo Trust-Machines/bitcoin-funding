@@ -45,13 +45,14 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
     let feedItems = [];
     for (const tx of txData.transactions) {
-      const dollarRaised = (tx.sats / 100000000.00) * btcPriceData;
+      const btcRaised = tx.sats / 100000000.0;
       feedItems.push(
         ActivityFeedItem({
           icon: "PlusCircleIcon", 
-          title: dollarAmountToString(dollarRaised) + " funded", 
-          subtitle: "By " + shortAddress(tx.userAddress),
-          details: dateToString(tx.createdAt)
+          title: shortAddress(tx.userAddress), 
+          subtitle: dateToString(tx.createdAt),
+          titleRight: btcRaised + " BTC",
+          subtitleRight: dollarAmountToString(btcRaised * btcPriceData)
         })
       )
     }
@@ -61,8 +62,9 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
         ActivityFeedItem({
           icon: "CheckCircleIcon", 
           title: "Fund created", 
-          subtitle: "",
-          details: dateToString(fundData.createdAt)
+          subtitle: dateToString(fundData.createdAt),
+          titleRight: "",
+          subtitleRight: ""
         })
       )
     }
@@ -74,13 +76,14 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const setupMemberItems = (fundData: Fund, membersData: MembersPaged, btcPriceData: number) => {
     let feedItems = [];
     for (const member of membersData.members) {
-      const dollarRaised = (member.sats / 100000000.00) * btcPriceData;
+      const btcRaised = member.sats / 100000000.0;
       feedItems.push(
         ActivityFeedItem({
           icon: "UserCircleIcon", 
           title: shortAddress(member.userAddress), 
           subtitle: dateToString(member.updatedAt),
-          details: dollarAmountToString(dollarRaised)
+          titleRight: btcRaised + " BTC",
+          subtitleRight: dollarAmountToString(btcRaised * btcPriceData)
         })
       )
     }
@@ -91,7 +94,8 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
           icon: "XCircleIcon", 
           title: "No members yet..", 
           subtitle: "",
-          details: "..."
+          titleRight: "...",
+          subtitleRight: ""
         })
       )
     }
@@ -216,26 +220,26 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)}
+                          {(fund.totalSats / 100000000.00).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 4,
+                          })} BTC
                           {' '}
                           <span className="text-xs text-gray-600">
-                            ({(fund.totalSats / 100000000.00).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 4,
-                            })} BTC)
+                            ({dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)})
                           </span>
                         </dd>
                       </div>
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                          {dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)}
+                          {(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 4,
+                          })} BTC
                           {' '}
                           <span className="text-xs text-gray-600">
-                            ({(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 4,
-                            })} BTC)
+                            ({dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)})
                           </span>
                         </dd>
                       </div>
