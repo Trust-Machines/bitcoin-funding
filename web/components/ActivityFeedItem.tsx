@@ -4,10 +4,11 @@ export function ActivityFeedItem({
   icon,
   title,
   subtitle,
-  details
+  titleRight,
+  subtitleRight
 }) {
   return (
-    <li key={title+subtitle+details}>
+    <li key={title+subtitle+titleRight+subtitleRight}>
       <div className="relative flex space-x-3 items-center pb-3">
         <div>
           <span className='bg-orange-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'>
@@ -29,7 +30,10 @@ export function ActivityFeedItem({
             </p>
           </div>
           <div className="text-right text-sm whitespace-nowrap text-gray-500">
-            <time dateTime='2022-01-08'>{details}</time>
+            <p>{titleRight}</p>
+            <p className="text-xs text-gray-400 -mt-1">
+              {subtitleRight}
+            </p>
           </div>
         </div>
       </div>
