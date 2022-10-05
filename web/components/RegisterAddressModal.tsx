@@ -67,11 +67,11 @@ export function RegisterAddressModal({ dehydratedState }) {
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                      Create a BallotBox BTC account
+                      Create a BTC account
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        It seems like this is your first time funding on BallotBox. We will create an internal BTC account for you and register this on-chain. Do not worry, gas is on us!
+                        It seems like this is your first time funding. We will create an internal BTC account for you and register this on-chain. Do not worry, gas is on us!
                       </p>
                     </div>
                   </div>

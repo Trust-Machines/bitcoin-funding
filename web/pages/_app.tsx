@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ClientProvider
-      appName="BallotBox Funding"
+      appName="Orangefund.us"
       appIconUrl="APP_ICON.png"
       dehydratedState={pageProps?.dehydratedState}
       network={stxNetwork}
@@ -54,7 +54,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       }, [])}
     >
       <Head>
-        <title>BallotBox - Funding</title>
+        <title>Orangefund.us</title>
         <meta name="description" content="Fund your Bitcoin Fund" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

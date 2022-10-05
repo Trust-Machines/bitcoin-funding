@@ -176,7 +176,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                   {isAdmin ? (
                     <Link
                       href={`/funds/${fund.slug}/manage`}
-                      className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                      className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
                     >
                       Manage
                     </Link>
@@ -184,7 +184,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                   {fund.registrationStatus == RegistrationStatus.COMPLETED ? (
                     <Link
                       href={`/funds/${fund.slug}/fund`}
-                      className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+                      className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
                     >
                       Fund
                     </Link>
@@ -284,7 +284,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                           </button>
                         </li>
                         <li className="mr-2">
-                          <button onClick={() => setShowMembers(true)}  className="inline-flex p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500 group" aria-current="page">
+                          <button onClick={() => setShowMembers(true)}  className="inline-flex p-4 text-orange-600 rounded-t-lg border-b-2 border-orange-600 active dark:text-orange-500 dark:border-orange-500 group" aria-current="page">
                             Members
                           </button>
                         </li>
@@ -311,7 +311,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                     <div className="border-b border-gray-200 dark:border-gray-700">
                       <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <li className="mr-2">
-                          <button onClick={() => setShowMembers(false)}  className="inline-flex p-4 text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500 group" aria-current="page">
+                          <button onClick={() => setShowMembers(false)}  className="inline-flex p-4 text-orange-600 rounded-t-lg border-b-2 border-orange-600 active dark:text-orange-500 dark:border-orange-500 group" aria-current="page">
                             Activity
                           </button>
                         </li>
