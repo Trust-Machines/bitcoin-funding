@@ -63,10 +63,22 @@ model User {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   fundAdmins                  FundAdmin[]
+  forwardConfirmation         ForwardConfirmation       @relation(fields: [forwardConfirmationId], references: [address])
+  forwardConfirmationId       String                    @unique
   @@index([appPrivateKey], type: Hash)
   @@index([address], type: Hash)
   @@index([registrationStatus], type: Hash)
   @@index([registrationTxId], type: Hash)
+}
+
+model ForwardConfirmation {
+  address                     String                    @id
+  user                        User?
+  fundAddress                 String?                
+  fundTransaction             FundingTransaction?       @relation(fields: [fundTransactionId], references: [txId])
+  fundTransactionId           String?                   @unique
+  @@index([fundAddress], type: Hash)
+  @@index([fundTransactionId], type: Hash)
 }
 
 model FundingWallet {
@@ -89,6 +101,7 @@ model FundingTransaction {
   sats                        Int
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)
+  confirmation                ForwardConfirmation?
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   @@index([txId], type: Hash)

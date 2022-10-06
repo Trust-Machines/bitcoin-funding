@@ -25,6 +25,7 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
         data: {
           appPrivateKey: hashedAppPrivateKey,
           address: account['address'],
+          forwardConfirmation: { create: { address: account['address'] } }
         },
       });
 

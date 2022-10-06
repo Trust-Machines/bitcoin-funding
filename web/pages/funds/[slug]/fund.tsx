@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
-import { Fund, FundingTransaction, RegistrationStatus, User } from '@prisma/client'
+import { ForwardConfirmation, Fund, FundingTransaction, RegistrationStatus, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useAccount, useAuth } from '@micro-stacks/react';
 import { getServerSideProps } from '@/common/session/index.ts';
-import { findFund, findUser, getUserBalance, forwardUserFunds, registerUser, getTransaction } from '@/common/fetchers';
+import { findFund, findUser, forwardUserFunds, registerUser, getTransaction, resetForwardUserFunds } from '@/common/fetchers';
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { StyledIcon } from '@/components/StyledIcon'
@@ -17,7 +17,7 @@ const stepsInit = [
   { id: '01', name: 'Connect Hiro Wallet', status: 'current' },
   { id: '02', name: 'Register BTC address', status: 'upcoming' },
   { id: '03', name: 'Send BTC to the fund', status: 'upcoming' },
-  { id: '04', name: 'Confirm', status: 'upcoming' },
+  { id: '04', name: 'Finalize', status: 'upcoming' },
 ]
 
 const FundFund: NextPage = ({ dehydratedState }) => {
@@ -29,8 +29,8 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [fund, setFund] = useState<Fund>({});
   const [user, setUser] = useState<User>({});
+  const [forwardConfirmation, setForwardConfirmation] = useState<ForwardConfirmation>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
-  const [walletBalance, setWalletBalance] = useState(0);
   const [steps, setSteps] = useState(stepsInit);
 
   useEffect(() => {
@@ -49,40 +49,44 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     if (isSignedIn) {
       const userInfo = await findUser(account.appPrivateKey as string);
       setUser(userInfo);
+      const confirmation = userInfo.forwardConfirmation;
+      setForwardConfirmation(confirmation)
 
       // User signed in and completed registration
       if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
-        const txId = localStorage.getItem(fund.slug);
 
-        // If forwarding transaction yet
-        if (txId == undefined || txId == null) {
+        // User has not confirmed yet
+        if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
           currentStep = 2;
-          const balanceResult = await getUserBalance(account.appPrivateKey as string);
-          if (balanceResult.status === 200) {
-            // If status is not 200, something went wrong. Most likely app is down or Electrum server is not reachable
-            const userBalance = await balanceResult.json();
-            setWalletBalance(userBalance);
 
-            // Start polling for balance
-            if (userBalance <= 1000) {
+        // User confirmed
+        } else {
+          currentStep = 3;
+
+          // There is a TX ID, so funds have been forwarded
+          if (confirmation.fundTransactionId) {
+            const tx = await getTransaction(confirmation.fundTransactionId);
+            setTransaction(tx);
+
+            // Start polling for transaction completion
+            if (tx.registrationStatus == RegistrationStatus.STARTED) {
+              currentStep = 3;
               var intervalId = window.setInterval(function(){
-                pollUserBalance(intervalId);
+                pollTransaction(intervalId, confirmation.fundTransactionId);
               }, 15000);
-            }
-          }
-        // User has unverified transactions
-        } else {          
-          const tx = await getTransaction(txId);
-          setTransaction(tx);
 
-          // Start polling for transaction completion
-          if (tx.registrationStatus == RegistrationStatus.STARTED) {
-            currentStep = 3;
+            // Funding is done
+            } else  {
+              currentStep = 4;
+            }
+
+          // No TX ID yet, so waiting for funds
+          } else {
+
+            // Start polling the confirmation
             var intervalId = window.setInterval(function(){
-              pollTransaction(intervalId);
+              pollForwardingConfirmation(intervalId);
             }, 15000);
-          } else  {
-            currentStep = 4;
           }
         }
 
@@ -125,35 +129,33 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     }
   }
 
-  const newFunding = async () => {
-    localStorage.removeItem(fund.slug);
-    fetchInfo();
-  }
-
   const viewFund = async () => {
     router.push(`/funds/${fund.slug}`);
   }
 
-  const forwardFunds = async () => {
+  const newFunding = async () => {
     setIsSaving(true);
-    const result = await forwardUserFunds(account.appPrivateKey as string, walletBalance, fund.address);
+    const result = await resetForwardUserFunds(account.appPrivateKey as string);
     if (result.status === 200) {
-      const json = await result.json();
-      localStorage.setItem(fund.slug, json.txId);
       fetchInfo();
     } else {
       setIsSaving(false);
     }
   }
 
-  const pollUserBalance = async (intervalId: number) => {
-    const balanceResult = await getUserBalance(account.appPrivateKey as string);
-    if (balanceResult.status != 200) {
-      return;
+  const forwardFunds = async () => {
+    setIsSaving(true);
+    const result = await forwardUserFunds(account.appPrivateKey as string, fund.address);
+    if (result.status === 200) {
+      fetchInfo();
+    } else {
+      setIsSaving(false);
     }
+  }
 
-    const balance = await balanceResult.json();
-    if (balance > 1000) {
+  const pollForwardingConfirmation = async (intervalId: number) => {
+    const userInfo = await findUser(account.appPrivateKey as string);
+    if (userInfo.forwardConfirmation.fundTransactionId) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -167,9 +169,8 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     }
   }
 
-  const pollTransaction = async (intervalId: number) => {
-    const txId = localStorage.getItem(fund.slug);
-    const tx = await getTransaction(txId as string);
+  const pollTransaction = async (intervalId: number, txId: string) => {
+    const tx = await getTransaction(txId);
     if (tx.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
       fetchInfo();
@@ -336,31 +337,29 @@ const FundFund: NextPage = ({ dehydratedState }) => {
             ): steps[2].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                  <p>Send BTC to 
+                  <p>
+                    Send BTC to 
                     <span className="font-bold"> {user.fundingWalletAddress}</span>
                   </p>
-                  <p>Once you have sent the funds, we keep track of the transaction and allow you to confirm and fund.</p>
-                  {walletBalance <= 1000 ? (
+                  <p className="mt-3">
+                    Once you have sent the funds, confirm below. We will track your funding and register it on chain.
+                  </p>
+
+                  {forwardConfirmation.fundAddress != null && forwardConfirmation.fundAddress != fund.address && forwardConfirmation.fundTransactionId == null ? (
                     <div className="mt-3">
-                      <AlertWait 
-                        title="Waiting for your BTC to arrive..."
-                        subTitle="Bitcoin transactions can take 10-30 minutes to complete."
-                        linkText="Show wallet in explorer"
-                        link={bitcoinExplorerLinkAddress(user.fundingWalletAddress)}
-                      />
+                      <Alert type={Alert.type.ERROR} title="Attention required">
+                        You have previously confirmed to forward BTC to another fund but no BTC was received yet after your confirmation.
+                        If you still want to fund the other fund, please wait for your first transaction to complete.
+                        If you do not want to fund the other fund, you can continue.
+                      </Alert>
                     </div>
                   ): null}
+
                 </div>
                 <div>
-                  {walletBalance > 1000 ? (
-                    <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
-                      Fund {' '}
-                      {(walletBalance / 100000000.0).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })} BTC
-                    </ButtonFundFlow>
-                  ): null}
+                <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
+                    Confirm funding
+                  </ButtonFundFlow>
                 </div>
               </div>
 
@@ -372,14 +371,21 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   No further action is required.
                   </p>
                   <div className="mt-3">
-                    {transaction.registrationTxId ? (
+                    {forwardConfirmation.fundTransactionId == null ? (
+                      <AlertWait 
+                        title="Waiting for your BTC to arrive..."
+                        subTitle="Bitcoin transactions can take 10-30 minutes to complete."
+                        linkText="Show wallet in explorer"
+                        link={bitcoinExplorerLinkAddress(user.fundingWalletAddress)}
+                      />
+                    ) : transaction.registrationTxId ? (
                       <AlertWait 
                         title="Your BTC has arrived at the fund's wallet. It's now being registered on chain."
                         subTitle="Stacks transactions can take 10-30 minutes to complete."
                         linkText="Show transaction in explorer"
                         link={stacksExplorerLinkTx(transaction.registrationTxId)}
                       />
-                    ): (
+                    ) : (
                       <AlertWait 
                         title="Waiting for your BTC to arrive at the fund's wallet"
                         subTitle="Bitcoin transactions can take 10-30 minutes to complete."

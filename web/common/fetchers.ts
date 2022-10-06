@@ -153,10 +153,17 @@ export const registerUser = async (appPrivateKey: string) => {
   });
 };
 
-export const forwardUserFunds = async (appPrivateKey: string, sats: number, fundAddress: string) => {
+export const forwardUserFunds = async (appPrivateKey: string, fundAddress: string) => {
   return await fetch(API_URL + '/user/forward', {
     method: 'POST',
-    body: JSON.stringify({ appPrivateKey: appPrivateKey, sats: sats, fundAddress: fundAddress })
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, fundAddress: fundAddress })
+  });
+};
+
+export const resetForwardUserFunds = async (appPrivateKey: string) => {
+  return await fetch(API_URL + '/user/forward', {
+    method: 'POST',
+    body: JSON.stringify({ appPrivateKey: appPrivateKey, fundAddress: null })
   });
 };
 
