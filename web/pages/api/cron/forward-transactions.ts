@@ -27,6 +27,7 @@ async function postHandler(
     include: { user: true }
   })
 
+  var pendingCount = 0;
   for (const confirmation of confirmations) {
     const fundingWallet = await prisma.fundingWallet.findUniqueOrThrow({
       where: { address: confirmation.user.fundingWalletAddress as string }
@@ -34,6 +35,7 @@ async function postHandler(
 
     const balance = await getBalance(fundingWallet.address);
     if (balance > 1000) {
+      pendingCount += 1;
 
       // Forward BTC
       const wallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, fundingWallet.index)
@@ -62,5 +64,5 @@ async function postHandler(
     }
   }
 
-  res.status(200).json("Confirmations pending: " + confirmations.length);
+  res.status(200).json("Confirmations pending: " + pendingCount);
 }
