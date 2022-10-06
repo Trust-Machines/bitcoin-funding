@@ -5,6 +5,8 @@ import prisma from '@/common/db';
 import { registerUser } from '@/common/stacks/user-registry-v1-1';
 import { createWalletXpub } from '@/common/bitcoin/bitcoin-js';
 
+const startIndex = process.env.XPUB_START_INDEX ? parseInt(process.env.XPUB_START_INDEX) : 0;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<User | string>
@@ -45,11 +47,12 @@ async function postHandler(
 
     // Create new funding wallet for user
     const walletCount = await prisma.fundingWallet.aggregate({ _count: true });
-    const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, walletCount._count);
+    const walletIndex = startIndex + walletCount._count;
+    const newWallet = createWalletXpub(process.env.XPUB_MNEMONIC as string, walletIndex);
     const resultWallet = await prisma.fundingWallet.create({
       data: {
         address: newWallet.address,
-        index: walletCount._count
+        index: walletIndex
       },
     });
 
