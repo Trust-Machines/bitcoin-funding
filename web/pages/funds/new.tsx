@@ -33,9 +33,13 @@ const New: NextPage = ({ dehydratedState }) => {
     let value = target.value;
     if (target.type == 'checkbox') {
       value = target.checked;
-    } else if (target.type == 'file') {
+    } else if (target.type == 'file' && event.target.files.length > 0) {
       value = event.target.files[0];
       setFileName(`${target.files[0].name} chosen`);
+      const src = URL.createObjectURL(event.target.files[0]);
+      const preview = document.getElementById("preview");
+      preview.src = src;
+      preview.style.display = "block";
     }
 
     setState(prevState => { return { ...prevState, [name]: value } });
@@ -145,6 +149,7 @@ const New: NextPage = ({ dehydratedState }) => {
                               <span>Upload a file</span>
                             )}
                             <input id="image" name="image" type="file" accept="image/*" className="sr-only" onChange={handleInputChange} />
+                            <img id="preview" className="mt-2" />
                           </div>
                           {!fileName ? (
                             <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
