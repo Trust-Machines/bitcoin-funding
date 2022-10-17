@@ -36,7 +36,7 @@ const New: NextPage = ({ dehydratedState }) => {
     } else if (target.type == 'file' && event.target.files.length > 0) {
       value = event.target.files[0];
       setFileName(`${target.files[0].name} chosen`);
-      const src = URL.createObjectURL(event.target.files[0]);
+      const src = URL.createObjectURL(value);
       const preview = document.getElementById("preview");
       preview.src = src;
       preview.style.display = "block";

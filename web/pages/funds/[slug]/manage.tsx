@@ -48,6 +48,10 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     if (name == "avatar") {
       setAvatar(value);
       setFileName(`${target.files[0].name} chosen`);
+      const src = URL.createObjectURL(value);
+      const preview = document.getElementById("preview");
+      preview.src = src;
+      preview.style.display = "block";
     } else {
       setFund(prevState => { return { ...prevState, [name]: value } });
     }
@@ -228,6 +232,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                             <span>Upload a file</span>
                           )}
                           <input id="avatar" name="avatar" type="file" accept="image/*" className="sr-only" onChange={handleInputChange} />
+                          <img id="preview" className="mt-2" />
                         </div>
                         {!fileName ? (
                           <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
