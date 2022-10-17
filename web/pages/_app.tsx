@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ClientProvider
       appName="Orangefund.us"
-      appIconUrl="APP_ICON.png"
+      appIconUrl="https://www.ballotbox.xyz/logo512.png"
       dehydratedState={pageProps?.dehydratedState}
       network={stxNetwork}
       onPersistState={useCallback(async (dehydratedState: string) => {
