@@ -29,6 +29,8 @@ model Fund {
   admins                      FundAdmin[]
   totalSats                   Int                       @default(0)
   totalMembers                Int                       @default(0)
+  twitterHandle               String?
+  websiteUrl                  String?
   @@index([address], type: Hash)
   @@index([slug], type: Hash)
   @@index([registrationStatus], type: Hash)

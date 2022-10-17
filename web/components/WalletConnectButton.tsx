@@ -33,7 +33,7 @@ export const WalletConnectButton = ({ buttonText }) => {
     if (isSignedIn) {
       fetchName();
     }
-  }, []);
+  }, [isSignedIn]);
 
   return (
     <>
