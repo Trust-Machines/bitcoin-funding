@@ -246,6 +246,14 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                         </dd>
                       </div>
                     </dl>
+                    <dl className="grid grid-cols-1 gap-y-4 mt-5 mb-12">
+                      <div className="sm:col-span-1">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                          <div className="bg-green-600 h-2.5 rounded-full" style={{width: `${100 * fund.totalSats / fund.raisingAmount}%`}}></div>
+                        </div>
+                      </div>
+                    </dl>
+
                     <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
                       <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">Number of members</dt>
