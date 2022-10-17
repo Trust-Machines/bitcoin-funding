@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAccount, useAuth } from '@micro-stacks/react';
 import { Button } from '@/components/Button';
 import { DownloadWalletModal } from '@/components/DownloadWalletModal';
+import axios from 'axios';
 
 const shortAddress = (address: string | null) => {
   if (address) {
@@ -34,6 +35,20 @@ export const WalletConnectButton = ({ buttonText }) => {
     setLabel(isRequestPending ? 'Loading...' : isSignedIn ? shortAddress(account.stxAddress) : buttonText);
   }, [isRequestPending, isSignedIn]);
 
+  useEffect(() => {
+    const fetchName = async () => {
+      const url = `https://stacks-node-api.mainnet.stacks.co/v1/addresses/stacks/${account.stxAddress}`;
+      const { data } = await axios.get(url);
+      if (data['names'] && data['names'].length > 0) {
+        setLabel(data['names'][0]);
+      }
+    };
+
+    if (isSignedIn) {
+      fetchName();
+    }
+  }, []);
+
   return (
     <>
       {showDownloadModal ? (
@@ -54,22 +69,20 @@ export const WalletConnectButton = ({ buttonText }) => {
         }}
       >
         {isSignedIn ? (
-          <span className="flex items-center w-36 ml-3">
+          <span className="w-32 justify-items-center self-center">
             {buttonHover ? (
-              <span className="flex items-center">
-                <span className="truncate text-md ml-1">Sign Out</span>
-              </span>
+              <span className="truncate text-md ml-1">Sign Out</span>
             ) : (
-              <>
+              <span className="flex items-center ml-2">
                 <span className="block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white mr-3" />
                 <span className="truncate">{label}</span>
-              </>
+              </span>
             )}
           </span>
         ) : (
-          <>
+          <span className="flex items-center">
             {label}
-          </>
+          </span>
         )}
       </Button>
     </>
