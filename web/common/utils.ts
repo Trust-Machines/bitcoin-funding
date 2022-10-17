@@ -1,4 +1,5 @@
 import { BTC_EXPLORER_URL } from "./constants";
+import axios from 'axios';
 
 export function hexToBytes(hex: string): Uint8Array {
 	return hexToBytesHelper(hex.substring(0, 2) === '0x' ? hex.substring(2) : hex);
@@ -46,6 +47,16 @@ export function daysToDate(date: Date): number {
 
 export function shortAddress(address: string): string {
   return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
+}
+
+export async function resolveBns(address: string): string {
+  const url = `https://stacks-node-api.mainnet.stacks.co/v1/addresses/stacks/${address}`;
+  const { data } = await axios.get(url);
+  if (data['names'] && data['names'].length > 0) {
+    return data['names'][0];
+  }
+
+  return shortAddress(address);
 }
 
 export function stacksExplorerLinkTx(txId: string) {

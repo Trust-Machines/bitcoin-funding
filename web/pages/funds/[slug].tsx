@@ -8,7 +8,7 @@ import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
 import { ActivityFeedItem } from '@/components/ActivityFeedItem'
-import { dollarAmountToString, shortAddress, stacksExplorerLinkTx } from '@/common/utils'
+import { dollarAmountToString, shortAddress, stacksExplorerLinkTx, resolveBns } from '@/common/utils'
 import { dateToString, daysToDate } from '@/common/utils'
 import { Pagination } from '@/components/Pagination'
 import { TransactionsPaged } from 'pages/api/fund/[slug]/transactions'
@@ -42,14 +42,16 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
     }
   }
 
-  const setupActivityItems = (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
+  const setupActivityItems = async (fundData: Fund, txData: TransactionsPaged, btcPriceData: number) => {
     let feedItems = [];
     for (const tx of txData.transactions) {
       const btcRaised = tx.sats / 100000000.0;
+      const name = await resolveBns(tx.userAddress);
+
       feedItems.push(
         ActivityFeedItem({
-          icon: "PlusCircleIcon", 
-          title: shortAddress(tx.userAddress), 
+          icon: "PlusCircleIcon",
+          title: name,
           subtitle: dateToString(tx.createdAt),
           titleRight: btcRaised + " BTC",
           subtitleRight: dollarAmountToString(btcRaised * btcPriceData)

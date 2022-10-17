@@ -2,18 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAccount, useAuth } from '@micro-stacks/react';
 import { Button } from '@/components/Button';
 import { DownloadWalletModal } from '@/components/DownloadWalletModal';
-import axios from 'axios';
-
-const shortAddress = (address: string | null) => {
-  if (address) {
-    if (address.includes('.')) {
-      return address;
-    }
-    return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
-  }
-
-  return '';
-};
+import { resolveBns, shortAddress } from '@/common/utils'
 
 const useHover = () => {
   const [hovering, setHovering] = useState(false);
@@ -37,11 +26,8 @@ export const WalletConnectButton = ({ buttonText }) => {
 
   useEffect(() => {
     const fetchName = async () => {
-      const url = `https://stacks-node-api.mainnet.stacks.co/v1/addresses/stacks/${account.stxAddress}`;
-      const { data } = await axios.get(url);
-      if (data['names'] && data['names'].length > 0) {
-        setLabel(data['names'][0]);
-      }
+      const name = await resolveBns(account.stxAddress);
+      setLabel(name);
     };
 
     if (isSignedIn) {
