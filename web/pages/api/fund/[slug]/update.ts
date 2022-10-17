@@ -101,7 +101,6 @@ async function postHandler(
       if (removedAdmins != '') {
         const addresses = removedAdmins.split(",");
         for (const address of addresses) {
-        
           // Delete fundAdmin
           const user = await prisma.user.findUnique({
             where: {
@@ -123,6 +122,8 @@ async function postHandler(
         data: {
           name: fields.name as string,
           about: fields.about as string,
+          twitterHandle: fields.twitterHandle as string,
+          websiteUrl: fields.websiteUrl as string,
           slug: slug,
           avatar: avatar
         },
