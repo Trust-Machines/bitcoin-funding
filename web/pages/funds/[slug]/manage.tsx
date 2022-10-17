@@ -294,30 +294,50 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
             </div>
 
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label htmlFor="admin" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Admins</label>
-              <div className="mt-1 sm:mt-0 sm:col-span-2">
-                {adminItems}
-                <div className="max-w-lg flex rounded-md shadow-sm items-center">
+              <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Website URL</label>
+              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                <div className="flex max-w-lg rounded-md shadow-sm">
+                  <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                    https://
+                  </span>
                   <input
                     type="text"
-                    name="admin"
-                    id="admin"
-                    autoComplete="admin"
-                    className="flex-1 block w-full focus:ring-orange-500 focus:border-orange-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                    onChange={handleAdminChange}
-                    value={newAdmin}
+                    name="websiteUrl"
+                    id="websiteUrl"
+                    autoComplete="websiteUrl"
+                    className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
                   />
-                  <a
-                    onClick={() => { addAdmin() }}
-                    className="ml-2 font-medium text-sm text-orange-700 cursor-pointer"
-                  >
-                    Add
-                  </a>
                 </div>
-
-                <p className="mt-2 text-sm text-gray-500">Fund admins can update fund details. Enter a Stacks address to add a new fund admin.</p>
               </div>
             </div>
+
+            {isAdmin ? (
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <label htmlFor="admin" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Admins</label>
+                <div className="mt-1 sm:mt-0 sm:col-span-2">
+                  {adminItems}
+                  <div className="max-w-lg flex rounded-md shadow-sm items-center">
+                    <input
+                      type="text"
+                      name="admin"
+                      id="admin"
+                      autoComplete="admin"
+                      className="flex-1 block w-full focus:ring-orange-500 focus:border-orange-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                      onChange={handleAdminChange}
+                      value={newAdmin}
+                    />
+                    <a
+                      onClick={() => { addAdmin() }}
+                      className="ml-2 font-medium text-sm text-orange-700 cursor-pointer"
+                    >
+                      Add
+                    </a>
+                  </div>
+
+                  <p className="mt-2 text-sm text-gray-500">Fund admins can update fund details. Enter a Stacks address to add a new fund admin.</p>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           {isAdmin ? (
