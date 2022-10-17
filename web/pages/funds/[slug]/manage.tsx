@@ -288,6 +288,8 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                     id="twitterHandle"
                     autoComplete="twitterHandle"
                     className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                    onChange={handleInputChange}
+                    value={fund.twitterHandle}
                   />
                 </div>
               </div>
@@ -306,6 +308,8 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                     id="websiteUrl"
                     autoComplete="websiteUrl"
                     className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-orange-500 focus:ring-orange-500 sm:text-sm"
+                    onChange={handleInputChange}
+                    value={fund.websiteUrl}
                   />
                 </div>
               </div>
