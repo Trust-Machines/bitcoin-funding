@@ -7,13 +7,14 @@ import { useAccount } from '@micro-stacks/react';
 
 export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
   const [isSaving, setIsSaving] = useState(false);
+  const [registrationStarted, setRegistrationStarted] = useState(false);
   const account = useAccount();
 
   const registerUserAddress = async () => {
     setIsSaving(true);
     const result = await registerUser(account.appPrivateKey as string);
     setIsSaving(false);
-    setShowWelcomeModal(false);
+    setRegistrationStarted(true);
   }
 
   return (
@@ -43,29 +44,56 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6">
-                <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-                    <StyledIcon as="AnnotationIcon" size={5} className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-5">
-                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                      Welcome to OrangeFund!
-                    </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        You'll be able to fund projects using native bitcoin from any Bitcoin wallet.
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        We're getting your account set up. It will take about 10 minutes to hit the blockchain.
-                      </p>
+                {registrationStarted ? (
+                  <>
+                    <div>
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+                        <StyledIcon as="AnnotationIcon" size={5} className="h-6 w-6 text-orange-600" />
+                      </div>
+                      <div className="mt-3 text-center sm:mt-5">
+                        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                          Cowabunga!
+                        </Dialog.Title>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            Your Bitcoin account is being created! This will take up to 30 minutes.
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="mt-5 sm:mt-6">
-                  <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
-                    Create Bitcoin account
-                  </ButtonFundFlow>
-                </div>
+                    <div className="mt-5 sm:mt-6">
+                      <ButtonFundFlow onClick={() => { setShowWelcomeModal(false); }} saving={isSaving}>
+                        Browse OrangeFund
+                      </ButtonFundFlow>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+                        <StyledIcon as="AnnotationIcon" size={5} className="h-6 w-6 text-orange-600" />
+                      </div>
+                      <div className="mt-3 text-center sm:mt-5">
+                        <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                          Welcome to OrangeFund!
+                        </Dialog.Title>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            You'll be able to fund projects using native bitcoin from any Bitcoin wallet.
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            We're getting your account set up. It will take about 10 minutes to hit the blockchain.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-5 sm:mt-6">
+                      <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
+                        Create Bitcoin account
+                      </ButtonFundFlow>
+                    </div>
+                  </>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>
