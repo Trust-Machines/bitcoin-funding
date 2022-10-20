@@ -8,21 +8,45 @@ import { Footer } from '@/components/Footer'
 
 import Head from 'next/head'
 import { useCallback } from 'react';
-import { destroySession, saveSession } from '@/common/fetchers';
+import { destroySession, saveSession, findUser } from '@/common/fetchers';
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { StacksSessionState } from 'micro-stacks/connect';
+import { User, RegistrationStatus } from '@prisma/client';
+import { WelcomeModal } from '@/components/WelcomeModal';
 
 const stxNetwork = process.env.NEXT_PUBLIC_NETWORK;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User>({});
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    const loadUser = async (appPrivateKey : string) => {
+      const userInfo = await findUser(appPrivateKey as string);
+
+      if (userInfo.registrationStatus === RegistrationStatus.STARTED && !userInfo.registrationTxId) {
+        setShowWelcomeModal(true);
+      }
+
+      setUser(userInfo);
+    };
+
     if (isLoading) {
       setAuthenticated(pageProps?.dehydratedState);
+
+      if (pageProps?.dehydratedState) {
+        const stateJson = JSON.parse(pageProps?.dehydratedState);
+        
+        if (stateJson[1] && stateJson[1][1] && stateJson[1][1][0]) {
+          const appPrivateKey = stateJson[1][1][0]['appPrivateKey'];
+          loadUser(appPrivateKey);
+        }
+      }
+
       setIsLoading(false);
     }
   }, [pageProps?.dehydratedState, isLoading]);
@@ -34,7 +58,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       dehydratedState={pageProps?.dehydratedState}
       network={stxNetwork}
       onPersistState={useCallback(async (dehydratedState: string) => {
-
         // Replace address by testnet address if needed
         const stateJson = JSON.parse(dehydratedState);
         stateJson[1][1][0]['address'] = pageProps.address;
@@ -60,6 +83,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <Header isAuthenticated={isAuthenticated} />
+      {showWelcomeModal ? (
+        <WelcomeModal showWelcomeModal={showWelcomeModal} setShowWelcomeModal={setShowWelcomeModal} />
+      ) : null}
       <Component {...pageProps} />
       <Footer />
     </ClientProvider>

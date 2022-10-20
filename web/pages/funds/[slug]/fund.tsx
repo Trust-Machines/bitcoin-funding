@@ -308,7 +308,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   {user.registrationStatus == RegistrationStatus.FAILED ? (
                     <div className="mt-3">
                       <Alert type={Alert.type.ERROR}>
-                        The registration failed. Please try again.
+                        Your Bitcoin address registration failed. Please try again.
                       </Alert>
                     </div>
                   ):null}

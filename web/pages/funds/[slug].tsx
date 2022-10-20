@@ -196,7 +196,19 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       >
                         Fund
                       </Link>
-                    ):null}
+                    ): (
+                      <div className="has-tooltip">
+                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
+                          Your BTC address is still being registered...
+                        </span>
+                        <button
+                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
+                          disabled
+                        >
+                          Fund
+                        </button>
+                      </div>
+                    )}
                     {fund.twitterHandle ? (
                       <Link
                         className="inline-flex items-center justify-center mr-4 ml-8"
