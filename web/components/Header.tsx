@@ -109,7 +109,7 @@ export const Header: FC = ({ isAuthenticated, user }) => {
               </Button>
             ) : null}
             <WalletConnectButton buttonText='Connect Stacks Wallet' />
-            {user && user.registrationStatus === RegistrationStatus.STARTED && user.registrationTxId ? (
+            {user && user.registrationStatus === RegistrationStatus.STARTED && !user.registrationTxId ? (
               <div className="has-tooltip cursor-pointer">
                 <span className="tooltip rounded shadow-lg p-2 bg-black text-white mt-10 font-semibold max-w-7xl top-1 right-0">
                   Your BTC address is being registered on-chain...
@@ -119,7 +119,7 @@ export const Header: FC = ({ isAuthenticated, user }) => {
                     <StyledIcon
                       as="BellIcon"
                       size={7}
-                      className="text-orange-600"
+                      className="text-orange-600 hover:text-orange-700"
                     />
                   </span>
                 </a>
