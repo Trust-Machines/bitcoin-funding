@@ -114,7 +114,7 @@ export const Header: FC = ({ isAuthenticated, user }) => {
                 <span className="tooltip rounded shadow-lg p-2 bg-black text-white mt-10 font-semibold max-w-7xl top-1 right-0">
                   Your BTC address is being registered on-chain...
                 </span>
-                <a href={stacksExplorerLinkTx(user.registrationTxId)}>
+                <a target="_blank" href={stacksExplorerLinkTx(user.registrationTxId)}>
                   <span className="inline-block w-8 h-8">
                     <StyledIcon
                       as="BellIcon"
