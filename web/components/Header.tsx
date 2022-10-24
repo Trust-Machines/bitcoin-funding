@@ -99,11 +99,16 @@ export const Header: FC = ({ isAuthenticated }) => {
               <Logo className="h-10 w-auto" />
             </Link>
           </div>
-          <div className="flex items-center gap-x-5 md:gap-x-8">
+          <div className="flex items-center gap-x-5 md:gap-x-2">
             {isAuthenticated ? (
-              <Button color='blue' href='/funds/new'>
-                Create a new Fund
-              </Button>
+              <>
+                <Button color='blue' href='/funds/new'>
+                  Create a new Fund
+                </Button>
+                <Button color='blue' href='/user'>
+                  My funds
+                </Button>
+              </>
             ) : null}
             <WalletConnectButton buttonText='Connect Stacks Wallet' />
             <div className="-mr-1 md:hidden">

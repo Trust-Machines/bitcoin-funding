@@ -51,6 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
+        router.push("/");
       }, [])}
     >
       <Head>
