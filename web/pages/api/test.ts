@@ -31,6 +31,7 @@ import {
   verifyBlockHeader,
   wasTxMinedPrev 
 } from '@/common/stacks/clarity-bitcoin';
+import { sendMail } from '@/common/email';
 
 type Data = {
   output: string
@@ -40,6 +41,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+
+  await sendMail("hello@nieldeckx.be", "the subject", "the text...");
 
   // const createWalletResult = createWallet();
   // console.log("createWalletResult: ", createWalletResult);
