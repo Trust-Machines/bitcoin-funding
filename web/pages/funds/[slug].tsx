@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Fund, RegistrationStatus } from '@prisma/client'
-import { findFund, findFundFundingTransactions, findFundMembers, getBtcPrice, isFundAdmin } from '@/common/fetchers'
+import { findFund, findFundFundingTransactions, findFundMembers, findUser, getBtcPrice, isFundAdmin } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -15,9 +15,12 @@ import { TransactionsPaged } from 'pages/api/fund/[slug]/transactions'
 import { AlertWait } from '@/components/AlertWait'
 import { MembersPaged } from 'pages/api/fund/[slug]/members'
 import { StyledIcon } from '@/components/StyledIcon';
+import { useAccount, useAuth } from '@micro-stacks/react'
 
 const FundDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
+  const account = useAccount();
+  const { isSignedIn } = useAuth();
   const { slug } = router.query
   const [isLoading, setIsLoading] = useState(true);
   const [fund, setFund] = useState<Fund>({});
@@ -28,6 +31,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
   const [memberItems, setMemberItems] = useState([]);
   const [btcPrice, setBtcPrice] = useState(0);
   const [showMembers, setShowMembers] = useState(false);
+  const [user, setUser] = useState<User>({});
 
   const pageSelectedTransactions = async (page: number) => {
     if (page >= 0 && page < transactions.totalPages) {
@@ -123,6 +127,11 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
       setFund(fundData);
       setBtcPrice(btcPriceData);
 
+      if (isSignedIn) {
+        const userInfo = await findUser(account.appPrivateKey as string);
+        setUser(userInfo);
+      }
+
       // Setup activity items
       setupActivityItems(fundData, transactionsData, btcPriceData);
       setupMemberItems(fundData, members, btcPriceData);
@@ -189,14 +198,40 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                         Manage
                       </Link>
                     ):null}
-                    {fund.registrationStatus == RegistrationStatus.COMPLETED ? (
+
+                    {!isSignedIn ? (
+                      <div className="has-tooltip">
+                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
+                          Connect your Stacks wallet first... 
+                        </span>
+                        <button
+                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
+                          disabled
+                        >
+                          Fund
+                        </button>
+                      </div>
+                    ) : user.registrationStatus == RegistrationStatus.COMPLETED ? (
                       <Link
                         href={`/funds/${fund.slug}/fund`}
                         className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
                       >
                         Fund
                       </Link>
-                    ):null}
+                    ): (
+                      <div className="has-tooltip">
+                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
+                          Your BTC address is being registered on-chain...
+                        </span>
+                        <button
+                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
+                          disabled
+                        >
+                          Fund
+                        </button>
+                      </div>
+                    )}
+
                     {fund.twitterHandle ? (
                       <Link
                         className="inline-flex items-center justify-center mr-4 ml-8"
