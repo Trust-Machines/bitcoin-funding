@@ -6,11 +6,13 @@ import { findAllFunds, findUserFunds } from '@/common/fetchers'
 import { Pagination } from './Pagination'
 import { FundsPaged } from 'pages/api/fund/all'
 import { Fund } from '@prisma/client'
+import { useAccount } from '@micro-stacks/react';
 
 export function Main({ dehydratedState }) {
   const [isLoading, setIsLoading] = useState(true);
   const [funds, setFunds] = useState<FundsPaged>({});
   const [userFunds, setUserFunds] = useState<Fund[]>({});
+  const [user, setUser] = useState<User>({});
 
   const pageSelected = (page: Number) => {
     if (page >= 0 && page < funds.totalPages) {
