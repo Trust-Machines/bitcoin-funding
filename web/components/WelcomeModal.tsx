@@ -4,17 +4,20 @@ import { StyledIcon } from '@/components/StyledIcon'
 import { registerUser } from '@/common/fetchers';
 import { ButtonFundFlow } from '@/components/ButtonFundFlow';
 import { useAccount } from '@micro-stacks/react';
+import { useRouter } from 'next/router';
 
 export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
   const [isSaving, setIsSaving] = useState(false);
   const [registrationStarted, setRegistrationStarted] = useState(false);
   const account = useAccount();
+  const router = useRouter();
 
   const registerUserAddress = async () => {
     setIsSaving(true);
     const result = await registerUser(account.appPrivateKey as string);
     setIsSaving(false);
     setRegistrationStarted(true);
+    router.reload();
   }
 
   return (
