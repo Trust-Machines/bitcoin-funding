@@ -6,13 +6,12 @@ import { findAllFunds, findUserFunds } from '@/common/fetchers'
 import { Pagination } from './Pagination'
 import { FundsPaged } from 'pages/api/fund/all'
 import { Fund } from '@prisma/client'
-import { useAccount } from '@micro-stacks/react';
+import { Button } from './Button'
 
-export function Main({ dehydratedState }) {
+export function User({ dehydratedState }) {
   const [isLoading, setIsLoading] = useState(true);
   const [funds, setFunds] = useState<FundsPaged>({});
   const [userFunds, setUserFunds] = useState<Fund[]>({});
-  const [user, setUser] = useState<User>({});
 
   const pageSelected = (page: Number) => {
     if (page >= 0 && page < funds.totalPages) {
@@ -41,14 +40,23 @@ export function Main({ dehydratedState }) {
           <Loading />
         ) : (
           <>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your Funds</h2>
             {userFunds.length > 0 ? (
               <>
-                <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your Funds</h2>
                 <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                   {userFunds.map(fund => <FundThumbnail key={"user" + fund.fund.address} fund={fund.fund} />)}
                 </div>
               </>
-            ): null}
+            ) : (
+              <>
+                <div className="mt-3 mb-3">
+                  Start by creating your first fund!
+                </div>
+                <Button color='blue' href='/funds/new'>
+                  Create a new Fund
+                </Button>
+              </>
+            )}
 
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 mt-8">Our popular Funds</h2>
             {funds.total > 0 ? (
