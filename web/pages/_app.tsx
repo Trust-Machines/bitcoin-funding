@@ -70,6 +70,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       onAuthentication={useCallback(async (payload: StacksSessionState) => {
         const address = stxNetwork == "mainnet" ? payload.addresses.mainnet : payload.addresses.testnet;
         pageProps.address = address;
+        setIsLoading(true);
       }, [])}
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
