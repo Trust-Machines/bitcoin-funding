@@ -1,22 +1,42 @@
-import fs from "fs";
-import aws from 'aws-sdk';
-import nodemailer from "nodemailer";
+const Sib = require('sib-api-v3-sdk')
 
-export const sendMail = async (to: string, subject: string, text: string) => {
-  
-  const ses = new aws.SES({
-    accessKeyId: process.env.BF_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.BF_AWS_ACCESS_KEY_SECRET,
-    region: "us-east-1"
-  });
+export const sendMailRegistration = async (to: string) => {
+  const subject = 
+  `
+    Your account on OrangeFund.us is ready!
+  `;
+  const textContent = 
+  `
+    You can now support your favorite fund with native BTC at ${process.env.NEXT_PUBLIC_BASE_URL}
+  `;
+  const htmlContent =
+  `
+    You can now support your favorite fund with native BTC at
+    <a href="${process.env.NEXT_PUBLIC_BASE_URL}"> OrangeFund.us</a>
+  `;
 
-  const mailer = nodemailer.createTransport({ SES: ses });
+  sendMail(to, subject, textContent, htmlContent);
+}
 
-  await mailer.sendMail({
-    from: `OrangeFund.us <noreply@orangefund.us>`,
-    to: "hello@nieldeckx.be",
-    subject: "Your Sign-In Link",
-    text: `Hi there,`,
-  });
+export const sendMail = async (to: string, subject: string, textContent: string, htmlContent: string) => {
+  const client = Sib.ApiClient.instance
+  var apiKey = client.authentications["api-key"];
+  apiKey.apiKey = process.env.SIB_API_KEY;
 
-};
+  const emailApi = new Sib.TransactionalEmailsApi()
+  const sender = {
+    email: 'support@orangefund.us',
+    name: 'OrangeFund.us',
+  }
+  const receivers = [{ email: to }]
+
+  emailApi.sendTransacEmail({
+    sender: sender,
+    to: receivers,
+    subject: subject,
+    textContent: textContent,
+    htmlContent: htmlContent
+  })
+  .then(console.log)
+  .catch(console.log)
+}
