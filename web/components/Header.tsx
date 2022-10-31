@@ -10,6 +10,7 @@ import { WalletConnectButton } from '@/components/WalletConnectButton'
 import { StyledIcon } from '@/components/StyledIcon'
 import { RegistrationStatus } from '@prisma/client'
 import { stacksExplorerLinkTx } from '@/common/utils'
+import { useAuth } from '@micro-stacks/react'
 
 function MobileNavLink({ href, children }) {
   return (
@@ -92,7 +93,9 @@ function MobileNavigation() {
   )
 }
 
-export const Header: FC = ({ isAuthenticated, user }) => {
+export const Header: FC = ({ user }) => {
+  const { isSignedIn } = useAuth();
+
   return (
     <header className="py-10">
       <Container>
@@ -103,7 +106,7 @@ export const Header: FC = ({ isAuthenticated, user }) => {
             </Link>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-2">
-            {isAuthenticated ? (
+            {isSignedIn ? (
               <>
                 <Button color='blue' href='/funds/new'>
                   Create a new Fund
@@ -114,7 +117,7 @@ export const Header: FC = ({ isAuthenticated, user }) => {
               </>
             ) : null}
             <WalletConnectButton buttonText='Connect Stacks Wallet' />
-            {user && user.registrationStatus === RegistrationStatus.STARTED && user.registrationTxId ? (
+            {isSignedIn && user.registrationStatus === RegistrationStatus.STARTED && user.registrationTxId ? (
               <div className="has-tooltip cursor-pointer">
                 <span className="tooltip rounded shadow-lg p-2 bg-black text-white mt-10 font-semibold max-w-7xl top-1 right-0">
                   Your BTC address is being registered on-chain...
