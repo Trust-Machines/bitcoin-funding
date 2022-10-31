@@ -64,11 +64,12 @@ async function postHandler(
     if (registrationTxId != undefined && registrationResult.error == undefined) {
       const result = await prisma.user.update({
         where: {
-          appPrivateKey: hashedAppPrivateKey,
+          appPrivateKey: hashedAppPrivateKey
         },
         data: {
           registrationStatus: RegistrationStatus.STARTED,
           registrationTxId: registrationTxId,
+          email: body.email == "" ? null : body.email
         },
       });
       res.status(200).json(result)
