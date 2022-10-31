@@ -18,7 +18,6 @@ import { WelcomeModal } from '@/components/WelcomeModal';
 const stxNetwork = process.env.NEXT_PUBLIC_NETWORK;
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User>({});
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -36,7 +35,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
 
     if (isLoading) {
-      setAuthenticated(pageProps?.dehydratedState);
 
       if (pageProps?.dehydratedState) {
         const stateJson = JSON.parse(pageProps?.dehydratedState);
@@ -64,7 +62,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         const newDehydratedState = JSON.stringify(stateJson);
         
         pageProps.dehydratedState = newDehydratedState;
-        setAuthenticated(true);
         await saveSession(newDehydratedState);
       }, [])}
       onAuthentication={useCallback(async (payload: StacksSessionState) => {
@@ -73,7 +70,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         setIsLoading(true);
       }, [])}
       onSignOut={useCallback(async () => {
-        setAuthenticated(false);
         await destroySession();
         router.push("/");
       }, [])}
@@ -84,7 +80,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header isAuthenticated={isAuthenticated} user={user} />
+      <Header user={user} />
       {showWelcomeModal ? (
         <WelcomeModal showWelcomeModal={showWelcomeModal} setShowWelcomeModal={setShowWelcomeModal} />
       ) : null}
