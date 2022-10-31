@@ -7,6 +7,9 @@ import { Logo } from '@/components/Logo'
 import { Button } from '@/components/Button'
 
 import { WalletConnectButton } from '@/components/WalletConnectButton'
+import { StyledIcon } from '@/components/StyledIcon'
+import { RegistrationStatus } from '@prisma/client'
+import { stacksExplorerLinkTx } from '@/common/utils'
 
 function MobileNavLink({ href, children }) {
   return (
@@ -89,7 +92,7 @@ function MobileNavigation() {
   )
 }
 
-export const Header: FC = ({ isAuthenticated }) => {
+export const Header: FC = ({ isAuthenticated, user }) => {
   return (
     <header className="py-10">
       <Container>
@@ -99,13 +102,34 @@ export const Header: FC = ({ isAuthenticated }) => {
               <Logo className="h-10 w-auto" />
             </Link>
           </div>
-          <div className="flex items-center gap-x-5 md:gap-x-8">
+          <div className="flex items-center gap-x-5 md:gap-x-2">
             {isAuthenticated ? (
-              <Button color='blue' href='/funds/new'>
-                Create a new Fund
-              </Button>
+              <>
+                <Button color='blue' href='/funds/new'>
+                  Create a new Fund
+                </Button>
+                <Button color='blue' href='/user'>
+                  My funds
+                </Button>
+              </>
             ) : null}
             <WalletConnectButton buttonText='Connect Stacks Wallet' />
+            {user && user.registrationStatus === RegistrationStatus.STARTED && user.registrationTxId ? (
+              <div className="has-tooltip cursor-pointer">
+                <span className="tooltip rounded shadow-lg p-2 bg-black text-white mt-10 font-semibold max-w-7xl top-1 right-0">
+                  Your BTC address is being registered on-chain...
+                </span>
+                <a target="_blank" href={stacksExplorerLinkTx(user.registrationTxId)}>
+                  <span className="inline-block w-8 h-8">
+                    <StyledIcon
+                      as="BellIcon"
+                      size={7}
+                      className="text-orange-600 hover:text-orange-700"
+                    />
+                  </span>
+                </a>
+              </div>
+            ) : null}
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>

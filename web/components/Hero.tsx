@@ -1,5 +1,5 @@
+import { useEffect, useState } from 'react'
 import Image from 'next/future/image'
-
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { WalletConnectButton } from '@/components/WalletConnectButton'
@@ -9,8 +9,16 @@ import logoStatamic from '@/images/logos/statamic.svg'
 import logoStaticKit from '@/images/logos/statickit.svg'
 import logoTransistor from '@/images/logos/transistor.svg'
 import logoTuple from '@/images/logos/tuple.svg'
+import { useAuth } from '@micro-stacks/react'
 
-export function Hero() {
+export function Hero({ dehydratedState }) {
+  const { isSignedIn } = useAuth();
+  const [isAuthenticated, setAuthenticated] = useState(dehydratedState && dehydratedState.length > 0);
+  
+  useEffect(() => {
+    setAuthenticated(isSignedIn);
+  }, [isSignedIn]);
+
   return (
     <Container className="pt-20 text-center lg:pt-40 min-h-screen">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
@@ -32,7 +40,13 @@ export function Hero() {
         Native Bitcoin Funding in hours, not weeks.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <WalletConnectButton buttonText='Create a Bitcoin Fund' />
+        {isAuthenticated ? (
+          <Button color='blue' href='/funds/new'>
+            Create a new Fund
+          </Button>
+        ) : (
+          <WalletConnectButton buttonText='Create a Bitcoin Fund' />
+        )}
         <Button
           href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
           variant="outline"

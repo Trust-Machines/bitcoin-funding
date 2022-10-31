@@ -308,7 +308,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                   {user.registrationStatus == RegistrationStatus.FAILED ? (
                     <div className="mt-3">
                       <Alert type={Alert.type.ERROR}>
-                        The registration failed. Please try again.
+                        Your Bitcoin address registration failed. Please try again.
                       </Alert>
                     </div>
                   ):null}
@@ -339,7 +339,10 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
                     Send BTC to 
-                    <span className="font-bold"> {user.fundingWalletAddress}</span>
+                    <span className="font-bold"> {user.fundingWalletAddress}</span> or use the QR code below
+                  </p>
+                  <p>
+                    <img src={`https://chart.googleapis.com/chart?chs=225x225&chld=L|2&cht=qr&chl=bitcoin:${user.fundingWalletAddress}`} />
                   </p>
                   <p className="mt-3">
                     Once you have sent the funds, confirm below. We will track your funding and register it on chain.
