@@ -60,7 +60,7 @@ export function Hero({ dehydratedState }) {
           <span className="ml-3">Watch video</span>
         </Button>
       </div>
-      <div className="mt-36 lg:mt-56">
+      <div className="mt-36 lg:mt-56 hidden">
         <p className="font-display text-base text-slate-900">
           Trusted by these six funds so far
         </p>
