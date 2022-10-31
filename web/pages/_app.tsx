@@ -19,6 +19,7 @@ const stxNetwork = process.env.NEXT_PUBLIC_NETWORK;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [appPrivateKey, setAppPrivateKey] = useState("");
   const [user, setUser] = useState<User>({});
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const router = useRouter();
@@ -34,20 +35,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       setUser(userInfo);
     };
 
-    if (isLoading) {
-
-      if (pageProps?.dehydratedState) {
-        const stateJson = JSON.parse(pageProps?.dehydratedState);
-        
-        if (stateJson[1] && stateJson[1][1] && stateJson[1][1][0]) {
-          const appPrivateKey = stateJson[1][1][0]['appPrivateKey'];
-          loadUser(appPrivateKey);
-        }
-      }
-
+    if (isLoading && appPrivateKey) {
+      loadUser(appPrivateKey);
       setIsLoading(false);
     }
-  }, [pageProps?.dehydratedState, isLoading]);
+  }, [pageProps?.dehydratedState, isLoading, appPrivateKey]);
 
   return (
     <ClientProvider
@@ -63,11 +55,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         
         pageProps.dehydratedState = newDehydratedState;
         await saveSession(newDehydratedState);
+        
+        if (stateJson[1] && stateJson[1][1] && stateJson[1][1][0]) {
+          const appPrivateKey = stateJson[1][1][0]['appPrivateKey'];
+          setAppPrivateKey(appPrivateKey);
+          setIsLoading(true);
+        }
       }, [])}
       onAuthentication={useCallback(async (payload: StacksSessionState) => {
         const address = stxNetwork == "mainnet" ? payload.addresses.mainnet : payload.addresses.testnet;
         pageProps.address = address;
-        setIsLoading(true);
       }, [])}
       onSignOut={useCallback(async () => {
         await destroySession();
