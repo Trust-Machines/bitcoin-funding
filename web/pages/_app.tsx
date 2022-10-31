@@ -20,6 +20,7 @@ const stxNetwork = process.env.NEXT_PUBLIC_NETWORK;
 function MyApp({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [dehydratedState, setDehydratedState] = useState([]);
   const [user, setUser] = useState<User>({});
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const router = useRouter();
@@ -38,9 +39,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     if (isLoading) {
       setAuthenticated(pageProps?.dehydratedState);
 
-      if (pageProps?.dehydratedState) {
-        const stateJson = JSON.parse(pageProps?.dehydratedState);
-        
+      if (pageProps?.dehydratedState || dehydratedState.length > 0) {
+        const stateJson = JSON.parse(pageProps?.dehydratedState) || JSON.parse(dehydratedState);
+
         if (stateJson[1] && stateJson[1][1] && stateJson[1][1][0]) {
           const appPrivateKey = stateJson[1][1][0]['appPrivateKey'];
           loadUser(appPrivateKey);
@@ -49,7 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       setIsLoading(false);
     }
-  }, [pageProps?.dehydratedState, isLoading]);
+  }, [pageProps?.dehydratedState, dehydratedState, isLoading]);
 
   return (
     <ClientProvider
@@ -62,8 +63,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         const stateJson = JSON.parse(dehydratedState);
         stateJson[1][1][0]['address'] = pageProps.address;
         const newDehydratedState = JSON.stringify(stateJson);
-        
+
         pageProps.dehydratedState = newDehydratedState;
+        setDehydratedState(newDehydratedState);
         setAuthenticated(true);
         await saveSession(newDehydratedState);
       }, [])}
@@ -75,6 +77,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       onSignOut={useCallback(async () => {
         setAuthenticated(false);
         await destroySession();
+        setDehydratedState([]);
         router.push("/");
       }, [])}
     >
