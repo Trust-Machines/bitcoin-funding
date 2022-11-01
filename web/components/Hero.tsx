@@ -20,7 +20,7 @@ export function Hero({ dehydratedState }) {
   }, [isSignedIn]);
 
   return (
-    <Container className="pt-20 text-center lg:pt-40 min-h-screen">
+    <Container className="pt-20 text-center lg:pt-48 min-h-screen">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
         Turn {' '}
         <span className="relative whitespace-nowrap text-orange-600">
@@ -60,7 +60,7 @@ export function Hero({ dehydratedState }) {
           <span className="ml-3">Watch video</span>
         </Button>
       </div>
-      <div className="mt-36 lg:mt-56">
+      <div className="mt-36 lg:mt-56 hidden">
         <p className="font-display text-base text-slate-900">
           Trusted by these six funds so far
         </p>
