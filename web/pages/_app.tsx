@@ -35,8 +35,17 @@ function MyApp({ Component, pageProps }: AppProps) {
       setUser(userInfo);
     };
 
-    if (isLoading && appPrivateKey) {
-      loadUser(appPrivateKey);
+    var userAppPrivateKey = appPrivateKey;
+    if (!userAppPrivateKey && pageProps?.dehydratedState) {
+      const stateJson = JSON.parse(pageProps?.dehydratedState);
+      if (stateJson[1] && stateJson[1][1] && stateJson[1][1][0]) {
+        const appPrivateKey = stateJson[1][1][0]['appPrivateKey'];
+        userAppPrivateKey = appPrivateKey;
+      }
+    }
+
+    if (isLoading && userAppPrivateKey) {
+      loadUser(userAppPrivateKey);
       setIsLoading(false);
     }
   }, [pageProps?.dehydratedState, isLoading, appPrivateKey]);
