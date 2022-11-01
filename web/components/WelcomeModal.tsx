@@ -9,12 +9,19 @@ import { useRouter } from 'next/router';
 export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
   const [isSaving, setIsSaving] = useState(false);
   const [registrationStarted, setRegistrationStarted] = useState(false);
+  const [email, setEmail] = useState("");
   const account = useAccount();
   const router = useRouter();
 
+  const handleInputChange = (event: any) => {
+    const target = event.target;
+    const value = target.value;
+    setEmail(value);
+  }
+
   const registerUserAddress = async () => {
     setIsSaving(true);
-    const result = await registerUser(account.appPrivateKey as string);
+    const result = await registerUser(account.appPrivateKey as string, email);
     setIsSaving(false);
     setRegistrationStarted(true);
     router.reload();
@@ -83,11 +90,25 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
                             You'll be able to fund projects using native bitcoin from any Bitcoin wallet.
-                          </p>
-                          <p className="text-sm text-gray-500">
                             We're getting your account set up. It will take about 10 minutes to hit the blockchain.
                           </p>
                         </div>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            You can enter your email address below, and we will let you know by email once your account is fully set up.
+                            This is the only time we will use your email address. No spam, that's a promise.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <input
+                          type="email"
+                          name="raisingAmount"
+                          id="raisingAmount"
+                          autoComplete="raisingAmount"
+                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
+                          onChange={handleInputChange}
+                        />
                       </div>
                     </div>
                     <div className="mt-5 sm:mt-6">
