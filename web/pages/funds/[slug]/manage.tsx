@@ -271,7 +271,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   onChange={handleInputChange}
                   value={fund.about}
                 ></textarea>
-                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the fund and the fundraise.</p>
+                <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose your fundraise.</p>
               </div>
             </div>
 

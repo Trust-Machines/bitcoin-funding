@@ -171,7 +171,7 @@ const New: NextPage = ({ dehydratedState }) => {
                       onChange={handleInputChange}
                       value={state.about}
                     ></textarea>
-                    <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the DAO and the fundraise.</p>
+                    <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of your fundraise.</p>
                   </div>
                 </div>
 
