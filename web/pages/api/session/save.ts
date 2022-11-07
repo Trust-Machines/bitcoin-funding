@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { sessionOptions } from '@/common/session/index';
 import prisma from '@/common/db';
 import { hashAppPrivateKey } from '@/common/stacks/utils';
+import { registerUserHelper } from '../user/register';
 
 async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
   const { dehydratedState } = await req.body;
@@ -21,6 +22,8 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
     const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
     let user = await prisma.user.findUnique({ where: { appPrivateKey: hashedAppPrivateKey } });
     if (!user) {
+
+      // Create user
       user = await prisma.user.create({
         data: {
           appPrivateKey: hashedAppPrivateKey,
@@ -40,9 +43,14 @@ async function saveSessionRoute(req: NextApiRequest, res: NextApiResponse) {
         })
       }
       await prisma.fundAdminInvite.deleteMany({ where: { userAddress: account['address'] } })
-    }
 
-    res.json({ dehydratedState, user });
+      // Register user on chain
+      const result = await registerUserHelper(account['appPrivateKey']);
+      res.status(result.status).json(result.result);
+    
+    } else {
+      res.json({ dehydratedState, user });
+    }
   } catch (error) {
     console.log("[API] ERROR:", { directory: __dirname, error: error });
     res.status(500).json({ message: (error as Error).message });

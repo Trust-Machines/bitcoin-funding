@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { StyledIcon } from '@/components/StyledIcon'
-import { registerUser } from '@/common/fetchers';
+import { saveEmail } from '@/common/fetchers';
 import { ButtonFundFlow } from '@/components/ButtonFundFlow';
 import { useAccount } from '@micro-stacks/react';
 import { useRouter } from 'next/router';
@@ -19,9 +19,9 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
     setEmail(value);
   }
 
-  const registerUserAddress = async () => {
+  const saveUserEmail = async () => {
     setIsSaving(true);
-    const result = await registerUser(account.appPrivateKey as string, email);
+    const result = await saveEmail(account.appPrivateKey as string, email);
     setIsSaving(false);
     setRegistrationStarted(true);
     router.reload();
@@ -110,8 +110,8 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
                       </div>
                     </div>
                     <div className="mt-5 sm:mt-6">
-                      <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
-                        Create Bitcoin account
+                      <ButtonFundFlow onClick={async () => { saveUserEmail() }} saving={isSaving}>
+                        Save email
                       </ButtonFundFlow>
                     </div>
                   </>

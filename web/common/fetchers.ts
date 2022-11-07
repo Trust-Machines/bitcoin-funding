@@ -146,8 +146,8 @@ export const getUserBalance = async (appPrivateKey: string) => {
   });
 };
 
-export const registerUser = async (appPrivateKey: string, email: string) => {
-  return await fetch(API_URL + '/user/register', {
+export const saveEmail = async (appPrivateKey: string, email: string) => {
+  return await fetch(API_URL + '/user/save-email', {
     method: 'POST',
     body: JSON.stringify({ appPrivateKey: appPrivateKey, email: email })
   });
