@@ -3,16 +3,22 @@ const Sib = require('sib-api-v3-sdk')
 export const sendMailRegistration = async (to: string) => {
   const subject = 
   `
-    Your account on OrangeFund.us is ready!
+    Your OrangeFund account is ready!
   `;
   const textContent = 
   `
-    You can now support your favorite fund with native BTC at ${process.env.NEXT_PUBLIC_BASE_URL}
+    Hi!
+    Your account is all ready! Just go to OrangeFund.us to get started. If you have any questions reply back to this email. We're happy to help.  
+    Best,
+    Philip 
   `;
   const htmlContent =
   `
-    You can now support your favorite fund with native BTC at
-    <a href="${process.env.NEXT_PUBLIC_BASE_URL}"> OrangeFund.us</a>
+    <p>Hi!</p>
+    <p>Your account is all ready! Just go to <a href="${process.env.NEXT_PUBLIC_BASE_URL}"> OrangeFund.us</a> to get started.</p>
+    <p>If you have any questions reply back to this email. We're happy to help.</p>
+    <p>Best,</p>
+    <p>Philip</p> 
   `;
 
   sendMail(to, subject, textContent, htmlContent);
