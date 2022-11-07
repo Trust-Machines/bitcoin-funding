@@ -89,14 +89,12 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            You'll be able to fund projects using native bitcoin from any Bitcoin wallet.
                             We're getting your account set up. It will take about 10 minutes to hit the blockchain.
                           </p>
                         </div>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            You can enter your email address below, and we will let you know by email once your account is fully set up.
-                            This is the only time we will use your email address. No spam, that's a promise.
+                            Enter your email and we'll let you know when your account is ready.
                           </p>
                         </div>
                       </div>
