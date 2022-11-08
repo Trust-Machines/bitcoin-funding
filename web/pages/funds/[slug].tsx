@@ -201,64 +201,14 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                 ):null}
 
                 <div className="bg-white shadow sm:rounded-lg">
-                  <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+                  <div className="px-4 py-5 sm:px-6">
                     <h2 id="about" className="text-xl leading-6 font-medium text-gray-900">
                       {fund.name}
                     </h2>
                   </div>
-                  <div className="px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {(fund.totalSats / 100000000.00).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                          })} BTC
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)})
-                          </span>
-                        </dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                          })} BTC
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)})
-                          </span>
-                        </dd>
-                      </div>
-                    </dl>
-
-                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {fund.totalMembers}
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({transactions.total} transactions)
-                          </span>
-                        </dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {daysToDate(fund.raisingDeadline)}
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dateToString(fund.raisingDeadline, false)})
-                          </span>
-                        </dd>
-                      </div>
+                  <div className="px-4 pb-5 sm:px-6">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2">
                       <div className="sm:col-span-3">
-                        <dt className="text-sm font-medium text-gray-500">About</dt>
                         <dd className="mt-1 text-sm text-gray-900">{fund.about}</dd>
                       </div>
                     </dl>
@@ -276,6 +226,58 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                       <div className="bg-green-600 h-2.5 rounded-full" style={{width: `${100 * fund.totalSats / fund.raisingAmount}%`}}></div>
                     </div>
                   </div>
+
+                  <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {(fund.totalSats / 100000000.00).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 4,
+                        })} BTC
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)})
+                        </span>
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 4,
+                        })} BTC
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)})
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Number of members</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {fund.totalMembers}
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({transactions.total} transactions)
+                        </span>
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Days to go</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {daysToDate(fund.raisingDeadline)}
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dateToString(fund.raisingDeadline, false)})
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
               </div>
 
