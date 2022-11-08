@@ -104,7 +104,7 @@ export function WelcomeModal({ showWelcomeModal, setShowWelcomeModal }) {
                           name="raisingAmount"
                           id="raisingAmount"
                           autoComplete="raisingAmount"
-                          className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-none rounded-l-md sm:text-sm border-gray-300"
+                          className="flex-1 block w-full focus:ring-orange-500 focus:border-orange-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                           onChange={handleInputChange}
                         />
                       </div>
