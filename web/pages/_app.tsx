@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     const loadUser = async (appPrivateKey : string) => {
       const userInfo = await findUser(appPrivateKey as string);
 
-      if (userInfo.registrationStatus === RegistrationStatus.STARTED && !userInfo.registrationTxId) {
+      if (userInfo.registrationStatus === RegistrationStatus.STARTED && !userInfo.email) {
         setShowWelcomeModal(true);
       }
 
