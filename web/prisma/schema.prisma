@@ -55,6 +55,17 @@ model FundAdminInvite {
   @@index([userAddress], type: Hash)
 }
 
+model FundUpdateSubscription {
+  id                          Int                       @id @default(autoincrement())
+  fund                        Fund                      @relation(fields: [fundId], references: [address])
+  user                        User                      @relation(fields: [userId], references: [appPrivateKey])
+  fundId                      String
+  userId                      String
+  comment                     String
+  @@index([fundId], type: Hash)
+  @@index([userId], type: Hash)
+}
+
 model User {
   appPrivateKey               String                    @id
   address                     String                    @unique
