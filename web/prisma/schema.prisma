@@ -61,6 +61,7 @@ model FundUpdateSubscription {
   user                        User                      @relation(fields: [userId], references: [appPrivateKey])
   fundId                      String
   userId                      String
+  email                       String
   comment                     String
   @@index([fundId], type: Hash)
   @@index([userId], type: Hash)
