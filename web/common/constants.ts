@@ -18,7 +18,7 @@ if (process.env.NEXT_PUBLIC_NETWORK === 'mainnet') {
   BTC_NETWORK = networks.bitcoin;
   BTC_EXPLORER_URL = 'https://mempool.space';
 
-  ELECTRUM_HOST = 'electrum.blockstream.info';
+  ELECTRUM_HOST = 'xtrum.com';
   ELECTRUM_PORT = 50001;
 
   STACKS_NETWORK = new StacksMainnet();

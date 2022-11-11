@@ -100,7 +100,7 @@ export async function sendBtc(senderPrivateKey: string, receiverAddress: string,
   // If we forward all funds, the sender can not be added as output. So we need to keep some dust.
   const actualAmount = amount - fee;
   const senderValueLeft = unspent.value - amount;
-  const dustToKeep = BTC_NETWORK == networks.regtest ? 1000 : 500;
+  const dustToKeep = 1000;
   const dust = senderValueLeft == 0 ? dustToKeep : 0;
 
   psbt.addOutput({
