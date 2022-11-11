@@ -21,7 +21,7 @@ export const sendMailRegistration = async (to: string) => {
     <p>Philip</p> 
   `;
 
-  sendMail(to, subject, textContent, htmlContent);
+  await sendMail(to, subject, textContent, htmlContent);
 }
 
 export const sendMail = async (to: string, subject: string, textContent: string, htmlContent: string) => {
@@ -42,7 +42,9 @@ export const sendMail = async (to: string, subject: string, textContent: string,
     subject: subject,
     textContent: textContent,
     htmlContent: htmlContent
-  })
-  .then(console.log)
-  .catch(console.log)
+  }).then(function(data: any) {
+    console.log("[EMAIL] result:", data);
+  }, function(error: any) {
+    console.log("[EMAIL] error:", error);
+  });
 }

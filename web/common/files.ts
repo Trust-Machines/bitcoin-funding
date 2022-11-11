@@ -16,7 +16,6 @@ const saveToS3 = async (blob: any, contentType: string, name: string) => {
     Body: blob
   };
   const result = await s3.upload(params).promise();
-
   return result;
 };
 
@@ -36,9 +35,10 @@ export async function saveFile(file: any, name: string) {
     try {
       fs.unlinkSync(file.filepath);
       const result = await saveToS3(data, file.mimetype, `${name}.${extension}`);
+      console.log("[FILE] result:", result);
       return result.Location;
     } catch (e) {
-      console.log(e);
+      console.log("[FILE] error:", e);
       return '';
     }
   }
@@ -57,9 +57,10 @@ export async function createPlaceholderAndSaveFile(seed: string) {
     // Production: save to S3
     try {
       const result = await saveToS3(data, 'image/svg+xml', `${seed}.svg`);
+      console.log("[FILE] result:", result);
       return result.Location;
     } catch (e) {
-      console.log(e);
+      console.log("[FILE] error:", e);
       return '';
     }
   }
