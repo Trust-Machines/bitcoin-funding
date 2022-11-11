@@ -28,7 +28,7 @@ async function getHandler(
   const pageSize = 15;
 
   const result = await prisma.fund.findMany({
-    where: { registrationStatus: RegistrationStatus.COMPLETED },
+    where: { registrationStatus: RegistrationStatus.COMPLETED, active: true },
     skip: parseInt(page as string) * pageSize,
     take: pageSize,
   });

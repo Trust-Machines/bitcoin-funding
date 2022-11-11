@@ -15,6 +15,7 @@ datasource db {
 
 model Fund {
   address                     String                    @id
+  active                      Boolean                   @default(true)
   name                        String
   slug                        String                    @unique
   avatar                      String
