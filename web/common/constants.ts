@@ -18,9 +18,8 @@ if (process.env.NEXT_PUBLIC_NETWORK === 'mainnet') {
   BTC_NETWORK = networks.bitcoin;
   BTC_EXPLORER_URL = 'https://mempool.space';
 
-  // TODO: find trusted server
-  // ELECTRUM_HOST = 'testnet.hsmiths.com';
-  // ELECTRUM_PORT = 53011;
+  ELECTRUM_HOST = 'electrum.blockstream.info';
+  ELECTRUM_PORT = 50002;
 
   STACKS_NETWORK = new StacksMainnet();
   STACKS_API_URL = 'https://stacks-node-api.mainnet.stacks.co';
