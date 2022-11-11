@@ -19,7 +19,7 @@ if (process.env.NEXT_PUBLIC_NETWORK === 'mainnet') {
   BTC_EXPLORER_URL = 'https://mempool.space';
 
   ELECTRUM_HOST = 'electrum.blockstream.info';
-  ELECTRUM_PORT = 50002;
+  ELECTRUM_PORT = 50001;
 
   STACKS_NETWORK = new StacksMainnet();
   STACKS_API_URL = 'https://stacks-node-api.mainnet.stacks.co';
