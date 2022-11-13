@@ -175,84 +175,15 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
             {/* COL - AVATAR + NAME + INFO */}
             <div className="col-span-4">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+              <div className="grid grid-cols-1 gap-6 items-center">
 
                 {/* COL - AVATAR  */}
                 <div className="col-span-1">
-                  <section className="col-span-1 w-40 h-40 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
+                  <section className="col-span-1 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
                       <img src={fund.avatar}/>
                     </div>
                   </section>
-                </div>
-
-                {/* COL - NAME */}
-                <div className="col-span-3">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-3">{fund.name}</h1>
-                  <div className="inline-flex items-center justify-center">
-                    {isAdmin ? (
-                      <Link
-                        href={`/funds/${fund.slug}/manage`}
-                        className="inline-flex items-center justify-center mt-1 mr-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
-                      >
-                        Manage
-                      </Link>
-                    ):null}
-
-                    {!isSignedIn ? (
-                      <div className="has-tooltip">
-                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
-                          Connect your Stacks wallet first... 
-                        </span>
-                        <button
-                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
-                          disabled
-                        >
-                          Fund
-                        </button>
-                      </div>
-                    ) : user.registrationStatus == RegistrationStatus.COMPLETED ? (
-                      <Link
-                        href={`/funds/${fund.slug}/fund`}
-                        className="inline-flex items-center justify-center mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
-                      >
-                        Fund
-                      </Link>
-                    ): (
-                      <div className="has-tooltip">
-                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
-                          Your BTC address is being registered on-chain...
-                        </span>
-                        <button
-                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
-                          disabled
-                        >
-                          Fund
-                        </button>
-                      </div>
-                    )}
-
-                    {fund.twitterHandle ? (
-                      <Link
-                        className="inline-flex items-center justify-center mr-4 ml-8"
-                        target="_blank" href={`https://www.twitter.com/${fund.twitterHandle}`}
-                      >
-                        <svg
-                          className="w-5 h-5 text-gray-500 fill-current"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24">
-                          <path
-                            d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"
-                          />
-                        </svg>
-                      </Link>
-                    ) : null}
-                    {fund.websiteUrl ? (
-                      <Link className="inline-flex items-center justify-center mr-4 ml-2 text-gray-500" target="_blank" href={`https://${fund.websiteUrl}`}>
-                        <StyledIcon as="LinkIcon" size={5} className="block" />
-                      </Link>
-                    ) : null}
-                  </div>
                 </div>
               </div> 
 
@@ -270,71 +201,14 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                 ):null}
 
                 <div className="bg-white shadow sm:rounded-lg">
-                  <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                    <h2 id="about" className="text-lg leading-6 font-medium text-gray-900">
-                      About {fund.name}
+                  <div className="px-4 py-5 sm:px-6">
+                    <h2 id="about" className="text-xl leading-6 font-medium text-gray-900">
+                      {fund.name}
                     </h2>
                   </div>
-                  <div className="px-4 py-5 sm:px-6">
-                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {(fund.totalSats / 100000000.00).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                          })} BTC
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)})
-                          </span>
-                        </dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 4,
-                          })} BTC
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)})
-                          </span>
-                        </dd>
-                      </div>
-                    </dl>
-                    <dl className="grid grid-cols-1 gap-y-4 mt-5 mb-12">
-                      <div className="sm:col-span-1">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                          <div className="bg-green-600 h-2.5 rounded-full" style={{width: `${100 * fund.totalSats / fund.raisingAmount}%`}}></div>
-                        </div>
-                      </div>
-                    </dl>
-
-                    <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Number of members</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {fund.totalMembers}
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({transactions.total} transactions)
-                          </span>
-                        </dd>
-                      </div>
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">Days to go</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
-                          {daysToDate(fund.raisingDeadline)}
-                          {' '}
-                          <span className="text-xs text-gray-600">
-                            ({dateToString(fund.raisingDeadline, false)})
-                          </span>
-                        </dd>
-                      </div>
+                  <div className="px-4 pb-5 sm:px-6">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2">
                       <div className="sm:col-span-3">
-                        <dt className="text-sm font-medium text-gray-500">About</dt>
                         <dd className="mt-1 text-sm text-gray-900">{fund.about}</dd>
                       </div>
                     </dl>
@@ -345,6 +219,135 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
             {/* COL - Activity feed & members */}
             <div className="col-span-2">
+              <div className="bg-white shadow sm:rounded-lg mb-10">
+                <div className="p-4 sm:px-6">
+                  <div className="sm:col-span-1">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                      <div className="bg-green-600 h-2.5 rounded-full" style={{width: `${100 * fund.totalSats / fund.raisingAmount}%`}}></div>
+                    </div>
+                  </div>
+
+                  <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Raised so far</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {(fund.totalSats / 100000000.00).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 4,
+                        })} BTC
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dollarAmountToString((fund.totalSats / 100000000.00) * btcPrice)})
+                        </span>
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Target to raise</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {(fund.raisingAmount / 100000000.00).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 4,
+                        })} BTC
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dollarAmountToString((fund.raisingAmount / 100000000.00) * btcPrice)})
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <dl className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 mt-5">
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Number of members</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {fund.totalMembers}
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({transactions.total} transactions)
+                        </span>
+                      </dd>
+                    </div>
+                    <div className="sm:col-span-1">
+                      <dt className="text-sm font-medium text-gray-500">Days to go</dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {daysToDate(fund.raisingDeadline)}
+                        {' '}
+                        <span className="text-xs text-gray-600">
+                          ({dateToString(fund.raisingDeadline, false)})
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <dl className="grid grid-cols-1 gap-y-4 mt-5">
+                    {isAdmin ? (
+                      <Link
+                        href={`/funds/${fund.slug}/manage`}
+                        className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
+                      >
+                        Manage
+                      </Link>
+                    ):null}
+
+                    {!isSignedIn ? (
+                      <div className="has-tooltip">
+                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
+                          Connect your Stacks wallet first... 
+                        </span>
+                        <button
+                          className="inline-flex items-center justify-center disabled:opacity-75 mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
+                          disabled
+                        >
+                          Fund this project
+                        </button>
+                      </div>
+                    ) : user.registrationStatus == RegistrationStatus.COMPLETED ? (
+                      <Link
+                        href={`/funds/${fund.slug}/fund`}
+                        className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
+                      >
+                        Fund this project
+                      </Link>
+                    ): (
+                      <div className="has-tooltip">
+                        <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
+                          Your BTC address is being registered on-chain...
+                        </span>
+                        <button
+                          className="inline-flex items-center w-full justify-center disabled:opacity-75 mt-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
+                          disabled
+                        >
+                          Fund this project
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="inline-flex justify-end">
+                      {fund.twitterHandle ? (
+                        <Link
+                          className="inline-flex items-center justify-center mr-4 ml-8"
+                          target="_blank" href={`https://www.twitter.com/${fund.twitterHandle}`}
+                        >
+                          <svg
+                            className="w-5 h-5 text-gray-500 fill-current"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24">
+                            <path
+                              d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"
+                            />
+                          </svg>
+                        </Link>
+                      ) : null}
+                      {fund.websiteUrl ? (
+                        <Link className="inline-flex items-center justify-center ml-2 text-gray-500" target="_blank" href={`https://${fund.websiteUrl}`}>
+                          <StyledIcon as="LinkIcon" size={5} className="block" />
+                        </Link>
+                      ) : null}
+                    </div>
+                  </dl>
+                </div>
+              </div>
+
               <section>
                 {showMembers ? (
                   <div className="bg-white shadow sm:rounded-lg">

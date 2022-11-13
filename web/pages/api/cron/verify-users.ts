@@ -31,7 +31,7 @@ async function postHandler(
       let result = await verifyUser(user.address);
       if (result.email && result.registrationStatus == RegistrationStatus.COMPLETED) {
         console.log("[VERIFY USERS] send email:", result.email);
-        sendMailRegistration(result.email);
+        await sendMailRegistration(result.email);
       }
       console.log("[VERIFY USERS] verification response:", result);
     } catch (error) {

@@ -14,17 +14,15 @@ import { bitcoinExplorerLinkAddress, bitcoinExplorerLinkTx, stacksExplorerLinkTx
 import { ButtonFundFlow } from '@/components/ButtonFundFlow';
 
 const stepsInit = [
-  { id: '01', name: 'Connect Hiro Wallet', status: 'current' },
-  { id: '02', name: 'Register BTC address', status: 'upcoming' },
-  { id: '03', name: 'Send BTC to the fund', status: 'upcoming' },
-  { id: '04', name: 'Finalize', status: 'upcoming' },
+  { id: '01', name: 'Send BTC to the fund', status: 'current' },
+  { id: '02', name: 'Confirmation', status: 'upcoming' },
 ]
 
 const FundFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
   const { slug } = router.query;
   const account = useAccount();
-  const { openAuthRequest, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [fund, setFund] = useState<Fund>({});
@@ -34,7 +32,9 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const [steps, setSteps] = useState(stepsInit);
 
   useEffect(() => {
-    if (slug) {
+    if (!isSignedIn) {
+      router.push(`/funds/${slug}`);
+    } else if (slug) {
       fetchInfo();
     }
   }, [slug, isSignedIn]);
@@ -45,88 +45,54 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     const fund = await findFund(slug as string);
     setFund(fund);
     
+    const userInfo = await findUser(account.appPrivateKey as string);
+    setUser(userInfo);
+    const confirmation = userInfo.forwardConfirmation;
+    setForwardConfirmation(confirmation)
+
+    // User has not confirmed yet
     let currentStep = 0;
-    if (isSignedIn) {
-      const userInfo = await findUser(account.appPrivateKey as string);
-      setUser(userInfo);
-      const confirmation = userInfo.forwardConfirmation;
-      setForwardConfirmation(confirmation)
+    if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
+      currentStep = 0;
 
-      // User signed in and completed registration
-      if (userInfo.registrationStatus == RegistrationStatus.COMPLETED) {
+    // User confirmed
+    } else {
+      currentStep = 1;
 
-        // User has not confirmed yet
-        if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
-          currentStep = 2;
+      // There is a TX ID, so funds have been forwarded
+      if (confirmation.fundTransactionId) {
+        const tx = await getTransaction(confirmation.fundTransactionId);
+        setTransaction(tx);
 
-        // User confirmed
-        } else {
-          currentStep = 3;
-
-          // There is a TX ID, so funds have been forwarded
-          if (confirmation.fundTransactionId) {
-            const tx = await getTransaction(confirmation.fundTransactionId);
-            setTransaction(tx);
-
-            // Start polling for transaction completion
-            if (tx.registrationStatus == RegistrationStatus.STARTED) {
-              currentStep = 3;
-              var intervalId = window.setInterval(function(){
-                pollTransaction(intervalId, confirmation.fundTransactionId);
-              }, 15000);
-
-            // Funding is done
-            } else  {
-              currentStep = 4;
-            }
-
-          // No TX ID yet, so waiting for funds
-          } else {
-
-            // Start polling the confirmation
-            var intervalId = window.setInterval(function(){
-              pollForwardingConfirmation(intervalId);
-            }, 15000);
-          }
-        }
-
-      // User signed in and started registration
-      } else {
-        currentStep = 1;
-
-        // Start polling if registration started
-        if (userInfo.registrationTxId != null) {
+        // Start polling for transaction completion
+        if (tx.registrationStatus == RegistrationStatus.STARTED) {
           var intervalId = window.setInterval(function(){
-            pollUser(intervalId);
-          }, 15000);  
+            pollTransaction(intervalId, confirmation.fundTransactionId);
+          }, 15000);
+
+        // Funding is done
+        } else  {
+          currentStep = 2;
         }
+
+      // No TX ID yet, so waiting for funds
+      } else {
+
+        // Start polling the confirmation
+        var intervalId = window.setInterval(function(){
+          pollForwardingConfirmation(intervalId);
+        }, 15000);
       }
     }
 
     // Update steps data
     var newSteps = [...stepsInit];
-    for (let step = 0; step < 4; step++) {
+    for (let step = 0; step < 2; step++) {
       newSteps[step].status = step < currentStep ? "complete" : step == currentStep ? "current" : "upcoming";
     }
     setSteps(newSteps);
 
     setIsLoading(false);
-  }
-
-  const connectWallet = async () => {
-    setIsSaving(true);
-    await openAuthRequest();
-    fetchInfo();
-  }
-
-  const registerUserAddress = async () => {
-    setIsSaving(true);
-    const result = await registerUser(account.appPrivateKey as string);
-    if (result.status === 200) {
-      fetchInfo();
-    } else {
-      setIsSaving(false);
-    }
   }
 
   const viewFund = async () => {
@@ -156,14 +122,6 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const pollForwardingConfirmation = async (intervalId: number) => {
     const userInfo = await findUser(account.appPrivateKey as string);
     if (userInfo.forwardConfirmation.fundTransactionId) {
-      clearInterval(intervalId);
-      fetchInfo();
-    }
-  }
-
-  const pollUser = async (intervalId: number) => {
-    const userInfo = await findUser(account.appPrivateKey as string);
-    if (userInfo.registrationStatus != RegistrationStatus.STARTED) {
       clearInterval(intervalId);
       fetchInfo();
     }
@@ -278,66 +236,6 @@ const FundFund: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                    Connect your Stacks wallet.
-                  </p>
-                  <p>
-                    No wallet installed yet? Download the Hiro wallet 
-                    <a 
-                      className="ml-1 text-orange-700"
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://wallet.hiro.so/"
-                    > 
-                      here
-                    </a>.
-                  </p>
-                </div>
-                <ButtonFundFlow onClick={async () => { connectWallet() }} saving={isSaving}>
-                  Connect Stacks wallet
-                </ButtonFundFlow>
-              </div>
-            ) : steps[1].status == "current" ? (
-              <div className="bg-white shadow sm:rounded-lg">
-                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                  <p>
-                    It seems like this is your first time funding. 
-                    We will create an internal BTC account for you and register this on-chain. 
-                    Do not worry, gas is on us!
-                  </p>
-
-                  {user.registrationStatus == RegistrationStatus.FAILED ? (
-                    <div className="mt-3">
-                      <Alert type={Alert.type.ERROR}>
-                        Your Bitcoin address registration failed. Please try again.
-                      </Alert>
-                    </div>
-                  ):null}
-
-                  {user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null ? (
-                    <div className="mt-3">
-                      <AlertWait 
-                        title="Your BTC account is being created and registered on chain."
-                        subTitle="Stacks transactions can take 10-30 minutes to complete."
-                        linkText="Open transaction in explorer"
-                        link={stacksExplorerLinkTx(user.registrationTxId)}
-                      />
-                    </div>
-                  ):null}
-
-                </div>
-                <div>
-                  {!(user.registrationStatus == RegistrationStatus.STARTED && user.registrationTxId != null) ? (
-                    <ButtonFundFlow onClick={async () => { registerUserAddress() }} saving={isSaving}>
-                      Create BTC account
-                    </ButtonFundFlow>
-                  ): null}
-                </div>
-              </div>
-
-            ): steps[2].status == "current" ? (
-              <div className="bg-white shadow sm:rounded-lg">
-                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                  <p>
                     Send BTC to 
                     <span className="font-bold"> {user.fundingWalletAddress}</span> or use the QR code below
                   </p>
@@ -366,7 +264,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                 </div>
               </div>
 
-            ): steps[3].status == "current" ? (
+            ): steps[1].status == "current" ? (
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
