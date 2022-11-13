@@ -12,6 +12,8 @@ import { Alert } from '@/components/Alert';
 import { AlertWait } from '@/components/AlertWait';
 import { bitcoinExplorerLinkAddress, bitcoinExplorerLinkTx, stacksExplorerLinkTx } from '@/common/utils';
 import { ButtonFundFlow } from '@/components/ButtonFundFlow';
+import { Button } from '@/components/Button'
+import { saveFundUserInfo } from '@/common/fetchers'
 
 const stepsInit = [
   { id: '01', name: 'Send BTC to the fund', status: 'current' },
@@ -20,6 +22,10 @@ const stepsInit = [
 
 const FundFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter();
+  const [state, setState] = useState({
+    email: '',
+    comment: ''
+  });
   const { slug } = router.query;
   const account = useAccount();
   const { isSignedIn } = useAuth();
@@ -51,39 +57,39 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     setForwardConfirmation(confirmation)
 
     // User has not confirmed yet
-    let currentStep = 0;
-    if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
-      currentStep = 0;
+    let currentStep = 1;
+    // if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
+    //   currentStep = 0;
 
-    // User confirmed
-    } else {
-      currentStep = 1;
+    // // User confirmed
+    // } else {
+    //   currentStep = 1;
 
-      // There is a TX ID, so funds have been forwarded
-      if (confirmation.fundTransactionId) {
-        const tx = await getTransaction(confirmation.fundTransactionId);
-        setTransaction(tx);
+    //   // There is a TX ID, so funds have been forwarded
+    //   if (confirmation.fundTransactionId) {
+    //     const tx = await getTransaction(confirmation.fundTransactionId);
+    //     setTransaction(tx);
 
-        // Start polling for transaction completion
-        if (tx.registrationStatus == RegistrationStatus.STARTED) {
-          var intervalId = window.setInterval(function(){
-            pollTransaction(intervalId, confirmation.fundTransactionId);
-          }, 15000);
+    //     // Start polling for transaction completion
+    //     if (tx.registrationStatus == RegistrationStatus.STARTED) {
+    //       var intervalId = window.setInterval(function(){
+    //         pollTransaction(intervalId, confirmation.fundTransactionId);
+    //       }, 15000);
 
-        // Funding is done
-        } else  {
-          currentStep = 2;
-        }
+    //     // Funding is done
+    //     } else  {
+    //       currentStep = 2;
+    //     }
 
-      // No TX ID yet, so waiting for funds
-      } else {
+    //   // No TX ID yet, so waiting for funds
+    //   } else {
 
-        // Start polling the confirmation
-        var intervalId = window.setInterval(function(){
-          pollForwardingConfirmation(intervalId);
-        }, 15000);
-      }
-    }
+    //     // Start polling the confirmation
+    //     var intervalId = window.setInterval(function(){
+    //       pollForwardingConfirmation(intervalId);
+    //     }, 15000);
+    //   }
+    // }
 
     // Update steps data
     var newSteps = [...stepsInit];
@@ -136,6 +142,31 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     if (transaction.registrationTxId == null && tx.registrationTxId != null) {
       clearInterval(intervalId);
       fetchInfo();
+    }
+  }
+
+  const handleInputChange = (event: any) => {
+    const target = event.target;
+    const name = target.name;
+    setState(prevState => { return { ...prevState, [name]: target.value } });
+  }
+
+  const saveInfo = async () => {
+    setIsSaving(true);
+
+    const formData = new FormData();
+    formData.append("email", state.email);
+    formData.append("comment", state.comment);
+    formData.append("dehydratedState", dehydratedState);
+
+    const res = await saveFundUserInfo(fund.slug, formData);
+    const data = await res.json();
+
+    if (res.status === 200) {
+      console.log('All data is saved');
+      setIsSaving(false);
+    } else {
+      setIsSaving(false);
     }
   }
 
@@ -246,7 +277,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     Once you have sent the funds, confirm below. We will track your funding and register it on chain.
                   </p>
 
-                  {forwardConfirmation.fundAddress != null && forwardConfirmation.fundAddress != fund.address && forwardConfirmation.fundTransactionId == null ? (
+                  {forwardConfirmation && forwardConfirmation.fundAddress != null && forwardConfirmation.fundAddress != fund.address && forwardConfirmation.fundTransactionId == null ? (
                     <div className="mt-3">
                       <Alert type={Alert.type.ERROR} title="Attention required">
                         You have previously confirmed to forward BTC to another fund but no BTC was received yet after your confirmation.
@@ -258,7 +289,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
 
                 </div>
                 <div>
-                <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
+                  <ButtonFundFlow onClick={async () => { forwardFunds() }} saving={isSaving}>
                     Confirm funding
                   </ButtonFundFlow>
                 </div>
@@ -268,11 +299,11 @@ const FundFund: NextPage = ({ dehydratedState }) => {
               <div className="bg-white shadow sm:rounded-lg">
                 <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                   <p>
-                  The fund is being funded with your BTC. 
-                  No further action is required.
+                    The fund is being funded with your BTC. 
+                    No further action is required.
                   </p>
                   <div className="mt-3">
-                    {forwardConfirmation.fundTransactionId == null ? (
+                    {forwardConfirmation && forwardConfirmation.fundTransactionId == null ? (
                       <AlertWait 
                         title="Waiting for your BTC to arrive..."
                         subTitle="Bitcoin transactions can take 10-30 minutes to complete."
@@ -294,6 +325,51 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                         link={bitcoinExplorerLinkTx(transaction.txId)}
                       />
                     )}
+                  </div>
+
+                  <div className="mt-3">
+                    Leave your email and a comment below to stay updated on {fund.name}'s progress.
+
+                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Your email</label>
+                      <div className="mt-1 sm:mt-0 sm:col-span-2">
+                        <div className="max-w-lg flex rounded-md shadow-sm">
+                          <input
+                            type="text"
+                            name="email"
+                            id="email"
+                            autoComplete="email"
+                            className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                            onChange={handleInputChange}
+                            value={state.email}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label htmlFor="comment" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Comment (optional)</label>
+                      <div className="mt-1 sm:mt-0 sm:col-span-2">
+                        <div className="max-w-lg flex rounded-md shadow-sm">
+                          <textarea
+                            id="comment"
+                            name="comment"
+                            rows="3"
+                            className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
+                            onChange={handleInputChange}
+                            value={state.comment}
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:items-end sm:pt-5">
+                      <div className="flex justify-end">
+                        <Button onClick={() => saveInfo()} saving={isSaving}>
+                          Save
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

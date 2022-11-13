@@ -177,3 +177,10 @@ export const getTransaction = async (txId: string) => {
   const json = await res.json();
   return json;
 };
+
+export const saveFundUserInfo = async (slug: string, formData: FormData) => {
+  return await fetch(API_URL + '/fund/' + slug + '/user-info', {
+    method: 'POST',
+    body: formData,
+  });
+};
