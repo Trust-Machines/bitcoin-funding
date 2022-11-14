@@ -2,7 +2,6 @@ import { RegistrationStatus } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { verifyUser } from '../user/verify';
 import prisma from '@/common/db';
-import { sendMailRegistration } from '@/common/email';
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,10 +28,6 @@ async function postHandler(
   for (const user of unverified) {
     try {
       let result = await verifyUser(user.address);
-      if (result.email && result.registrationStatus == RegistrationStatus.COMPLETED) {
-        console.log("[VERIFY USERS] send email:", result.email);
-        await sendMailRegistration(result.email);
-      }
       console.log("[VERIFY USERS] verification response:", result);
     } catch (error) {
       console.log("[VERIFY USERS] ERROR:", error);
