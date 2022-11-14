@@ -1,6 +1,6 @@
 const Sib = require('sib-api-v3-sdk')
 
-export const sendMailRegistration = async (to: string) => {
+export async function sendMailRegistration(to: string): Promise<boolean> {
   const subject = 
   `
     Your OrangeFund account is ready!
@@ -21,10 +21,10 @@ export const sendMailRegistration = async (to: string) => {
     <p>Philip</p> 
   `;
 
-  await sendMail(to, subject, textContent, htmlContent);
+  return await sendMail(to, subject, textContent, htmlContent);
 }
 
-export const sendMail = async (to: string, subject: string, textContent: string, htmlContent: string) => {
+export async function sendMail(to: string, subject: string, textContent: string, htmlContent: string): Promise<boolean> {
   const client = Sib.ApiClient.instance
   var apiKey = client.authentications["api-key"];
   apiKey.apiKey = process.env.SIB_API_KEY;
@@ -36,15 +36,12 @@ export const sendMail = async (to: string, subject: string, textContent: string,
   }
   const receivers = [{ email: to }]
 
-  emailApi.sendTransacEmail({
+  const sendResult = await emailApi.sendTransacEmail({
     sender: sender,
     to: receivers,
     subject: subject,
     textContent: textContent,
     htmlContent: htmlContent
-  }).then(function(data: any) {
-    console.log("[EMAIL] result:", data);
-  }, function(error: any) {
-    console.log("[EMAIL] error:", error);
   });
+  return true;
 }
