@@ -338,10 +338,10 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-3">
+                    <div className="mt-6">
                       Leave your email and a comment below to stay updated on {fund.name}'s progress.
 
-                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Your email</label>
                         <div className="mt-1 sm:mt-0 sm:col-span-2">
                           <div className="max-w-lg flex rounded-md shadow-sm">
