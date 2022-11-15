@@ -16,17 +16,17 @@ plan:
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
+            contract-name: clarity-bitcoin
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 421940
+            path: contracts/test/clarity-bitcoin.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
             contract-name: main
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 10340
             path: contracts/main.clar
-            anchor-block-only: true
-            clarity-version: 1
-        - contract-publish:
-            contract-name: user-registry-v1-1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 8770
-            path: contracts/user-registry-v1-1.clar
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
@@ -44,16 +44,16 @@ plan:
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
-            contract-name: clarity-bitcoin
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 421940
-            path: contracts/test/clarity-bitcoin.clar
-            anchor-block-only: true
-            clarity-version: 1
-        - contract-publish:
             contract-name: fund-funding-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 31360
             path: contracts/fund-funding-v1-1.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: user-registry-v1-1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 8770
+            path: contracts/user-registry-v1-1.clar
             anchor-block-only: true
             clarity-version: 1

@@ -36,6 +36,7 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const [forwardConfirmation, setForwardConfirmation] = useState<ForwardConfirmation>({});
   const [transaction, setTransaction] = useState<FundingTransaction>({});
   const [steps, setSteps] = useState(stepsInit);
+  const [savedComment, setSavedComment] = useState(false);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -154,16 +155,11 @@ const FundFund: NextPage = ({ dehydratedState }) => {
   const saveInfo = async () => {
     setIsSaving(true);
 
-    const formData = new FormData();
-    formData.append("email", state.email);
-    formData.append("comment", state.comment);
-    formData.append("dehydratedState", dehydratedState);
-
-    const res = await saveFundUserInfo(fund.slug, formData);
+    const res = await saveFundUserInfo(fund.slug, state.email, state.comment, dehydratedState);
     const data = await res.json();
 
     if (res.status === 200) {
-      console.log('All data is saved');
+      setSavedComment(true);
       setIsSaving(false);
     } else {
       setIsSaving(false);
@@ -327,50 +323,66 @@ const FundFund: NextPage = ({ dehydratedState }) => {
                     )}
                   </div>
 
-                  <div className="mt-3">
-                    Leave your email and a comment below to stay updated on {fund.name}'s progress.
-
-                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Your email</label>
-                      <div className="mt-1 sm:mt-0 sm:col-span-2">
-                        <div className="max-w-lg flex rounded-md shadow-sm">
-                          <input
-                            type="text"
-                            name="email"
-                            id="email"
-                            autoComplete="email"
-                            className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
-                            onChange={handleInputChange}
-                            value={state.email}
-                          />
+                  {savedComment ? (
+                    <div className="mt-3">
+                      
+                      <div className="rounded-md bg-green-50 p-4">
+                        <div className="flex">
+                          <div className="flex-shrink-0">
+                            <StyledIcon as="CheckCircleIcon" size={5} className="h-5 w-5 text-green-400" />
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-green-800">Your data was saved succesfully and you will receive periodical updates from the project.</p>
+                          </div>
                         </div>
                       </div>
                     </div>
+                  ) : (
+                    <div className="mt-3">
+                      Leave your email and a comment below to stay updated on {fund.name}'s progress.
 
-                    <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                      <label htmlFor="comment" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Comment (optional)</label>
-                      <div className="mt-1 sm:mt-0 sm:col-span-2">
-                        <div className="max-w-lg flex rounded-md shadow-sm">
-                          <textarea
-                            id="comment"
-                            name="comment"
-                            rows="3"
-                            className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
-                            onChange={handleInputChange}
-                            value={state.comment}
-                          ></textarea>
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Your email</label>
+                        <div className="mt-1 sm:mt-0 sm:col-span-2">
+                          <div className="max-w-lg flex rounded-md shadow-sm">
+                            <input
+                              type="text"
+                              name="email"
+                              id="email"
+                              autoComplete="email"
+                              className="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300"
+                              onChange={handleInputChange}
+                              value={state.email}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Comment (optional)</label>
+                        <div className="mt-1 sm:mt-0 sm:col-span-2">
+                          <div className="max-w-lg flex rounded-md shadow-sm">
+                            <textarea
+                              id="comment"
+                              name="comment"
+                              rows="3"
+                              className="max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"
+                              onChange={handleInputChange}
+                              value={state.comment}
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:items-end sm:pt-5">
+                        <div className="flex justify-end">
+                          <Button onClick={() => saveInfo()} saving={isSaving}>
+                            Save
+                          </Button>
                         </div>
                       </div>
                     </div>
-
-                    <div className="sm:grid sm:grid-cols-2 sm:gap-4 sm:items-end sm:pt-5">
-                      <div className="flex justify-end">
-                        <Button onClick={() => saveInfo()} saving={isSaving}>
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             ):(
