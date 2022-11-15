@@ -9,44 +9,51 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
+            contract-name: test-utils
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 4660
+            path: contracts/test/test-utils.clar
+            anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
             contract-name: main
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 10340
             path: contracts/main.clar
             anchor-block-only: true
+            clarity-version: 1
         - contract-publish:
             contract-name: user-registry-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 8770
             path: contracts/user-registry-v1-1.clar
             anchor-block-only: true
+            clarity-version: 1
         - contract-publish:
-            contract-name: test-utils
+            contract-name: fund-registry-trait-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 4660
-            path: contracts/test/test-utils.clar
+            cost: 2960
+            path: contracts/fund-registry-trait-v1-1.clar
             anchor-block-only: true
+            clarity-version: 1
+        - contract-publish:
+            contract-name: fund-registry-v1-1
+            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
+            cost: 11120
+            path: contracts/fund-registry-v1-1.clar
+            anchor-block-only: true
+            clarity-version: 1
         - contract-publish:
             contract-name: clarity-bitcoin
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 421940
-            path: contracts/clarity-bitcoin.clar
+            path: contracts/test/clarity-bitcoin.clar
             anchor-block-only: true
-        - contract-publish:
-            contract-name: fund-registry-trait-v1-1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 3190
-            path: contracts/fund-registry-trait-v1-1.clar
-            anchor-block-only: true
-        - contract-publish:
-            contract-name: fund-registry-v1-1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 11400
-            path: contracts/fund-registry-v1-1.clar
-            anchor-block-only: true
+            clarity-version: 1
         - contract-publish:
             contract-name: fund-funding-v1-1
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 32260
+            cost: 31360
             path: contracts/fund-funding-v1-1.clar
             anchor-block-only: true
+            clarity-version: 1
