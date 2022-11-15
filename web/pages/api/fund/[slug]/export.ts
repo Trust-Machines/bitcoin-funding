@@ -21,7 +21,8 @@ async function getHandler(
   const resultFund = await prisma.fund.findUniqueOrThrow({
     where: {
       slug: slug as string,
-    }
+    },
+    include: { subscriptions: true }
   });
   const account = JSON.parse(dehydratedState as string)[1][1][0];
   const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
@@ -35,9 +36,14 @@ async function getHandler(
     return res.status(403).json('Not allowed');
   }
 
-  const filename = `${resultFund.slug}-export.csv`;
   try {
-    const csvFile = 'txId,sats,email,comment';
+    const filename = `${resultFund.slug}-export.csv`;
+    let csvFile = "email,comment\n";
+    // TODO: include tx ID and amount of sats funded?
+    resultFund.subscriptions.forEach((subscription) => {
+      csvFile = csvFile.concat(`${subscription.email},${subscription.comment}\n`);
+    });
+
     res.status(200)
       .setHeader("Content-Type", "text/csv")
       .setHeader("Content-Disposition", `attachment; filename=${filename}`)
