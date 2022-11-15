@@ -6,7 +6,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<boolean | string>
 ) {
-  if (req.method === 'POST') {
+  if (req.method === 'GET') {
     await getHandler(req, res);
   } else {
     res.status(400).json("Unsupported method: " + req.method);
@@ -18,14 +18,12 @@ async function getHandler(
   res: NextApiResponse<boolean>
 ) {
   const { slug, dehydratedState } = req.query;
-  const body = JSON.parse(req.body);
   const resultFund = await prisma.fund.findUniqueOrThrow({
     where: {
       slug: slug as string,
     }
   });
-
-  const account = JSON.parse(body.dehydratedState as string)[1][1][0];
+  const account = JSON.parse(dehydratedState as string)[1][1][0];
   const hashedAppPrivateKey = await hashAppPrivateKey(account['appPrivateKey'])
   const isAdmin = await prisma.fundAdmin.findFirst({ 
     where: { 

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Fund, RegistrationStatus } from '@prisma/client'
-import { findFund, findFundFundingTransactions, findFundMembers, findUser, getBtcPrice, isFundAdmin, exportToCsv } from '@/common/fetchers'
+import { findFund, findFundFundingTransactions, findFundMembers, findUser, getBtcPrice, isFundAdmin } from '@/common/fetchers'
 import { Container } from '@/components/Container'
 import { Loading } from '@/components/Loading'
 import { getServerSideProps } from '@/common/session/index.ts';
@@ -109,12 +109,6 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
     setMemberItems(feedItems);
     setMembers(membersData);
-  }
-
-  const exportMembers = async () => {
-    const res = await exportToCsv(slug, dehydratedState);
-    const data = await res.text();
-    console.log(data);
   }
 
   useEffect(() => {
@@ -295,12 +289,12 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                           Manage
                         </Link>
 
-                        <button
+                        <a
                           className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-slate-500"
-                          onClick={() => exportMembers() }
+                          href={`/api/fund/${slug}/export?dehydratedState=${dehydratedState}`}
                         >
                           Export to CSV
-                        </button>
+                        </a>
                       </>
                     ):null}
 

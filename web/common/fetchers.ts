@@ -184,13 +184,3 @@ export const saveFundUserInfo = async (slug: string, email: string, comment: str
     body: JSON.stringify({ email: email, comment: comment, dehydratedState: dehydratedState })
   });
 };
-
-export const exportToCsv = async (slug: string, dehydratedState: string) => {
-  return await fetch(API_URL + '/fund/' + slug + '/export', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/csv',
-    },
-    body: JSON.stringify({ dehydratedState: dehydratedState })
-  });
-};
