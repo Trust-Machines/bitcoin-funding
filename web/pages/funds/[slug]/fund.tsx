@@ -58,39 +58,39 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     setForwardConfirmation(confirmation)
 
     // User has not confirmed yet
-    let currentStep = 1;
-    // if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
-    //   currentStep = 0;
+    let currentStep = 0;
+    if (confirmation.fundAddress == null || (confirmation.fundAddress != null && confirmation.fundAddress != fund.address)) {
+      currentStep = 0;
 
-    // // User confirmed
-    // } else {
-    //   currentStep = 1;
+    // User confirmed
+    } else {
+      currentStep = 1;
 
-    //   // There is a TX ID, so funds have been forwarded
-    //   if (confirmation.fundTransactionId) {
-    //     const tx = await getTransaction(confirmation.fundTransactionId);
-    //     setTransaction(tx);
+      // There is a TX ID, so funds have been forwarded
+      if (confirmation.fundTransactionId) {
+        const tx = await getTransaction(confirmation.fundTransactionId);
+        setTransaction(tx);
 
-    //     // Start polling for transaction completion
-    //     if (tx.registrationStatus == RegistrationStatus.STARTED) {
-    //       var intervalId = window.setInterval(function(){
-    //         pollTransaction(intervalId, confirmation.fundTransactionId);
-    //       }, 15000);
+        // Start polling for transaction completion
+        if (tx.registrationStatus == RegistrationStatus.STARTED) {
+          var intervalId = window.setInterval(function(){
+            pollTransaction(intervalId, confirmation.fundTransactionId);
+          }, 15000);
 
-    //     // Funding is done
-    //     } else  {
-    //       currentStep = 2;
-    //     }
+        // Funding is done
+        } else  {
+          currentStep = 2;
+        }
 
-    //   // No TX ID yet, so waiting for funds
-    //   } else {
+      // No TX ID yet, so waiting for funds
+      } else {
 
-    //     // Start polling the confirmation
-    //     var intervalId = window.setInterval(function(){
-    //       pollForwardingConfirmation(intervalId);
-    //     }, 15000);
-    //   }
-    // }
+        // Start polling the confirmation
+        var intervalId = window.setInterval(function(){
+          pollForwardingConfirmation(intervalId);
+        }, 15000);
+      }
+    }
 
     // Update steps data
     var newSteps = [...stepsInit];
