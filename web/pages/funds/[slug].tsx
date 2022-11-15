@@ -181,7 +181,7 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                 <div className="col-span-1">
                   <section className="col-span-1 lg:w-full lg:h-full lg:w-max-40 lg:h-max-40">
                     <div className="rounded-md overflow-hidden">
-                      <img src={fund.avatar}/>
+                      <img src={fund.avatar} />
                     </div>
                   </section>
                 </div>
@@ -281,18 +281,27 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
 
                   <dl className="grid grid-cols-1 gap-y-4 mt-5">
                     {isAdmin ? (
-                      <Link
-                        href={`/funds/${fund.slug}/manage`}
-                        className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-orange-500"
-                      >
-                        Manage
-                      </Link>
+                      <>
+                        <Link
+                          href={`/funds/${fund.slug}/manage`}
+                          className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-slate-500"
+                        >
+                          Manage
+                        </Link>
+
+                        <Link
+                          href={`/funds/${fund.slug}/manage`}
+                          className="inline-flex items-center justify-center mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-slate-500"
+                        >
+                          Export to CSV
+                        </Link>
+                      </>
                     ):null}
 
                     {!isSignedIn ? (
                       <div className="has-tooltip">
                         <span className="tooltip rounded shadow-lg p-2 bg-black text-white -mt-8 font-semibold">
-                          Connect your Stacks wallet first... 
+                          Connect your Stacks wallet first...
                         </span>
                         <button
                           className="inline-flex items-center justify-center disabled:opacity-75 mt-1 w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 focus:outline-none cursor-not-allowed"
