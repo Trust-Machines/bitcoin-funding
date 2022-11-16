@@ -67,6 +67,7 @@ model FundUpdateSubscription {
   comment                     String
   @@index([fundId], type: Hash)
   @@index([userId], type: Hash)
+  @@unique([email, fundId])
 }
 
 model User {
