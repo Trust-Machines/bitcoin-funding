@@ -156,8 +156,6 @@ const FundFund: NextPage = ({ dehydratedState }) => {
     setIsSaving(true);
 
     const res = await saveFundUserInfo(fund.slug, state.email, state.comment, dehydratedState);
-    const data = await res.json();
-
     if (res.status === 200) {
       setSavedComment(true);
       setIsSaving(false);
