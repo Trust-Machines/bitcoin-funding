@@ -12,6 +12,8 @@
   "dependencies": {
     "@dicebear/avatars": "^4.10.3",
     "@dicebear/avatars-initials-sprites": "^4.10.3",
+    "@emotion/cache": "^11.10.5",
+    "@emotion/react": "^11.10.5",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
     "@mantine/core": "^5.8.0",
