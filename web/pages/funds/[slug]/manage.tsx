@@ -10,6 +10,12 @@ import { getServerSideProps } from '@/common/session/index.ts'
 import { Button } from '@/components/Button'
 import { Alert } from '@/components/Alert'
 import { AdminItem } from '@/components/AdminItem'
+import dynamic from 'next/dynamic'
+
+const RichTextEditorNoSSR = dynamic(
+  () => import('@mantine/rte'),
+  { ssr: false }
+)
 
 const ManageFund: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -33,6 +39,10 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
   const [addedAdmins, setAddedAdmins] = useState([]);
   const [deleteAdmin, setDeleteAdmin] = useState('');
   const [deletedAdmins, setDeletedAdmins] = useState([]);
+
+  const handleRichTextInputChange = (value: any) => {
+    setFund(prevState => { return { ...prevState, ["description"]: value } });
+  }
 
   const handleInputChange = (event:any) => {
     const target = event.target;
@@ -103,6 +113,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
     formData.append("updateAvatar", avatarRemoved);
     formData.append("name", fund.name);
     formData.append("about", fund.about);
+    formData.append("description", fund.description);
     formData.append("slug", fund.slug);
     formData.append("twitterHandle", fund.twitterHandle);
     formData.append("websiteUrl", fund.websiteUrl);
@@ -272,6 +283,27 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                   value={fund.about}
                 ></textarea>
                 <p className="mt-2 text-sm text-gray-500">Write a few sentences about the purpose your fundraise.</p>
+              </div>
+            </div>
+
+            <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"> Description </label>
+              <div className="mt-1 sm:mt-0 sm:col-span-2">
+                <RichTextEditorNoSSR 
+                  value={fund.description} 
+                  onChange={handleRichTextInputChange} 
+                  id="rte"
+                  controls={[
+                    ['clean'],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['h1', 'h2', 'h3'],
+                    ['alignLeft', 'alignCenter', 'alignRight'],
+                    ['blockquote', 'code', 'codeBlock'],
+                    ['link'],
+                    ['image', 'video'],
+                  ]}
+                />
+                <p className="mt-2 text-sm text-gray-500">Add additional formatted information.</p>
               </div>
             </div>
 
