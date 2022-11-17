@@ -122,6 +122,7 @@ async function postHandler(
         data: {
           name: fields.name as string,
           about: fields.about as string,
+          description: fields.description as string,
           twitterHandle: fields.twitterHandle as string,
           websiteUrl: fields.websiteUrl as string,
           slug: slug,
