@@ -28,6 +28,7 @@ model Fund {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   admins                      FundAdmin[]
+  subscriptions               FundUpdateSubscription[]
   totalSats                   Int                       @default(0)
   totalMembers                Int                       @default(0)
   twitterHandle               String?
@@ -56,6 +57,19 @@ model FundAdminInvite {
   @@index([userAddress], type: Hash)
 }
 
+model FundUpdateSubscription {
+  id                          Int                       @id @default(autoincrement())
+  fund                        Fund                      @relation(fields: [fundId], references: [address])
+  user                        User                      @relation(fields: [userId], references: [appPrivateKey])
+  fundId                      String
+  userId                      String
+  email                       String
+  comment                     String
+  @@index([fundId], type: Hash)
+  @@index([userId], type: Hash)
+  @@unique([email, fundId])
+}
+
 model User {
   appPrivateKey               String                    @id
   address                     String                    @unique
@@ -68,6 +82,7 @@ model User {
   createdAt                   DateTime                  @default(now())
   updatedAt                   DateTime                  @updatedAt
   fundAdmins                  FundAdmin[]
+  fundSubscriptions           FundUpdateSubscription[]
   forwardConfirmation         ForwardConfirmation       @relation(fields: [forwardConfirmationId], references: [address])
   forwardConfirmationId       String                    @unique
   @@index([appPrivateKey], type: Hash)

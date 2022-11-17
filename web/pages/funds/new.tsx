@@ -244,12 +244,12 @@ const New: NextPage = ({ dehydratedState }) => {
           </div>
 
           <div className="pt-5 pb-5">
-              <div className="flex justify-end">
-                <Button onClick={() => submitCreateFund()} saving={isSaving}>
-                  Save
-                </Button>
-              </div>
+            <div className="flex justify-end">
+              <Button onClick={() => submitCreateFund()} saving={isSaving}>
+                Save
+              </Button>
             </div>
+          </div>
         </div>
       )}
     </Container>

@@ -177,3 +177,10 @@ export const getTransaction = async (txId: string) => {
   const json = await res.json();
   return json;
 };
+
+export const saveFundUserInfo = async (slug: string, email: string, comment: string, dehydratedState: string) => {
+  return await fetch(API_URL + '/fund/' + slug + '/user-info', {
+    method: 'POST',
+    body: JSON.stringify({ email: email, comment: comment, dehydratedState: dehydratedState })
+  });
+};
