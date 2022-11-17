@@ -16,6 +16,12 @@ import { AlertWait } from '@/components/AlertWait'
 import { MembersPaged } from 'pages/api/fund/[slug]/members'
 import { StyledIcon } from '@/components/StyledIcon';
 import { useAccount, useAuth } from '@micro-stacks/react'
+import dynamic from 'next/dynamic'
+
+const RichTextEditorNoSSR = dynamic(
+  () => import('@mantine/rte'),
+  { ssr: false }
+)
 
 const FundDetails: NextPage = ({ dehydratedState }) => {
   const router = useRouter()
@@ -209,7 +215,18 @@ const FundDetails: NextPage = ({ dehydratedState }) => {
                   <div className="px-4 pb-5 sm:px-6">
                     <dl className="grid grid-cols-1 sm:grid-cols-2">
                       <div className="sm:col-span-3">
-                        <dd className="mt-1 text-sm text-gray-900">{fund.about}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {fund.about}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                  <div className="px-1 pb-5 sm:px-2">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2">
+                      <div className="sm:col-span-3">
+                        <dd className="mt-1 text-sm text-gray-900">
+                          <RichTextEditorNoSSR readOnly id="rte" value={fund.description} style={{border: 0}}/>
+                        </dd>
                       </div>
                     </dl>
                   </div>

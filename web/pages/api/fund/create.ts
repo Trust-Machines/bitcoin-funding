@@ -75,6 +75,7 @@ async function postHandler(
             slug: slug,
             avatar: avatar,
             about: fields.about as string,
+            description: fields.description as string,
             raisingAmount: parseInt(fields.raisingAmount as string),
             raisingDeadline: new Date(fields.raisingDeadline as string),
             admins: { create: [{ user: { connect: { appPrivateKey: hashedAppPrivateKey } } }] },

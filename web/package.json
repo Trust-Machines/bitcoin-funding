@@ -12,8 +12,13 @@
   "dependencies": {
     "@dicebear/avatars": "^4.10.3",
     "@dicebear/avatars-initials-sprites": "^4.10.3",
+    "@emotion/cache": "^11.10.5",
+    "@emotion/react": "^11.10.5",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
+    "@mantine/core": "^5.8.0",
+    "@mantine/hooks": "^5.8.0",
+    "@mantine/rte": "^5.8.0",
     "@micro-stacks/react": "^1.0.3",
     "@prisma/client": "^4.2.1",
     "@samouraiwallet/electrum-client": "^1.2.4",

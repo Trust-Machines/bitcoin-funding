@@ -20,6 +20,7 @@ model Fund {
   slug                        String                    @unique
   avatar                      String
   about                       String?
+  description                 String?
   registrationTxId            String?
   registrationStatus          RegistrationStatus        @default(STARTED)
   raisingAmount               Int                       // amount in satoshi
