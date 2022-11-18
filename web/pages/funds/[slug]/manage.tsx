@@ -229,7 +229,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
             </div>
 
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Project Image</label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
                 {avatarRemoved ? (
                   <label htmlFor="avatar" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-500 focus-within:ring-offset-2 hover:text-indigo-500">
@@ -268,6 +268,7 @@ const ManageFund: NextPage = ({ dehydratedState }) => {
                     </section>
                   </div>
                 )}
+                <p className="mt-2 text-sm text-gray-500">Add an image that clearly represents your project.</p>
               </div>
             </div>
 

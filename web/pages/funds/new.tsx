@@ -128,7 +128,7 @@ const New: NextPage = ({ dehydratedState }) => {
 
               <div className="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your DAO called?</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">What is your fund called?</label>
                   <div className="mt-1 sm:mt-0 sm:col-span-2">
                     <div className="max-w-lg flex rounded-md shadow-sm">
                       <input
@@ -145,7 +145,7 @@ const New: NextPage = ({ dehydratedState }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Avatar</label>
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Project Image</label>
                   <div className="mt-1 sm:mt-0 sm:col-span-2">
                     <label htmlFor="image" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
                       <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
@@ -168,6 +168,7 @@ const New: NextPage = ({ dehydratedState }) => {
                         </div>
                       </div>
                     </label>
+                    <p className="mt-2 text-sm text-gray-500">Add an image that clearly represents your project.</p>
                   </div>
                 </div>
 
@@ -233,7 +234,7 @@ const New: NextPage = ({ dehydratedState }) => {
                 </div>
 
                 <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin DAO address</label>
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Enter your Bitcoin address</label>
                   <div className="mt-1 sm:mt-0 sm:col-span-2">
                     <div className="max-w-lg flex rounded-md shadow-sm">
                       <input
@@ -267,7 +268,7 @@ const New: NextPage = ({ dehydratedState }) => {
                       />
                     </div>
                     <p className="mt-2 text-sm text-gray-500">
-                      Deposits will close end of day (23:59 PST).
+                      Set a time limit for your campaign. You won’t be able to change this after you launch. Deposits will close end of day (23:59 PST).
                     </p>
                   </div>
                 </div>
