@@ -49,7 +49,7 @@ export function shortAddress(address: string): string {
   return `${address.substring(0, 5)}...${address.substring(address.length, address.length - 5)}`;
 }
 
-export async function resolveBns(address: string): string {
+export async function resolveBns(address: string): Promise<string> {
   const url = `https://stacks-node-api.mainnet.stacks.co/v1/addresses/stacks/${address}`;
   const { data } = await axios.get(url);
   if (data['names'] && data['names'].length > 0) {
