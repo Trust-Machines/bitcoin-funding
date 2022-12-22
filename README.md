@@ -1,73 +1,63 @@
-# Orangefund.us: Bitcoin Funding
+# OrangeFund.us
 
-## Introduction
+Orange Fund is a crowdfunding/fundraising platform that allows projects to raise native Bitcoin (BTC)
 
-Generally speaking, there are two personas: the user and the Fund admin.
+## Deploy OrangeFund
 
-### As a Fund admin
-- I want to to collect BTC from multiple people
-- I want to be able to add 1 or more Bitcoin addresses to my Fund (for collecting funds) 
-- The money collected must be native BTC sent from a native BTC address (including Coinbase) to a BTC address (electrum, Casa, Trezor, etc) 
-- I want to set an end date for my campaign (optional)
-- I want the Fund to issue governance rights to members 
-- I want to see all transactions in/out of the Fund’s wallet listed publicly 
-- I want to promote decentralization wherever possible 
+In order to deploy an instance of OrangeFund, you can follow these steps:
 
-### As a user 
-- I want to send BTC from any BTC wallet to the Fund 
-- I want governance rights of the Fund 
-- I want to see all transactions in/out of the Fund’s wallet listed publicly 
+0. Run `npm i` in the `web/` folder
+1. Set up a SQL database and run the following commands in the `web` folder
+  - `npx db push` to create and push updates to your SQL db according to `schema.prisma`
+  - `npx prisma generate` to update your schema definitions in prisma
+  - `npx prisma studio` to run a UI to browse your DB
+2. Set up an Electrum server to track Bitcoin deposits through your own xpub (extended public address) and set of private keys
+3. Use `npm run start` to run the Next.js server locally
 
-### Main problems to solve
-- You want Fund funds to raise as much money as possible 
-- Make it as easy as possible to fund BTC and not connect their wallets 
-- Easiest step should be sending BTC 
-- Connecting their Hiro Wallet
+Additionally, you can deploy an instance of Orange Fund to Vercel (https://vercel.app/)
 
-### Roles: 
-- Normal user: Fund the Fund 
-- Power user: Funds + Govern the Fund
+## Features
 
+Current supported features:
+- Create a project to raise BTC on a wallet with your own set of private keys
+- Host an Electrum Server instance to support any Bitcoin wallet (whether it's a CEX withdrawal or a person's private wallet)
+- Keep track of each funding event through on-chain governance on Stacks
+- Upload rich media (jpeg, png, mp4, ...) to showcase the uniqueness of your project
 
-## Functional Requirements
+## Security
 
-1. As a user, I can read the value proposition of Orangefund.us (above the fold)
+IMPORTANT: OrangeFund has not been audited by any external firm as of today.
 
-#### Acceptance Criteria
-After visiting the homepage, I can read about Bitcoin Funds.
+## Clarity Usage  
 
----
+### Requires Clarinet 
 
-2. As a user, I can create a Bitcoin Fund
+Install Clarinet: https://github.com/hirosystems/clarinet
 
-#### Acceptance Criteria
-After a successful response, the newly created vault is visible in the UI.
+OrangeFund is partly written in Clarity and therefore requires you to install Clarinet locally on the command line. Type the following command to check that you have Clarinet installed: 
 
----
+```bash
+$ clarinet --version
+```
 
-3. As a user, I can browse Funds that have been created.
+Please make sure you have Clarinet version 0.31.1 or higher installed.
 
----
+### Download OrangeFund
 
-4. As a user, I can read more about a Fund, see a video etc..
+1. Clone the repo: 
 
----
+```bash
+$ git clone git@github.com:Trust-Machines/bitcoin-funding.git && cd bitcoin-funding
+```
 
-5. As a user, I can read the Fund story and see links
+2. Run the unit test to confirm all the tests passed and everything is working: 
 
----
+```bash
+$ clarinet test
+```
 
-6. As a user, I can choose to “Support the Fund” (i.e. fund it)
+3. Open the Clarinet console in order to interact with the contract 
 
----
-
-7. As a user, I can see all members with their Stacks address or BNS name and how much they donated (last 5 or 10 donations, with “more” link to separate page)
-
----
-
-8. As an admin, I should be able to manage the Fund (need “Manage Fund” button)
-
----
-
-9. As an admin, I can add additional admins
-
+```bash
+$ clarinet console
+```
