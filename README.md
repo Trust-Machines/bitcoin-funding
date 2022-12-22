@@ -14,6 +14,8 @@ In order to deploy an instance of OrangeFund, you can follow these steps:
 2. Set up an Electrum server to track Bitcoin deposits through your own xpub (extended public address) and set of private keys
 3. Use `npm run start` to run the Next.js server locally
 
+Don't forget to set your environment variables in the `.env` file (see `.env.example` for an example).
+ 
 Additionally, you can deploy an instance of Orange Fund to Vercel (https://vercel.app/)
 
 ## Features
